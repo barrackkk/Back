@@ -41,11 +41,19 @@ out/
 /out/
 /target/
 
-# Logs
+## log
+logs/
 *.log
+**/logs/
 
 # OS files
 .DS_Store
 
 # Gradle
 .gradle/
+
+##
+**/generated/*
+/.env.*
+*.env
+!.env.sample
