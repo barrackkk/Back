@@ -31,20 +31,16 @@ public class DailyWalk {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "daily_walk_id")
-    private Long id;  // BIGINT AUTO_INCREMENT
+    private Long Id;  // BIGINT AUTO_INCREMENT
 
     @Column(nullable = false)
     private Integer step;  // 걸음 수
 
     @Column(name = "distance_km", nullable = false)
-    private Double distanceKm;  // 거리 (km)
+    private Double distanceKm; 
 
     @Column(name = "burn_calories", nullable = false)
-    private Integer burnCalories;  // 소모 칼로리
-
-    @Column(name = "recorded_at", nullable = false,
-            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime recordedAt;  // 기록 시각
+    private Integer burnCalories;  
 
     @Column(name = "created_at", nullable = false,
             updatable = false,
