@@ -1,7 +1,10 @@
 package com.fitpet.server.domain.dailywalk.exception;
 
-public class DailyWalkNotFoundException extends RuntimeException {
-    public DailyWalkNotFoundException(String message) {
-        super(message);
+import com.fitpet.server.global.exception.BusinessException;
+import com.fitpet.server.global.exception.ErrorCode;
+
+public class DailyWalkNotFoundException extends BusinessException {
+    public DailyWalkNotFoundException() {
+        super(ErrorCode.DAILY_WALK_NOT_FOUND);
     }
 }

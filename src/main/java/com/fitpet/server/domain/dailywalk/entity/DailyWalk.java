@@ -1,5 +1,6 @@
 package com.fitpet.server.domain.dailywalk.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.fitpet.server.domain.user.entity.User;
@@ -12,17 +13,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "daily_walk")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -31,28 +32,53 @@ public class DailyWalk {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "daily_walk_id")
-    private Long Id;  // BIGINT AUTO_INCREMENT
+    private Long id;
 
     @Column(nullable = false)
-    private Integer step;  // 걸음 수
+    private Integer step;
 
-    @Column(name = "distance_km", nullable = false)
-    private Double distanceKm; 
+    @Column(name = "distance_km", nullable = false, precision = 7, scale = 3)
+    private BigDecimal distanceKm;
 
     @Column(name = "burn_calories", nullable = false)
-    private Integer burnCalories;  
+    private Integer burnCalories;
 
-    @Column(name = "created_at", nullable = false,
-            updatable = false,
-            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at",
-            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    // User와 N:1 관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @PrePersist
+    void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+        if (this.createdAt == null) this.createdAt = now;
+        if (this.updatedAt == null) this.updatedAt = now;
+    }
+
+    @PreUpdate
+    void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateStep(int newStep) {
+        if (newStep < 0) throw new IllegalArgumentException("걸음 수는 음수일 수 없습니다.");
+        this.step = newStep;
+    }
+
+    public void validateInvariants() {
+        if (this.step == null || this.step < 0) {
+            throw new IllegalArgumentException("걸음 수는 0 이상이어야 합니다.");
+        }
+        if (this.distanceKm == null || this.distanceKm.signum() < 0) {
+            throw new IllegalArgumentException("거리(km)는 0 이상이어야 합니다.");
+        }
+        if (this.burnCalories == null || this.burnCalories < 0) {
+            throw new IllegalArgumentException("소모 칼로리는 0 이상이어야 합니다.");
+        }
+    }
 }

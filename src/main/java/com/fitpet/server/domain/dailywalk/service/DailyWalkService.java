@@ -2,25 +2,34 @@ package com.fitpet.server.domain.dailywalk.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
+import org.springframework.validation.annotation.Validated;
+
+import com.fitpet.server.domain.dailywalk.dto.request.DailyWalkCreateRequest;
 import com.fitpet.server.domain.dailywalk.entity.DailyWalk;
 
-public interface DailyWalkService { 
-    //TODO: Mapper 추가하기
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.PositiveOrZero;
 
-    // 특정 사용자 전체 기록 조회
-    List<DailyWalk> getDailyWalksByUser(Long userId);
+@Validated
+public interface DailyWalkService {
 
-    // 특정 사용자 특정 날짜 기록 조회
-    Optional<DailyWalk> getDailyWalkByUserAndDate(Long userId, LocalDateTime date);
+    List<DailyWalk> getDailyWalksByUser(@NotNull Long userId);
 
-    // 새 기록 생성
-    DailyWalk createDailyWalk(DailyWalk dailyWalk);
+    DailyWalk getDailyWalkByUserAndCreatedAt(
+            @NotNull Long userId,
+            @NotNull @PastOrPresent LocalDateTime createdAt
+    );
 
-    // 기록 삭제
-    void deleteDailyWalk(Long dailyWalkId);
+    DailyWalk createDailyWalk(@Valid DailyWalkCreateRequest req);
 
-    // 걸음 수 업데이트
-    void updateDailyWalkStep(Long dailyWalkId, LocalDateTime date, Integer newStep);
+    void deleteDailyWalk(@NotNull Long dailyWalkId);
+
+    void updateDailyWalkStep(
+            @NotNull Long userId,
+            @NotNull @PastOrPresent LocalDateTime createdAt,
+            @NotNull @PositiveOrZero Integer newStep
+    );
 }
