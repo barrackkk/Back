@@ -43,19 +43,19 @@ public class DailyWalkController {
         return ResponseEntity.ok(body);
     }
 
-    @GetMapping("/users/{userId}/by-date")
-    public ResponseEntity<DailyWalkResponse> getByDate(
+    @GetMapping("/users/{userId}/today")
+    public ResponseEntity<DailyWalkResponse> getDailyWalkByUserIdAndDate(
             @PathVariable @NotNull Long userId,
             @RequestParam("date")
             @PastOrPresent
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        var dailywalk = dailyWalkService.getDailyWalkByUserIdAndDate(userId, date);
-        return ResponseEntity.ok(DailyWalkResponse.from(dailywalk));
+        var dailyWalk = dailyWalkService.getDailyWalkByUserIdAndDate(userId, date);
+        return ResponseEntity.ok(DailyWalkResponse.from(dailyWalk));
     }
 
     @PostMapping
-    public ResponseEntity<DailyWalkResponse> create(@RequestBody @Valid DailyWalkCreateRequest req) {
+    public ResponseEntity<DailyWalkResponse> createDailyWalk(@RequestBody @Valid DailyWalkCreateRequest req) {
         var saved = dailyWalkService.createDailyWalk(req);
         return ResponseEntity
                 .created(URI.create("/daily/walks/" + saved.getId()))
@@ -63,14 +63,14 @@ public class DailyWalkController {
     }
 
     @PatchMapping("/users/{userId}/step")
-    public ResponseEntity<Void> updateStep(@PathVariable @NotNull Long userId,
+    public ResponseEntity<Void> updateStepByUserIdAndDateId(@PathVariable @NotNull Long userId,
                                            @RequestBody @Valid DailyWalkStepUpdateRequest req) {
         dailyWalkService.updateDailyWalkStep(userId, req.date(), req.step());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{dailyWalkId}")
-    public ResponseEntity<Void> delete(@PathVariable @NotNull Long dailyWalkId) {
+    public ResponseEntity<Void> deleteByDailyWalkId(@PathVariable @NotNull Long dailyWalkId) {
         dailyWalkService.deleteDailyWalk(dailyWalkId);
         return ResponseEntity.noContent().build();
     }
