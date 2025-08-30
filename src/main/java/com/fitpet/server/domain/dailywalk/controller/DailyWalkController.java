@@ -28,8 +28,6 @@ import jakarta.validation.constraints.PastOrPresent;
 import lombok.RequiredArgsConstructor;
 
 
-// import 동일
-
 @RestController
 @RequestMapping("/daily/walks")
 @RequiredArgsConstructor

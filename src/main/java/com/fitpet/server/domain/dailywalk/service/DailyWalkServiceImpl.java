@@ -7,6 +7,10 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.PositiveOrZero;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +24,7 @@ import com.fitpet.server.global.exception.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -28,46 +33,39 @@ public class DailyWalkServiceImpl implements DailyWalkService {
     private final DailyWalkRepository dailyWalkRepository;
 
     @PersistenceContext
-    private EntityManager em;
+    private EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
-    public List<DailyWalk> getAllByUserId(Long userId) {
+    public List<DailyWalk> getAllByUserId(@NotNull Long userId) {
         return dailyWalkRepository.findAllByUser_Id(userId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public DailyWalk getDailyWalkByUserIdAndDate(Long userId, java.time.LocalDate date) {
-        LocalDateTime key = date.atStartOfDay(); // yyyy-MM-ddT00:00:00
-        return dailyWalkRepository.findByUser_IdAndCreatedAt(userId, key)
+    public DailyWalk getDailyWalkByUserIdAndDate(@NotNull Long userId,
+                                                 @NotNull @PastOrPresent LocalDate date) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end   = start.plusDays(1);
+        return dailyWalkRepository.findByUserIdAndDate(userId, start, end)
                 .orElseThrow(DailyWalkNotFoundException::new);
     }
 
     @Override
-    public DailyWalk createDailyWalk(DailyWalkCreateRequest req) {
-        // 사용자 존재 확인
-        if (em.find(User.class, req.userId()) == null) {
+    public DailyWalk createDailyWalk(@Valid DailyWalkCreateRequest req) {
+        if (entityManager.find(User.class, req.userId()) == null) {
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
-        User userRef = em.getReference(User.class, req.userId());
+        User userRef = entityManager.getReference(User.class, req.userId());
 
-        // createdAt 정규화: (요청값 있으면 그 '날짜'의 자정, 없으면 '오늘' 자정)
-        LocalDateTime createdKey = (req.createdAt() == null)
-                ? LocalDate.now().atStartOfDay()
-                : req.createdAt().toLocalDate().atStartOfDay();
-
-        // 하루 1행 보장: 중복 검사
-        if (dailyWalkRepository.existsByUser_IdAndCreatedAt(userRef.getId(), createdKey)) {
-            throw new BusinessException(ErrorCode.DAILY_WALK_ALREADY_EXISTS);
-        }
+        LocalDateTime created = (req.createdAt() != null) ? req.createdAt() : LocalDateTime.now();
 
         DailyWalk toSave = DailyWalk.builder()
                 .user(userRef)
                 .step(req.step())
                 .distanceKm(req.distanceKm())
                 .burnCalories(req.burnCalories())
-                .createdAt(createdKey)
+                .createdAt(created)
                 .build();
 
         toSave.validateInvariants();
@@ -75,14 +73,17 @@ public class DailyWalkServiceImpl implements DailyWalkService {
     }
 
     @Override
-    public void updateDailyWalkStep(Long userId, java.time.LocalDate date, Integer newStep) {
-        LocalDateTime key = date.atStartOfDay();
-        int updated = dailyWalkRepository.updateStepByUserIdAndCreatedAt(userId, key, newStep);
+    public void updateDailyWalkStep(@NotNull Long userId,
+                                    @NotNull @PastOrPresent LocalDate date,
+                                    @NotNull @PositiveOrZero Integer newStep) {
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end   = start.plusDays(1);
+        int updated = dailyWalkRepository.updateStepByUserIdAndDate(userId, start, end, newStep);
         if (updated == 0) throw new DailyWalkNotFoundException();
     }
 
     @Override
-    public void deleteDailyWalk(Long dailyWalkId) {
+    public void deleteDailyWalk(@NotNull Long dailyWalkId) {
         if (!dailyWalkRepository.existsById(dailyWalkId)) {
             throw new DailyWalkNotFoundException();
         }

@@ -15,7 +15,6 @@ import jakarta.validation.constraints.PositiveOrZero;
 
 @Validated
 public interface DailyWalkService {
-
     List<DailyWalk> getAllByUserId(@NotNull Long userId);
 
     DailyWalk getDailyWalkByUserIdAndDate(

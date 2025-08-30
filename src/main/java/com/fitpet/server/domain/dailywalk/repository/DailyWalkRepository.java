@@ -1,34 +1,45 @@
 package com.fitpet.server.domain.dailywalk.repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.*;
+import com.fitpet.server.domain.dailywalk.entity.DailyWalk;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.fitpet.server.domain.dailywalk.entity.DailyWalk;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DailyWalkRepository extends JpaRepository<DailyWalk, Long> {
 
     List<DailyWalk> findAllByUser_Id(Long userId);
 
-    List<DailyWalk> findByUser_IdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
-
-    Optional<DailyWalk> findByUser_IdAndCreatedAt(Long userId, LocalDateTime createdAt);
-
-    boolean existsByUser_IdAndCreatedAt(Long userId, LocalDateTime createdAt);
+    @Query("""
+           select dw from DailyWalk dw
+            where dw.user.id = :userId
+              and dw.createdAt >= :start
+              and dw.createdAt < :end
+           """)
+    Optional<DailyWalk> findByUserIdAndDate(
+            @Param("userId") Long userId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
-           UPDATE DailyWalk dw
-              SET dw.step = :step
-            WHERE dw.user.id = :userId
-              AND dw.createdAt = :createdAt
+           update DailyWalk dw
+              set dw.step = :step
+            where dw.user.id = :userId
+              and dw.createdAt >= :start
+              and dw.createdAt < :end
            """)
-    int updateStepByUserIdAndCreatedAt(@Param("userId") Long userId,
-                                       @Param("createdAt") LocalDateTime createdAt,
-                                       @Param("step") Integer step);
+    int updateStepByUserIdAndDate(
+            @Param("userId") Long userId,
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end,
+            @Param("step") Integer step
+    );
 }
