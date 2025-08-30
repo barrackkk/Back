@@ -1,6 +1,6 @@
 package com.fitpet.server.domain.dailywalk.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.validation.annotation.Validated;
@@ -16,11 +16,11 @@ import jakarta.validation.constraints.PositiveOrZero;
 @Validated
 public interface DailyWalkService {
 
-    List<DailyWalk> getDailyWalksByUser(@NotNull Long userId);
+    List<DailyWalk> getAllByUserId(@NotNull Long userId);
 
-    DailyWalk getDailyWalkByUserAndCreatedAt(
+    DailyWalk getDailyWalkByUserIdAndDate(
             @NotNull Long userId,
-            @NotNull @PastOrPresent LocalDateTime createdAt
+            @NotNull @PastOrPresent LocalDate date
     );
 
     DailyWalk createDailyWalk(@Valid DailyWalkCreateRequest req);
@@ -29,7 +29,7 @@ public interface DailyWalkService {
 
     void updateDailyWalkStep(
             @NotNull Long userId,
-            @NotNull @PastOrPresent LocalDateTime createdAt,
+            @NotNull @PastOrPresent LocalDate date,
             @NotNull @PositiveOrZero Integer newStep
     );
 }

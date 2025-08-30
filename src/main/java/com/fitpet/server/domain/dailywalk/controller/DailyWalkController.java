@@ -1,7 +1,7 @@
 package com.fitpet.server.domain.dailywalk.controller;
 
 import java.net.URI;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -39,21 +39,21 @@ public class DailyWalkController {
     private final DailyWalkService dailyWalkService;
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<List<DailyWalkResponse>> getAllByUser(@PathVariable @NotNull Long userId) {
-        var body = dailyWalkService.getDailyWalksByUser(userId)
+    public ResponseEntity<List<DailyWalkResponse>> getAllByUserId(@PathVariable @NotNull Long userId) {
+        var body = dailyWalkService.getAllByUserId(userId)
                 .stream().map(DailyWalkResponse::from).toList();
         return ResponseEntity.ok(body);
     }
 
     @GetMapping("/users/{userId}/by-date")
-    public ResponseEntity<DailyWalkResponse> getByUserAndDate(
+    public ResponseEntity<DailyWalkResponse> getByDate(
             @PathVariable @NotNull Long userId,
-            @RequestParam("createdAt")
+            @RequestParam("date")
             @PastOrPresent
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime createdAt
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        var dw = dailyWalkService.getDailyWalkByUserAndCreatedAt(userId, createdAt);
-        return ResponseEntity.ok(DailyWalkResponse.from(dw));
+        var dailywalk = dailyWalkService.getDailyWalkByUserIdAndDate(userId, date);
+        return ResponseEntity.ok(DailyWalkResponse.from(dailywalk));
     }
 
     @PostMapping
@@ -67,7 +67,7 @@ public class DailyWalkController {
     @PatchMapping("/users/{userId}/step")
     public ResponseEntity<Void> updateStep(@PathVariable @NotNull Long userId,
                                            @RequestBody @Valid DailyWalkStepUpdateRequest req) {
-        dailyWalkService.updateDailyWalkStep(userId, req.createdAt(), req.step());
+        dailyWalkService.updateDailyWalkStep(userId, req.date(), req.step());
         return ResponseEntity.noContent().build();
     }
 

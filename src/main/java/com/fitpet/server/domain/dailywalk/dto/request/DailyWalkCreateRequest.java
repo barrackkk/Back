@@ -1,6 +1,7 @@
 package com.fitpet.server.domain.dailywalk.dto.request;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -19,6 +20,6 @@ public record DailyWalkCreateRequest(
         @NotNull @PositiveOrZero Integer burnCalories,
 
         @PastOrPresent
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDateTime createdAt
 ) {}
