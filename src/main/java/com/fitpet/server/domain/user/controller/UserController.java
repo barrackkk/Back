@@ -59,7 +59,7 @@ public class UserController {
     @PatchMapping("/{userId}")
     public ResponseEntity<UserDto> update(
         @PathVariable Long userId,
-        @RequestBody UserUpdateRequest userUpdateRequest
+        @Valid @RequestBody UserUpdateRequest userUpdateRequest
     ) {
         log.info("[UserController] 사용자 수정 요청: id: {}", userId);
 
