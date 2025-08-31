@@ -75,25 +75,19 @@ public class DailyWalkServiceImpl implements DailyWalkService {
             log.warn("[DailyWalkService] 생성 실패 - 사용자 없음: userId={}", req.userId());
             throw new BusinessException(ErrorCode.USER_NOT_FOUND);
         }
+
         User userRef = entityManager.getReference(User.class, req.userId());
-
         LocalDateTime created = (req.createdAt() != null) ? req.createdAt() : LocalDateTime.now();
-
-        DailyWalk toSave = DailyWalk.builder()
-                .user(userRef)
-                .step(req.step())
-                .distanceKm(req.distanceKm())
-                .burnCalories(req.burnCalories())
-                .createdAt(created)
-                .build();
+        DailyWalk toSave = dailyWalkMapper.toEntity(req, userRef, created);
 
         toSave.validateInvariants();
-
         DailyWalk saved = dailyWalkRepository.save(toSave);
+
         log.info("[DailyWalkService] 생성 완료: dailyWalkId={}, userId={}, createdAt={}",
                 saved.getId(), userRef.getId(), saved.getCreatedAt());
         return saved;
     }
+
 
     @Override
     public void updateDailyWalkStep(@NotNull Long userId,

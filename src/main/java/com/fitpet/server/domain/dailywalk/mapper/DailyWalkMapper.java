@@ -12,7 +12,6 @@ import com.fitpet.server.domain.user.entity.User;
 @Component
 public class DailyWalkMapper {
 
-    /** Request + User ref + createdAt 을 받아 엔티티 생성 */
     public DailyWalk toEntity(DailyWalkCreateRequest req, User userRef, LocalDateTime createdAt) {
         return DailyWalk.builder()
                 .user(userRef)
