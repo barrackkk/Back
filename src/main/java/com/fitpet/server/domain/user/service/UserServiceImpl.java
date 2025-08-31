@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto createUser(UserCreateRequest request) {
-        log.debug("[UserService]: 사용자 등록 요청 - UserCreateRequest: {}", request);
+        log.debug("[UserService] 회원가입 요청 email={}, nickname={}", request.email(), request.nickname());
 
         validateUserCreateRequest(request);
 
@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDto findUser(Long userId) {
         log.debug("[UserService]: 사용자 조회 요청: id={}", userId);
 
