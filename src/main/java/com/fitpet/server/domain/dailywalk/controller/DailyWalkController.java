@@ -43,13 +43,13 @@ public class DailyWalkController {
         return ResponseEntity.ok(body);
     }
 
-    @GetMapping("/users/{userId}/today")
+    @GetMapping("/users/{userId}/date")
     public ResponseEntity<DailyWalkResponse> getDailyWalkByUserIdAndDate(
             @PathVariable @NotNull Long userId,
             @RequestParam("date")
             @PastOrPresent
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-    ) {
+    ) {x
         var dailyWalk = dailyWalkService.getDailyWalkByUserIdAndDate(userId, date);
         return ResponseEntity.ok(DailyWalkResponse.from(dailyWalk));
     }
