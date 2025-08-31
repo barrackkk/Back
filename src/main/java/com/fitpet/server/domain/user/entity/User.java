@@ -1,5 +1,6 @@
 package com.fitpet.server.domain.user.entity;
 
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,7 +32,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long id;  // BIGINT AUTO_INCREMENT
+    private Long id;
 
     @Column(nullable = false, length = 255)
     private String email;
@@ -45,22 +46,22 @@ public class User {
     private Integer age;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "ENUM('male','female')")
+    @Column(length = 10)
     private Gender gender;
 
-    @Column(name = "weight_kg", precision = 5, scale = 2)
+    @Column(name = "weight_kg")
     private Double weightKg;
 
-    @Column(name = "target_weight_kg", precision = 5, scale = 2)
+    @Column(name = "target_weight_kg")
     private Double targetWeightKg;
 
-    @Column(name = "height_cm", precision = 5, scale = 2)
+    @Column(name = "height_cm")
     private Double heightCm;
 
-    @Column(precision = 5, scale = 2)
+    @Column
     private Double pbf;  // 체지방률
 
-    @Column(name = "target_pbf", precision = 5, scale = 2)
+    @Column(name = "target_pbf")
     private Double targetPbf;
 
     @Column(length = 50)
