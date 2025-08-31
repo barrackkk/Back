@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,6 +68,19 @@ public class UserController {
         log.info("[UserController] 사용자 수정 완료: id: {}", userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> delete(
+        @PathVariable Long userId
+    ) {
+        log.info("[UserController] 사용자 삭제 요청: id: {}", userId);
+
+        userService.deleteUser(userId);
+
+        log.info("[UserController] 사용자 삭제 완료: id: {}", userId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
     }
 }
