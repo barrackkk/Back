@@ -2,12 +2,16 @@ package com.fitpet.server.domain.user.service;
 
 import com.fitpet.server.domain.user.dto.UserCreateRequest;
 import com.fitpet.server.domain.user.dto.UserDto;
+import com.fitpet.server.domain.user.dto.UserUpdateRequest;
 import com.fitpet.server.domain.user.entity.User;
 import com.fitpet.server.domain.user.mapper.UserMapper;
 import com.fitpet.server.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -16,19 +20,21 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Override
+    @Transactional
     public UserDto createUser(UserCreateRequest request) {
         log.debug("[UserService]: 사용자 등록 요청 - UserCreateRequest: {}", request);
 
         validateUserCreateRequest(request);
 
         User user = userMapper.toEntity(request);
+        user.changePassword(passwordEncoder.encode(request.password()));
         User savedUser = userRepository.save(user);
 
-        log.info("[UserService]: 사용자 등록 완료: id={}, nickname={}", savedUser.getId(), savedUser.getNickname());
-
+        log.info("[UserService]: 사용자 등록 완료: id={}, nickname={}", user.getId(), user.getNickname());
         return userMapper.toDto(savedUser);
 
     }
@@ -46,15 +52,38 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
-    public void validateUserCreateRequest(UserCreateRequest request) {
+    @Override
+    @Transactional
+    public UserDto updateUser(Long userId, UserUpdateRequest request) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        validateUserUpdateRequest(userId, request);
+        if (StringUtils.hasText(request.password())) {
+            user.changePassword(passwordEncoder.encode(request.password()));
+        }
+        user.update(request);
+
+        return userMapper.toDto(user);
+    }
+
+    private void validateUserCreateRequest(UserCreateRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
         if (userRepository.existsByNickname(request.nickname())) {
             throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
         }
-
     }
 
-
+    private void validateUserUpdateRequest(Long userId, UserUpdateRequest request) {
+        if (request.email() != null &&
+            userRepository.existsByEmailAndIdNot(request.email(), userId)) {
+            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        }
+        if (request.nickname() != null &&
+            userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
+            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+        }
+    }
 }
