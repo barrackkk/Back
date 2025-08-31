@@ -1,6 +1,7 @@
 package com.fitpet.server.domain.user.entity;
 
 
+import com.fitpet.server.domain.user.dto.UserUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -86,4 +87,40 @@ public class User {
     @Column(name = "updated_at",
         columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
+
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
+    // 사용자가 입력을 하지 않은 경우(빈값) 대비
+    public void update(UserUpdateRequest request) {
+        if (request.email() != null) {
+            this.email = request.email();
+        }
+        if (request.nickname() != null) {
+            this.nickname = request.nickname();
+        }
+        if (request.age() != null) {
+            this.age = request.age();
+        }
+        if (request.gender() != null) {
+            this.gender = request.gender();
+        }
+        if (request.weightKg() != null) {
+            this.weightKg = request.weightKg();
+        }
+        if (request.targetWeightKg() != null) {
+            this.targetWeightKg = request.targetWeightKg();
+        }
+        if (request.heightCm() != null) {
+            this.heightCm = request.heightCm();
+        }
+        if (request.pbf() != null) {
+            this.pbf = request.pbf();
+        }
+        if (request.targetPbf() != null) {
+            this.targetPbf = request.targetPbf();
+        }
+    }
 }
