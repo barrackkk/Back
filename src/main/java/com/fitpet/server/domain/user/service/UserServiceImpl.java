@@ -33,6 +33,19 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public UserDto findUser(Long userId) {
+        log.debug("[UserService]: 사용자 조회 요청: id={}", userId);
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> {
+                log.warn("[UserService]: 사용자 조회 요청 실패: id={}", userId);
+                throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
+            });
+
+        return userMapper.toDto(user);
+    }
+
     public void validateUserCreateRequest(UserCreateRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");

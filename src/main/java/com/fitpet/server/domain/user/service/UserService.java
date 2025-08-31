@@ -4,5 +4,7 @@ import com.fitpet.server.domain.user.dto.UserCreateRequest;
 import com.fitpet.server.domain.user.dto.UserDto;
 
 public interface UserService {
-    public UserDto createUser(UserCreateRequest request);
+    UserDto createUser(UserCreateRequest request);
+
+    UserDto findUser(Long userId);
 }
