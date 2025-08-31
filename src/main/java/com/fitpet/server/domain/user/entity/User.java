@@ -3,6 +3,7 @@ package com.fitpet.server.domain.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -15,15 +16,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "users",
     uniqueConstraints = {
         @UniqueConstraint(name = "uk_users_email", columnNames = "email")
     })
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -41,7 +44,7 @@ public class User {
     private String password;
 
     @Column(name = "nick_name", length = 60)
-    private String nickName;
+    private String nickname;
 
     private Integer age;
 
@@ -73,10 +76,13 @@ public class User {
     @Column(name = "refresh_token", length = 255)
     private String refreshToken;
 
+
+    @CreatedDate
     @Column(name = "created_at", updatable = false,
         columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
+    @LastModifiedDate
     @Column(name = "updated_at",
         columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
