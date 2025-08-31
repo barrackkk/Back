@@ -55,6 +55,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto updateUser(Long userId, UserUpdateRequest request) {
+
+        log.debug("[UserService]: 사용자 수정 요청: id={}", userId);
+
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
