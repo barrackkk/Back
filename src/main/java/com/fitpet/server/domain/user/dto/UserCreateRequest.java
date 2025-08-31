@@ -1,7 +1,9 @@
 package com.fitpet.server.domain.user.dto;
 
+import com.fitpet.server.domain.user.entity.Gender;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -21,6 +23,27 @@ public record UserCreateRequest(
 
     @NotBlank
     @Size(min = 5, max = 20)
-    String nickname
+    String nickname,
+
+    @NotNull
+    Integer age,
+
+    @NotNull
+    Gender gender,
+
+    @NotNull
+    Double weightKg,
+
+    @NotNull
+    Double targetWeightKg,
+
+    @NotNull
+    Double heightCm,
+
+    @NotNull
+    Double pbf,
+
+    @NotNull
+    Double targetPbf
 ) {
 }
