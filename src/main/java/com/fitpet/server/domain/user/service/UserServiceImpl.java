@@ -70,6 +70,18 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
+    @Transactional
+    @Override
+    public void deleteUser(Long userId) {
+
+        log.debug("[UserService]: 사용자 삭제 요청: id={}", userId);
+
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 사용자입니다."));
+
+        userRepository.delete(user);
+    }
+
     private void validateUserCreateRequest(UserCreateRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
