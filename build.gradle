@@ -28,6 +28,8 @@ dependencies {
     implementation 'jakarta.validation:jakarta.validation-api'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
+    implementation 'me.paulschwarz:spring-dotenv:3.0.0'
+
     runtimeOnly 'com.mysql:mysql-connector-j'
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

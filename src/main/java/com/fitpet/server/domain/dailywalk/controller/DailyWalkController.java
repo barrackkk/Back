@@ -49,7 +49,7 @@ public class DailyWalkController {
             @RequestParam("date")
             @PastOrPresent
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-    ) {x
+    ) {
         var dailyWalk = dailyWalkService.getDailyWalkByUserIdAndDate(userId, date);
         return ResponseEntity.ok(DailyWalkResponse.from(dailyWalk));
     }
