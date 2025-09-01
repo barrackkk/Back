@@ -21,5 +21,5 @@ public record DailyWalkCreateRequest(
 
         @PastOrPresent
         @JsonFormat(pattern = "yyyy-MM-dd")
-        LocalDateTime createdAt
+        LocalDate date
 ) {}

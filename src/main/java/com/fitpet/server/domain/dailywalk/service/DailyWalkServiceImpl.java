@@ -69,7 +69,7 @@ public class DailyWalkServiceImpl implements DailyWalkService {
     @Override
     public DailyWalk createDailyWalk(@Valid DailyWalkCreateRequest req) {
         log.debug("[DailyWalkService] 생성 요청: userId={}, step={}, distanceKm={}, burnCalories={}, createdAt={}",
-                req.userId(), req.step(), req.distanceKm(), req.burnCalories(), req.createdAt());
+                req.userId(), req.step(), req.distanceKm(), req.burnCalories(), req.date());
 
         if (entityManager.find(User.class, req.userId()) == null) {
             log.warn("[DailyWalkService] 생성 실패 - 사용자 없음: userId={}", req.userId());
@@ -77,7 +77,7 @@ public class DailyWalkServiceImpl implements DailyWalkService {
         }
 
         User userRef = entityManager.getReference(User.class, req.userId());
-        LocalDateTime created = (req.createdAt() != null) ? req.createdAt() : LocalDateTime.now();
+        LocalDateTime created = (req.date() != null) ? req.date().atStartOfDay() : LocalDateTime.now();
         DailyWalk toSave = dailyWalkMapper.toEntity(req, userRef, created);
 
         toSave.validateInvariants();
