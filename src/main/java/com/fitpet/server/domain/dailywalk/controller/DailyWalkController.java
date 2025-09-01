@@ -37,14 +37,14 @@ public class DailyWalkController {
     private final DailyWalkService dailyWalkService;
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<List<DailyWalkResponse>> getAllByUserId(@PathVariable @NotNull Long userId) {
+    public ResponseEntity<List<DailyWalkResponse>> listByUser(@PathVariable @NotNull Long userId) {
         var body = dailyWalkService.getAllByUserId(userId)
                 .stream().map(DailyWalkResponse::from).toList();
         return ResponseEntity.ok(body);
     }
 
     @GetMapping("/users/{userId}/date")
-    public ResponseEntity<DailyWalkResponse> getDailyWalkByUserIdAndDate(
+    public ResponseEntity<DailyWalkResponse> getByUserAndDate(
             @PathVariable @NotNull Long userId,
             @RequestParam("date")
             @PastOrPresent
@@ -55,7 +55,7 @@ public class DailyWalkController {
     }
 
     @PostMapping
-    public ResponseEntity<DailyWalkResponse> createDailyWalk(@RequestBody @Valid DailyWalkCreateRequest req) {
+    public ResponseEntity<DailyWalkResponse> create(@RequestBody @Valid DailyWalkCreateRequest req) {
         var saved = dailyWalkService.createDailyWalk(req);
         return ResponseEntity
                 .created(URI.create("/daily/walks/" + saved.getId()))
@@ -63,14 +63,14 @@ public class DailyWalkController {
     }
 
     @PatchMapping("/users/{userId}/step")
-    public ResponseEntity<Void> updateStepByUserIdAndDateId(@PathVariable @NotNull Long userId,
+    public ResponseEntity<Void> updateStepByUserAndDate(@PathVariable @NotNull Long userId,
                                            @RequestBody @Valid DailyWalkStepUpdateRequest req) {
         dailyWalkService.updateDailyWalkStep(userId, req.date(), req.step());
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{dailyWalkId}")
-    public ResponseEntity<Void> deleteByDailyWalkId(@PathVariable @NotNull Long dailyWalkId) {
+    public ResponseEntity<Void> delete(@PathVariable @NotNull Long dailyWalkId) {
         dailyWalkService.deleteDailyWalk(dailyWalkId);
         return ResponseEntity.noContent().build();
     }
