@@ -10,6 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Table(
@@ -22,6 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class)
 public class DailyWalk {
 
     @Id
@@ -38,9 +42,11 @@ public class DailyWalk {
     @Column(name = "burn_calories", nullable = false)
     private Integer burnCalories;
 
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
@@ -48,17 +54,6 @@ public class DailyWalk {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @PrePersist
-    void prePersist() {
-        LocalDateTime now = LocalDateTime.now();
-        if (this.createdAt == null) this.createdAt = now;
-        if (this.updatedAt == null) this.updatedAt = now;
-    }
-
-    @PreUpdate
-    void preUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 
     public void updateStep(int newStep) {
         if (newStep < 0) throw new IllegalArgumentException("걸음 수는 음수일 수 없습니다.");
