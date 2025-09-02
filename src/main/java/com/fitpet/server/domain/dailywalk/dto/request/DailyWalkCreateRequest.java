@@ -2,7 +2,6 @@ package com.fitpet.server.domain.dailywalk.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
