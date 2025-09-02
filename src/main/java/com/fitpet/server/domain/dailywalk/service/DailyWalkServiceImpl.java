@@ -56,7 +56,7 @@ public class DailyWalkServiceImpl implements DailyWalkService {
 
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end   = start.plusDays(1);
-        DailyWalk found = dailyWalkRepository.findByUserIdAndDate(userId, start, end)
+        DailyWalk found = dailyWalkRepository.findFirstByUser_IdAndCreatedAtBetweenOrderByCreatedAtDesc(userId, start, end)
                 .orElseThrow(() -> {
                     log.warn("[DailyWalkService] 사용자의 해당 날짜 조회 실패 : userId={}, date={} ", userId, date);
                     return new DailyWalkNotFoundException();

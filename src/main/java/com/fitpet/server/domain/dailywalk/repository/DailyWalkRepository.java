@@ -16,17 +16,9 @@ public interface DailyWalkRepository extends JpaRepository<DailyWalk, Long> {
 
     List<DailyWalk> findAllByUser_Id(Long userId);
 
-    @Query("""
-           select dw from DailyWalk dw
-            where dw.user.id = :userId
-              and dw.createdAt >= :start
-              and dw.createdAt < :end
-           """)
-    Optional<DailyWalk> findByUserIdAndDate(
-            @Param("userId") Long userId,
-            @Param("start") LocalDateTime start,
-            @Param("end") LocalDateTime end
-    );
+    Optional<DailyWalk> findFirstByUser_IdAndCreatedAtBetweenOrderByCreatedAtDesc(
+            Long userId, LocalDateTime start, LocalDateTime end);
+
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""
