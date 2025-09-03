@@ -1,8 +1,8 @@
-package com.fitpet.server.user.mapper;
+package com.fitpet.server.user.application.mapper;
 
-import com.fitpet.server.user.dto.UserCreateRequest;
-import com.fitpet.server.user.dto.UserDto;
-import com.fitpet.server.user.entity.User;
+import com.fitpet.server.user.domain.entity.User;
+import com.fitpet.server.user.presentation.dto.UserCreateRequest;
+import com.fitpet.server.user.presentation.dto.UserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

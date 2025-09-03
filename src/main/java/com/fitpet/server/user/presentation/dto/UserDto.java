@@ -1,6 +1,6 @@
-package com.fitpet.server.user.dto;
+package com.fitpet.server.user.presentation.dto;
 
-import com.fitpet.server.user.entity.Gender;
+import com.fitpet.server.user.domain.entity.Gender;
 import java.time.LocalDateTime;
 import lombok.Builder;
 

@@ -1,11 +1,11 @@
-package com.fitpet.server.user.service;
+package com.fitpet.server.user.application.service;
 
-import com.fitpet.server.user.dto.UserCreateRequest;
-import com.fitpet.server.user.dto.UserDto;
-import com.fitpet.server.user.dto.UserUpdateRequest;
-import com.fitpet.server.user.entity.User;
-import com.fitpet.server.user.mapper.UserMapper;
-import com.fitpet.server.user.repository.UserRepository;
+import com.fitpet.server.user.application.mapper.UserMapper;
+import com.fitpet.server.user.domain.entity.User;
+import com.fitpet.server.user.domain.repository.UserRepository;
+import com.fitpet.server.user.presentation.dto.UserCreateRequest;
+import com.fitpet.server.user.presentation.dto.UserDto;
+import com.fitpet.server.user.presentation.dto.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,72 +22,59 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-
     @Override
     @Transactional
     public UserDto createUser(UserCreateRequest request) {
-        log.debug("[UserService] 회원가입 요청 email={}, nickname={}", request.email(), request.nickname());
+        log.debug("회원가입 요청 email={}, nickname={}", request.email(), request.nickname());
 
         validateUserCreateRequest(request);
 
         User user = userMapper.toEntity(request);
         user.changePassword(passwordEncoder.encode(request.password()));
-        User savedUser = userRepository.save(user);
-
-        log.info("[UserService]: 사용자 등록 완료: id={}, nickname={}", user.getId(), user.getNickname());
-        return userMapper.toDto(savedUser);
-
+        User saved = userRepository.save(user);
+        return userMapper.toDto(saved);
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserDto findUser(Long userId) {
-        log.debug("[UserService]: 사용자 조회 요청: id={}", userId);
-
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> {
-                log.warn("[UserService]: 사용자 조회 요청 실패: id={}", userId);
-                throw new IllegalArgumentException("존재하지 않는 사용자입니다.");
-            });
-
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         return userMapper.toDto(user);
     }
 
     @Override
     @Transactional
     public UserDto updateUser(Long userId, UserUpdateRequest request) {
-
-        log.debug("[UserService]: 사용자 수정 요청: id={}", userId);
-
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
 
         validateUserUpdateRequest(userId, request);
+
         if (StringUtils.hasText(request.password())) {
             user.changePassword(passwordEncoder.encode(request.password()));
         }
-        user.update(request);
 
+        user.update(request);
         return userMapper.toDto(user);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteUser(Long userId) {
-
-        log.debug("[UserService]: 사용자 삭제 요청: id={}", userId);
-
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않은 사용자입니다."));
-
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
         userRepository.delete(user);
     }
 
+
     private void validateUserCreateRequest(UserCreateRequest request) {
         if (userRepository.existsByEmail(request.email())) {
+            log.warn("회원가입 실패 - 중복 이메일: {}", request.email());
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
         if (userRepository.existsByNickname(request.nickname())) {
+            log.warn("회원가입 실패 - 중복 닉네임: {}", request.nickname());
             throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
         }
     }
@@ -95,10 +82,12 @@ public class UserServiceImpl implements UserService {
     private void validateUserUpdateRequest(Long userId, UserUpdateRequest request) {
         if (request.email() != null &&
             userRepository.existsByEmailAndIdNot(request.email(), userId)) {
+            log.warn("사용자 수정 실패 - 이메일 중복: {} (요청자 id: {})", request.email(), userId);
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
         if (request.nickname() != null &&
             userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
+            log.warn("사용자 수정 실패 - 닉네임 중복: {} (요청자 id: {})", request.nickname(), userId);
             throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
         }
     }

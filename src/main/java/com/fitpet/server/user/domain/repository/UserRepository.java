@@ -1,0 +1,21 @@
+package com.fitpet.server.user.domain.repository;
+
+import com.fitpet.server.user.domain.entity.User;
+import java.util.Optional;
+
+
+public interface UserRepository {
+    User save(User user);
+
+    Optional<User> findById(Long id);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByNickname(String nickname);
+
+    boolean existsByEmailAndIdNot(String email, Long id);
+
+    boolean existsByNicknameAndIdNot(String nickname, Long id);
+
+    void delete(User user);
+}

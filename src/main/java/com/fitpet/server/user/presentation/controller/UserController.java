@@ -1,9 +1,9 @@
-package com.fitpet.server.user.controller;
+package com.fitpet.server.user.presentation.controller;
 
-import com.fitpet.server.user.dto.UserCreateRequest;
-import com.fitpet.server.user.dto.UserDto;
-import com.fitpet.server.user.dto.UserUpdateRequest;
-import com.fitpet.server.user.service.UserService;
+import com.fitpet.server.user.application.service.UserService;
+import com.fitpet.server.user.presentation.dto.UserCreateRequest;
+import com.fitpet.server.user.presentation.dto.UserDto;
+import com.fitpet.server.user.presentation.dto.UserUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
