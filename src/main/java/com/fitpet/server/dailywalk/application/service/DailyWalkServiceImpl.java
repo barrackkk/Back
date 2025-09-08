@@ -6,6 +6,7 @@ import com.fitpet.server.dailywalk.domain.exception.DailyWalkNotFoundException;
 import com.fitpet.server.dailywalk.domain.repository.DailyWalkRepository;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
+import com.fitpet.server.dailywalk.presentation.dto.response.DailyWalkResponse;
 import com.fitpet.server.shared.exception.BusinessException;
 import com.fitpet.server.shared.exception.ErrorCode;
 import com.fitpet.server.user.domain.entity.User;
@@ -35,11 +36,11 @@ public class DailyWalkServiceImpl implements DailyWalkService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<DailyWalk> getAllByUserId(@NotNull Long userId) {
+    public List<DailyWalkResponse> getAllByUserId(@NotNull Long userId) {
         log.debug("[DailyWalkService] 전체 조회 요청: userId={}", userId);
         List<DailyWalk> result = dailyWalkRepository.findAllByUser_Id(userId);
         log.info("[DailyWalkService] 전체 조회 완료: userId={}, count={}", userId, result.size());
-        return result;
+        return result.stream().map(DailyWalkResponse::from).toList();
     }
 
     @Override

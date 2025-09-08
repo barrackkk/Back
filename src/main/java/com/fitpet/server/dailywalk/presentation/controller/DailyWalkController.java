@@ -35,8 +35,7 @@ public class DailyWalkController {
 
     @GetMapping("/users/{userId}")
     public ResponseEntity<List<DailyWalkResponse>> listByUser(@PathVariable @NotNull Long userId) {
-        var body = dailyWalkService.getAllByUserId(userId)
-                .stream().map(DailyWalkResponse::from).toList();
+        List<DailyWalkResponse> body = dailyWalkService.getAllByUserId(userId);
         return ResponseEntity.ok(body);
     }
 

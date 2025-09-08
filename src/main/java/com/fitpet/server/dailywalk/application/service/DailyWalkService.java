@@ -3,6 +3,7 @@ package com.fitpet.server.dailywalk.application.service;
 import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
+import com.fitpet.server.dailywalk.presentation.dto.response.DailyWalkResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -12,7 +13,7 @@ import org.springframework.validation.annotation.Validated;
 
 @Validated
 public interface DailyWalkService {
-    List<DailyWalk> getAllByUserId(@NotNull Long userId);
+    List<DailyWalkResponse> getAllByUserId(@NotNull Long userId);
 
     DailyWalk getDailyWalkByUserIdAndDate(
             @NotNull Long userId,
