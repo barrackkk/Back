@@ -9,8 +9,7 @@ import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateR
 import com.fitpet.server.shared.exception.BusinessException;
 import com.fitpet.server.shared.exception.ErrorCode;
 import com.fitpet.server.user.domain.entity.User;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import com.fitpet.server.user.domain.repository.UserRepository;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -30,11 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class DailyWalkServiceImpl implements DailyWalkService {
 
     private final DailyWalkRepository dailyWalkRepository;
+    private final UserRepository userRepository;
     private final DailyWalkMapper dailyWalkMapper;
 
-    //TODO:  UserRepository로 수정 EntityManager로 확인하지 말 것 (인프라 누수)
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -63,41 +60,44 @@ public class DailyWalkServiceImpl implements DailyWalkService {
         return found;
     }
 
+
     @Override
     @Transactional
     public DailyWalk createDailyWalk(@Valid DailyWalkCreateRequest req) {
         log.debug("[DailyWalkService] 생성 요청: userId={}, step={}, distanceKm={}, burnCalories={}, date={}",
                 req.userId(), req.step(), req.distanceKm(), req.burnCalories(), req.date());
 
-        if (entityManager.find(User.class, req.userId()) == null) {
-            log.warn("[DailyWalkService] 생성 실패 - 사용자 없음: userId={}", req.userId());
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-        }
+        User user = userRepository.findById(req.userId())
+                .orElseThrow(() -> {
+                    log.warn("[DailyWalkService] 생성 실패 - 사용자 없음: userId={}", req.userId());
+                    return new BusinessException(ErrorCode.USER_NOT_FOUND);
+                });
 
-        User userRef = entityManager.getReference(User.class, req.userId());
         LocalDate date = (req.date() != null) ? req.date() : LocalDate.now();
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1);
 
-        // 이미 있는 데이터 있는지 확인
         Optional<DailyWalk> existing =
                 dailyWalkRepository.findByUserIdAndCreatedAtBetween(req.userId(), startOfDay, endOfDay);
 
         if (existing.isPresent()) {
             DailyWalk walk = existing.get();
+
             walk.update(req.step(), req.distanceKm(), req.burnCalories());
             walk.validateInvariants();
+
             log.info("[DailyWalkService] 업데이트 완료: id={}, userId={}, createdAt={}",
                     walk.getId(), req.userId(), walk.getCreatedAt());
             return walk;
         }
 
-        DailyWalk walk = dailyWalkMapper.toEntity(req, userRef, startOfDay);
+        DailyWalk walk = dailyWalkMapper.toEntity(req, user, startOfDay);
+
         walk.validateInvariants();
         DailyWalk saved = dailyWalkRepository.save(walk);
 
         log.info("[DailyWalkService] 저장 완료: dailyWalkId={}, userId={}, createdAt={}",
-                saved.getId(), userRef.getId(), saved.getCreatedAt());
+                saved.getId(), user.getId(), saved.getCreatedAt());
 
         return saved;
     }
