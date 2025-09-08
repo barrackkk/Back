@@ -1,25 +1,23 @@
 package com.fitpet.server.dailywalk.application.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
 import com.fitpet.server.dailywalk.application.mapper.DailyWalkMapper;
-import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
 import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
 import com.fitpet.server.dailywalk.domain.exception.DailyWalkNotFoundException;
 import com.fitpet.server.dailywalk.domain.repository.DailyWalkRepository;
-import com.fitpet.server.user.entity.User;
+import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
+import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
 import com.fitpet.server.shared.exception.BusinessException;
 import com.fitpet.server.shared.exception.ErrorCode;
-
+import com.fitpet.server.user.domain.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.PositiveOrZero;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,7 +40,7 @@ public class DailyWalkServiceImpl implements DailyWalkService {
     @Transactional(readOnly = true)
     public List<DailyWalk> getAllByUserId(@NotNull Long userId) {
         log.debug("[DailyWalkService] 전체 조회 요청: userId={}", userId);
-        List<DailyWalk> result = dailyWalkRepository.findAllByUserId(userId);
+        List<DailyWalk> result = dailyWalkRepository.findAllByUser_Id(userId);
         log.info("[DailyWalkService] 전체 조회 완료: userId={}, count={}", userId, result.size());
         return result;
     }
@@ -54,10 +52,10 @@ public class DailyWalkServiceImpl implements DailyWalkService {
         log.debug("[DailyWalkService] 사용자의 해당 날짜 조회 요청 : userId={}, date={} ", userId, date);
 
         LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end   = start.plusDays(1);
+        LocalDateTime end = start.plusDays(1);
 
         DailyWalk found = dailyWalkRepository
-                .findByUserIdAndDate(userId, start, end)
+                .findByUserIdAndCreatedAtBetween(userId, start, end)
                 .orElseThrow(DailyWalkNotFoundException::new);
 
         log.info("[DailyWalkService] 사용자의 해당 날짜 조회 성공 : id={}, userId={}, date={} ",
@@ -83,7 +81,7 @@ public class DailyWalkServiceImpl implements DailyWalkService {
 
         // 이미 있는 데이터 있는지 확인
         Optional<DailyWalk> existing =
-                dailyWalkRepository.findByUserIdAndDate(req.userId(), startOfDay, endOfDay);
+                dailyWalkRepository.findByUserIdAndCreatedAtBetween(req.userId(), startOfDay, endOfDay);
 
         if (existing.isPresent()) {
             DailyWalk walk = existing.get();
@@ -105,21 +103,29 @@ public class DailyWalkServiceImpl implements DailyWalkService {
     }
 
     @Override
-    public void updateDailyWalkStep(@NotNull Long userId,
-                                    @NotNull @PastOrPresent LocalDate date,
-                                    @NotNull @PositiveOrZero Integer newStep) {
-        log.debug("[DailyWalkService] 걸음수 수정 요청: userId={}, date={}, newStep={}", userId, date, newStep);
+    public void updateDailyWalkStep(
+            @NotNull Long userId,
+            @Valid DailyWalkStepUpdateRequest req) {
 
-        LocalDateTime start = date.atStartOfDay();
-        LocalDateTime end   = start.plusDays(1);
+        log.debug("[DailyWalkService] 걸음수 수정 요청 userId={}, req={}", userId, req);
 
-        int updated = dailyWalkRepository.updateStepByUserIdAndDate(userId, start, end, newStep);
+        LocalDateTime start = req.date().atStartOfDay();
+        LocalDateTime end = start.plusDays(1);
+
+        int updated = dailyWalkRepository.updateStepByUserIdAndDate(
+                userId,
+                start,
+                end,
+                req.step(),
+                req.distanceKm(),
+                req.burnCalories()
+        );
         if (updated == 0) {
-            log.warn("[DailyWalkService] 걸음수 수정 실패(대상 없음): userId={}, date={}", userId, date);
+            log.warn("[DailyWalkService] 걸음수 수정 실패(대상 없음): userId={}, date={}", userId, req.date());
             throw new DailyWalkNotFoundException();
         }
 
-        log.info("[DailyWalkService] 걸음수 수정 완료: userId={}, date={}, newStep={}", userId, date, newStep);
+        log.info("[DailyWalkService] 걸음수 수정 완료: userId={}, req={}", userId, req);
     }
 
     @Override

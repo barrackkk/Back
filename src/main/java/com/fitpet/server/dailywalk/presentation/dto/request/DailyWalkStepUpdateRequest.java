@@ -1,10 +1,11 @@
 package com.fitpet.server.dailywalk.presentation.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.*;
 
 public record DailyWalkStepUpdateRequest(
         @NotNull @PastOrPresent
@@ -14,9 +15,10 @@ public record DailyWalkStepUpdateRequest(
         @NotNull @PositiveOrZero
         Integer step,
 
-        @NotNull@PositiveOrZero
+        @NotNull @PositiveOrZero
         BigDecimal distanceKm,
 
         @NotNull @PositiveOrZero
         Integer burnCalories
-) {}
+) {
+}

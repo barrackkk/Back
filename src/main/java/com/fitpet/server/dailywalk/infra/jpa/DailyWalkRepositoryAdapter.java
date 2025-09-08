@@ -2,12 +2,12 @@ package com.fitpet.server.dailywalk.infra.jpa;
 
 import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
 import com.fitpet.server.dailywalk.domain.repository.DailyWalkRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,14 +15,15 @@ public class DailyWalkRepositoryAdapter implements DailyWalkRepository {
 
     private final DailyWalkJpaRepository jpaRepository;
 
+
     @Override
-    public List<DailyWalk> findAllByUserId(Long userId) {
+    public List<DailyWalk> findAllByUser_Id(Long userId) {
         return jpaRepository.findAllByUser_Id(userId);
     }
 
     @Override
-    public Optional<DailyWalk> findByUserIdAndDate(Long userId, LocalDateTime start, LocalDateTime end) {
-        return jpaRepository.findByUser_IdAndCreatedAtBetween(userId, start, end);
+    public Optional<DailyWalk> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end) {
+        return jpaRepository.findByUserIdAndCreatedAtBetween(userId, start, end);
     }
 
     @Override
@@ -41,7 +42,12 @@ public class DailyWalkRepositoryAdapter implements DailyWalkRepository {
     }
 
     @Override
-    public int updateStepByUserIdAndDate(Long userId, LocalDateTime start, LocalDateTime end, Integer step) {
-        return jpaRepository.updateStepByUserIdAndDate(userId, start, end, step);
+    public int updateStepByUserIdAndDate(Long userId,
+                                         LocalDateTime start,
+                                         LocalDateTime end,
+                                         Integer step,
+                                         BigDecimal distanceKm,
+                                         Integer burnCalories) {
+        return jpaRepository.updateStepByUserIdAndDate(userId, start, end, step, distanceKm, burnCalories);
     }
 }

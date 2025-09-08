@@ -1,11 +1,19 @@
 package com.fitpet.server.dailywalk.domain.entity;
 
+import com.fitpet.server.user.domain.entity.User;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
-import com.fitpet.server.user.entity.User;
-
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,11 +64,15 @@ public class DailyWalk {
 
 
     public void update(int step, BigDecimal distanceKm, int burnCalories) {
-        if (step < 0) throw new IllegalArgumentException("걸음 수는 음수일 수 없습니다.");
+        if (step < 0) {
+            throw new IllegalArgumentException("걸음 수는 음수일 수 없습니다.");
+        }
         if (distanceKm == null || distanceKm.signum() < 0) {
             throw new IllegalArgumentException("거리(km)는 0 이상이어야 합니다.");
         }
-        if (burnCalories < 0) throw new IllegalArgumentException("소모 칼로리는 0 이상이어야 합니다.");
+        if (burnCalories < 0) {
+            throw new IllegalArgumentException("소모 칼로리는 0 이상이어야 합니다.");
+        }
 
         this.step = step;
         this.distanceKm = distanceKm;

@@ -1,17 +1,15 @@
 package com.fitpet.server.dailywalk.domain.repository;
 
 import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface DailyWalkRepository {
-    List<DailyWalk> findAllByUserId(Long userId);
+    List<DailyWalk> findAllByUser_Id(Long userId);
 
-    Optional<DailyWalk> findByUserIdAndDate(Long userId, LocalDateTime start, LocalDateTime end);
-
+    Optional<DailyWalk> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
 
     DailyWalk save(DailyWalk dailyWalk);
 
@@ -19,5 +17,11 @@ public interface DailyWalkRepository {
 
     void deleteById(Long id);
 
-    int updateStepByUserIdAndDate(Long userId, LocalDateTime start, LocalDateTime end, Integer step, BigDecimal distance);
+    int updateStepByUserIdAndDate(Long userId,
+                                  LocalDateTime start,
+                                  LocalDateTime end,
+                                  Integer step,
+                                  BigDecimal distanceKm,
+                                  Integer burnCalories
+    );
 }

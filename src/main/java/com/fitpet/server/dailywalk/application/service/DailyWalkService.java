@@ -1,17 +1,14 @@
 package com.fitpet.server.dailywalk.application.service;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import org.springframework.validation.annotation.Validated;
-
-import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
 import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
-
+import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
+import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.PositiveOrZero;
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.validation.annotation.Validated;
 
 @Validated
 public interface DailyWalkService {
@@ -28,7 +25,6 @@ public interface DailyWalkService {
 
     void updateDailyWalkStep(
             @NotNull Long userId,
-            @NotNull @PastOrPresent LocalDate date,
-            @NotNull @PositiveOrZero Integer newStep
+            @Valid DailyWalkStepUpdateRequest req
     );
 }
