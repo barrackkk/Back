@@ -78,18 +78,5 @@ public class DailyWalk {
         this.distanceKm = distanceKm;
         this.burnCalories = burnCalories;
     }
-
-
-    public void validateInvariants() {
-        if (this.step == null || this.step < 0) {
-            throw new IllegalArgumentException("걸음 수는 0 이상이어야 합니다.");
-        }
-        if (this.distanceKm == null || this.distanceKm.signum() < 0) {
-            throw new IllegalArgumentException("거리(km)는 0 이상이어야 합니다.");
-        }
-        if (this.burnCalories == null || this.burnCalories < 0) {
-            throw new IllegalArgumentException("소모 칼로리는 0 이상이어야 합니다.");
-        }
-    }
 }
 

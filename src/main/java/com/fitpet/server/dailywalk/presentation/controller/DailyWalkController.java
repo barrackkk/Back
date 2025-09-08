@@ -5,7 +5,6 @@ import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateReque
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
 import com.fitpet.server.dailywalk.presentation.dto.response.DailyWalkResponse;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import java.net.URI;
 import java.time.LocalDate;
@@ -42,7 +41,7 @@ public class DailyWalkController {
 
     @GetMapping("/users/{userId}/date")
     public ResponseEntity<DailyWalkResponse> getByUserAndDate(
-            @PathVariable @NotNull Long userId,
+            @PathVariable Long userId,
             @RequestParam("date")
             @PastOrPresent
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
