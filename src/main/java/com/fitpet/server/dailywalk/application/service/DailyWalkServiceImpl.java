@@ -84,7 +84,6 @@ public class DailyWalkServiceImpl implements DailyWalkService {
             DailyWalk walk = existing.get();
 
             walk.update(req.step(), req.distanceKm(), req.burnCalories());
-            walk.validateInvariants();
 
             log.info("[DailyWalkService] 업데이트 완료: id={}, userId={}, createdAt={}",
                     walk.getId(), req.userId(), walk.getCreatedAt());
@@ -92,8 +91,6 @@ public class DailyWalkServiceImpl implements DailyWalkService {
         }
 
         DailyWalk walk = dailyWalkMapper.toEntity(req, user, startOfDay);
-
-        walk.validateInvariants();
         DailyWalk saved = dailyWalkRepository.save(walk);
 
         log.info("[DailyWalkService] 저장 완료: dailyWalkId={}, userId={}, createdAt={}",
