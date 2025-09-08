@@ -11,7 +11,6 @@ import com.fitpet.server.shared.exception.BusinessException;
 import com.fitpet.server.shared.exception.ErrorCode;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.repository.UserRepository;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
@@ -64,7 +63,7 @@ public class DailyWalkServiceImpl implements DailyWalkService {
 
     @Override
     @Transactional
-    public DailyWalkResponse createDailyWalk(@Valid DailyWalkCreateRequest req) {
+    public DailyWalkResponse createDailyWalk(DailyWalkCreateRequest req) {
         log.debug("[DailyWalkService] 생성 요청: userId={}, step={}, distanceKm={}, burnCalories={}, date={}",
                 req.userId(), req.step(), req.distanceKm(), req.burnCalories(), req.date());
 
@@ -103,7 +102,7 @@ public class DailyWalkServiceImpl implements DailyWalkService {
     @Override
     public void updateDailyWalkStep(
             @NotNull Long userId,
-            @Valid DailyWalkStepUpdateRequest req) {
+            DailyWalkStepUpdateRequest req) {
 
         log.debug("[DailyWalkService] 걸음수 수정 요청 userId={}, req={}", userId, req);
 
