@@ -1,7 +1,6 @@
 package com.fitpet.server.dailywalk.presentation.controller;
 
 import com.fitpet.server.dailywalk.application.service.DailyWalkService;
-import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
 import com.fitpet.server.dailywalk.presentation.dto.response.DailyWalkResponse;
@@ -48,20 +47,20 @@ public class DailyWalkController {
             @PastOrPresent
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ) {
-        DailyWalk dailyWalk = dailyWalkService.getDailyWalkByUserIdAndDate(userId, date);
-        return ResponseEntity.ok(DailyWalkResponse.from(dailyWalk));
+        DailyWalkResponse dailyWalk = dailyWalkService.getDailyWalkByUserIdAndDate(userId, date);
+        return ResponseEntity.ok(dailyWalk);
     }
 
     @PostMapping
     public ResponseEntity<DailyWalkResponse> create(@RequestBody @Valid DailyWalkCreateRequest req) {
-        DailyWalk saved = dailyWalkService.createDailyWalk(req);
+        DailyWalkResponse saved = dailyWalkService.createDailyWalk(req);
 
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(saved.getId())
+                .buildAndExpand(saved.id())
                 .toUri();
 
-        return ResponseEntity.created(location).body(DailyWalkResponse.from(saved));
+        return ResponseEntity.created(location).body(saved);
     }
 
     @PatchMapping("/users/{userId}/step")

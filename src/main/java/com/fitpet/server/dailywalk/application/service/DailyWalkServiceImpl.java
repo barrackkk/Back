@@ -45,8 +45,8 @@ public class DailyWalkServiceImpl implements DailyWalkService {
 
     @Override
     @Transactional(readOnly = true)
-    public DailyWalk getDailyWalkByUserIdAndDate(@NotNull Long userId,
-                                                 @NotNull @PastOrPresent LocalDate date) {
+    public DailyWalkResponse getDailyWalkByUserIdAndDate(@NotNull Long userId,
+                                                         @NotNull @PastOrPresent LocalDate date) {
         log.debug("[DailyWalkService] 사용자의 해당 날짜 조회 요청 : userId={}, date={} ", userId, date);
 
         LocalDateTime start = date.atStartOfDay();
@@ -58,13 +58,13 @@ public class DailyWalkServiceImpl implements DailyWalkService {
 
         log.info("[DailyWalkService] 사용자의 해당 날짜 조회 성공 : id={}, userId={}, date={} ",
                 found.getId(), userId, date);
-        return found;
+        return DailyWalkResponse.from(found);
     }
 
 
     @Override
     @Transactional
-    public DailyWalk createDailyWalk(@Valid DailyWalkCreateRequest req) {
+    public DailyWalkResponse createDailyWalk(@Valid DailyWalkCreateRequest req) {
         log.debug("[DailyWalkService] 생성 요청: userId={}, step={}, distanceKm={}, burnCalories={}, date={}",
                 req.userId(), req.step(), req.distanceKm(), req.burnCalories(), req.date());
 
@@ -88,7 +88,7 @@ public class DailyWalkServiceImpl implements DailyWalkService {
 
             log.info("[DailyWalkService] 업데이트 완료: id={}, userId={}, createdAt={}",
                     walk.getId(), req.userId(), walk.getCreatedAt());
-            return walk;
+            return DailyWalkResponse.from(walk);
         }
 
         DailyWalk walk = dailyWalkMapper.toEntity(req, user, startOfDay);
@@ -97,7 +97,7 @@ public class DailyWalkServiceImpl implements DailyWalkService {
         log.info("[DailyWalkService] 저장 완료: dailyWalkId={}, userId={}, createdAt={}",
                 saved.getId(), user.getId(), saved.getCreatedAt());
 
-        return saved;
+        return DailyWalkResponse.from(saved);
     }
 
     @Override

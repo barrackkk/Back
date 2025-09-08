@@ -1,6 +1,5 @@
 package com.fitpet.server.dailywalk.application.service;
 
-import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
 import com.fitpet.server.dailywalk.presentation.dto.response.DailyWalkResponse;
@@ -15,12 +14,12 @@ import org.springframework.validation.annotation.Validated;
 public interface DailyWalkService {
     List<DailyWalkResponse> getAllByUserId(@NotNull Long userId);
 
-    DailyWalk getDailyWalkByUserIdAndDate(
+    DailyWalkResponse getDailyWalkByUserIdAndDate(
             @NotNull Long userId,
             @NotNull @PastOrPresent LocalDate date
     );
 
-    DailyWalk createDailyWalk(@Valid DailyWalkCreateRequest req);
+    DailyWalkResponse createDailyWalk(@Valid DailyWalkCreateRequest req);
 
     void deleteDailyWalk(@NotNull Long dailyWalkId);
 
