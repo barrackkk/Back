@@ -34,7 +34,7 @@ public class DailyWalkController {
     private final DailyWalkService dailyWalkService;
 
     @GetMapping("/users/{userId}")
-    public ResponseEntity<List<DailyWalkResponse>> listByUser(@PathVariable @NotNull Long userId) {
+    public ResponseEntity<List<DailyWalkResponse>> listByUser(@PathVariable Long userId) {
         List<DailyWalkResponse> body = dailyWalkService.getAllByUserId(userId);
         return ResponseEntity.ok(body);
     }
@@ -59,14 +59,14 @@ public class DailyWalkController {
     }
 
     @PatchMapping("/users/{userId}/step")
-    public ResponseEntity<Void> updateStepByUserAndDate(@PathVariable @NotNull Long userId,
+    public ResponseEntity<Void> updateStepByUserAndDate(@PathVariable Long userId,
                                                         @RequestBody @Valid DailyWalkStepUpdateRequest req) {
         dailyWalkService.updateDailyWalkStep(userId, req);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{dailyWalkId}")
-    public ResponseEntity<Void> delete(@PathVariable @NotNull Long dailyWalkId) {
+    public ResponseEntity<Void> delete(@PathVariable Long dailyWalkId) {
         dailyWalkService.deleteDailyWalk(dailyWalkId);
         return ResponseEntity.noContent().build();
     }
