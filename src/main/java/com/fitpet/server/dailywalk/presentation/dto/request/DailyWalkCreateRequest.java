@@ -1,10 +1,12 @@
 package com.fitpet.server.dailywalk.presentation.dto.request;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.*;
 
 public record DailyWalkCreateRequest(
         @NotNull Long userId,
@@ -19,6 +21,6 @@ public record DailyWalkCreateRequest(
         @NotNull @PositiveOrZero Integer burnCalories,
 
         @PastOrPresent
-        @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate date
-) {}
+) {
+}
