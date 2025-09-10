@@ -73,25 +73,46 @@ public class UserServiceImpl implements UserService {
 
     private void validateUserCreateRequest(UserCreateRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            log.warn("회원가입 실패 - 중복 이메일: {}", request.email());
+            log.warn("회원가입 실패 - 중복 이메일: {}", maskEmail(request.email()));
             throw new DuplicateEmailException();
         }
         if (userRepository.existsByNickname(request.nickname())) {
-            log.warn("회원가입 실패 - 중복 닉네임: {}", request.nickname());
+            log.warn("회원가입 실패 - 중복 닉네임: {}", maskNickname(request.nickname()));
             throw new DuplicateNicknameException();
         }
     }
 
     private void validateUserUpdateRequest(Long userId, UserUpdateRequest request) {
-        if (request.email() != null &&
+        if (StringUtils.hasText(request.email()) &&
                 userRepository.existsByEmailAndIdNot(request.email(), userId)) {
-            log.warn("사용자 수정 실패 - 이메일 중복: {} (요청자 id: {})", request.email(), userId);
+            log.warn("사용자 수정 실패 - 이메일 중복: {} (요청자 id: {})", maskEmail(request.email()), userId);
             throw new DuplicateEmailException();
         }
-        if (request.nickname() != null &&
+        if (StringUtils.hasText(request.nickname()) &&
                 userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
-            log.warn("사용자 수정 실패 - 닉네임 중복: {} (요청자 id: {})", request.nickname(), userId);
+            log.warn("사용자 수정 실패 - 닉네임 중복: {} (요청자 id: {})", maskNickname(request.nickname()), userId);
             throw new DuplicateNicknameException();
         }
+    }
+
+    private static String maskEmail(String email) {
+        if (email == null) {
+            return null;
+        }
+        int at = email.indexOf('@');
+        if (at <= 1) {
+            return "***";
+        }
+        String local = email.substring(0, at);
+        String domain = email.substring(at);
+        String prefix = local.substring(0, Math.min(2, local.length()));
+        return prefix + "***" + domain;
+    }
+
+    private static String maskNickname(String nickname) {
+        if (nickname == null || nickname.isEmpty()) {
+            return nickname;
+        }
+        return nickname.substring(0, 1) + "***";
     }
 }
