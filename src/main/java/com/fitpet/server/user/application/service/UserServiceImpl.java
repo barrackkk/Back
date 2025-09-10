@@ -2,6 +2,9 @@ package com.fitpet.server.user.application.service;
 
 import com.fitpet.server.user.application.mapper.UserMapper;
 import com.fitpet.server.user.domain.entity.User;
+import com.fitpet.server.user.domain.exception.DuplicateEmailException;
+import com.fitpet.server.user.domain.exception.DuplicateNicknameException;
+import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
@@ -39,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserDto findUser(Long userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                .orElseThrow(UserNotFoundException::new);
         return userMapper.toDto(user);
     }
 
@@ -47,7 +50,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto updateUser(Long userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                .orElseThrow(UserNotFoundException::new);
 
         validateUserUpdateRequest(userId, request);
 
@@ -63,32 +66,53 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+                .orElseThrow(UserNotFoundException::new);
         userRepository.delete(user);
     }
 
 
     private void validateUserCreateRequest(UserCreateRequest request) {
         if (userRepository.existsByEmail(request.email())) {
-            log.warn("회원가입 실패 - 중복 이메일: {}", request.email());
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            log.warn("회원가입 실패 - 중복 이메일: {}", maskEmail(request.email()));
+            throw new DuplicateEmailException();
         }
         if (userRepository.existsByNickname(request.nickname())) {
-            log.warn("회원가입 실패 - 중복 닉네임: {}", request.nickname());
-            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+            log.warn("회원가입 실패 - 중복 닉네임: {}", maskNickname(request.nickname()));
+            throw new DuplicateNicknameException();
         }
     }
 
     private void validateUserUpdateRequest(Long userId, UserUpdateRequest request) {
-        if (request.email() != null &&
-            userRepository.existsByEmailAndIdNot(request.email(), userId)) {
-            log.warn("사용자 수정 실패 - 이메일 중복: {} (요청자 id: {})", request.email(), userId);
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+        if (StringUtils.hasText(request.email()) &&
+                userRepository.existsByEmailAndIdNot(request.email(), userId)) {
+            log.warn("사용자 수정 실패 - 이메일 중복: {} (요청자 id: {})", maskEmail(request.email()), userId);
+            throw new DuplicateEmailException();
         }
-        if (request.nickname() != null &&
-            userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
-            log.warn("사용자 수정 실패 - 닉네임 중복: {} (요청자 id: {})", request.nickname(), userId);
-            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+        if (StringUtils.hasText(request.nickname()) &&
+                userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
+            log.warn("사용자 수정 실패 - 닉네임 중복: {} (요청자 id: {})", maskNickname(request.nickname()), userId);
+            throw new DuplicateNicknameException();
         }
+    }
+
+    private static String maskEmail(String email) {
+        if (email == null) {
+            return null;
+        }
+        int at = email.indexOf('@');
+        if (at <= 1) {
+            return "***";
+        }
+        String local = email.substring(0, at);
+        String domain = email.substring(at);
+        String prefix = local.substring(0, Math.min(2, local.length()));
+        return prefix + "***" + domain;
+    }
+
+    private static String maskNickname(String nickname) {
+        if (nickname == null || nickname.isEmpty()) {
+            return nickname;
+        }
+        return nickname.substring(0, 1) + "***";
     }
 }
