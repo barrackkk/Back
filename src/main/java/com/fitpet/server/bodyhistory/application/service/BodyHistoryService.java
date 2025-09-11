@@ -1,22 +1,21 @@
 package com.fitpet.server.bodyhistory.application.service;
 
-
-import com.fitpet.server.bodyhistory.domain.entity.BodyHistory;
-import java.time.LocalDate;
+import com.fitpet.server.bodyhistory.presentation.dto.request.BodyHistoryCreateRequest;
+import com.fitpet.server.bodyhistory.presentation.dto.request.BodyHistoryUpdateRequest;
+import com.fitpet.server.bodyhistory.presentation.dto.response.BodyHistoryResponse;
 import java.util.List;
-import java.util.Optional;
-import org.springframework.validation.annotation.Validated;
 
-@Validated
 public interface BodyHistoryService {
-    BodyHistory save(BodyHistory bodyHistory);
 
-    Optional<BodyHistory> findById(Long id);
+    BodyHistoryResponse createBodyHistory(BodyHistoryCreateRequest request);
 
-    List<BodyHistory> findAllByUserId(Long userId);
+    BodyHistoryResponse findBodyHistoryById(Long historyId);
 
-    // Date는 월 단위로 검색
-    List<BodyHistory> findAllByUserIdAndDate(Long userId, LocalDate startDate, LocalDate endDate);
+    List<BodyHistoryResponse> findAllBodyHistoriesByUserId(Long userId);
 
-    void deleteById(Long id);
+    List<BodyHistoryResponse> findMonthlyBodyHistories(Long userId, int year, int month);
+
+    BodyHistoryResponse updateBodyHistory(Long historyId, BodyHistoryUpdateRequest request);
+
+    void deleteBodyHistory(Long historyId);
 }
