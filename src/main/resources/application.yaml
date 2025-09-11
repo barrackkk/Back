@@ -18,3 +18,16 @@ spring:
     user:
       name: ${SECURITY_USER}
       password: ${SECURITY_PASSWORD}
+
+jwt:
+  access:
+    secret: ${JWT_ACCESS_SECRET}
+    expiration-ms: ${JWT_ACCESS_EXPIRATION_MS}
+  refresh:
+    secret: ${JWT_REFRESH_SECRET}
+    expiration-ms: ${JWT_REFRESH_EXPIRATION_MS}
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
