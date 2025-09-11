@@ -62,7 +62,6 @@ public class DailyWalkServiceImpl implements DailyWalkService {
 
 
     @Override
-    @Transactional
     public DailyWalkResponse createDailyWalk(DailyWalkCreateRequest req) {
         log.debug("[DailyWalkService] 생성 요청: userId={}, step={}, distanceKm={}, burnCalories={}, date={}",
                 req.userId(), req.step(), req.distanceKm(), req.burnCalories(), req.date());
