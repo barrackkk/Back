@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class BodyHistoryServcieImpl implements BodyHistoryService {
+public class BodyHistoryServiceImpl implements BodyHistoryService {
     private final BodyHistoryRepository bodyHistoryRepository;
     private final UserRepository userRepository;
     private final BodyHistoryMapper bodyHistoryMapper;

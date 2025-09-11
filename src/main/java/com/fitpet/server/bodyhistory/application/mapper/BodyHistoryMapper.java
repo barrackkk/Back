@@ -1,14 +1,15 @@
 package com.fitpet.server.bodyhistory.application.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.ReportingPolicy;
+
 import com.fitpet.server.bodyhistory.domain.entity.BodyHistory;
 import com.fitpet.server.bodyhistory.presentation.dto.request.BodyHistoryCreateRequest;
 import com.fitpet.server.bodyhistory.presentation.dto.request.BodyHistoryUpdateRequest;
 import com.fitpet.server.bodyhistory.presentation.dto.response.BodyHistoryResponse;
 import com.fitpet.server.user.domain.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
 
 @Mapper(
         componentModel = "spring",
