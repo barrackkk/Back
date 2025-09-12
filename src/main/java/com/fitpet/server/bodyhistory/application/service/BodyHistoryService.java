@@ -1,9 +1,10 @@
 package com.fitpet.server.bodyhistory.application.service;
 
+import java.util.List;
+
 import com.fitpet.server.bodyhistory.presentation.dto.request.BodyHistoryCreateRequest;
 import com.fitpet.server.bodyhistory.presentation.dto.request.BodyHistoryUpdateRequest;
 import com.fitpet.server.bodyhistory.presentation.dto.response.BodyHistoryResponse;
-import java.util.List;
 
 public interface BodyHistoryService {
 
