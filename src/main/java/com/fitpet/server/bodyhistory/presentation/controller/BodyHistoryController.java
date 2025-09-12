@@ -57,9 +57,9 @@ public class BodyHistoryController {
 
     @PatchMapping("/users/{userId}")
     public ResponseEntity<BodyHistoryResponse> update(
-            @PathVariable Long userId,
+            @PathVariable Long historyId,
             @RequestBody @Valid BodyHistoryUpdateRequest request) {
-        bodyHistoryService.updateBodyHistory(userId, request);
+        bodyHistoryService.updateBodyHistory(historyId, request);
 
         return ResponseEntity.noContent().build();
     }
