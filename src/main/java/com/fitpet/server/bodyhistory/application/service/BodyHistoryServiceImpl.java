@@ -34,11 +34,19 @@ public class BodyHistoryServiceImpl implements BodyHistoryService {
 
     @Override
     public BodyHistoryResponse createBodyHistory(BodyHistoryCreateRequest req) {
+        log.debug("[BodyHistoryService] 기록 생성 요청: userId={}", req.userId());
+
         User user = userRepository.findById(req.userId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> {
+                    log.warn("[BodyHistoryService] 사용자 조회 실패: userId={}", req.userId());
+                    return new BusinessException(ErrorCode.USER_NOT_FOUND);
+                });
     
         BodyHistory bodyHistory = bodyHistoryMapper.toEntity(req, user);
         BodyHistory savedBodyHistory = bodyHistoryRepository.save(bodyHistory);
+
+        log.info("[BodyHistoryService] 기록 생성 완료: historyId={}, userId={}",
+                savedBodyHistory.getId(), req.userId());
     
         return bodyHistoryMapper.toResponse(savedBodyHistory);
     }
@@ -46,47 +54,75 @@ public class BodyHistoryServiceImpl implements BodyHistoryService {
     @Override
     @Transactional(readOnly = true)
     public BodyHistoryResponse findBodyHistoryById(Long historyId) {
-        return bodyHistoryRepository.findById(historyId)
-                .map(bodyHistoryMapper::toResponse)
-                .orElseThrow(BodyHistoryNotFoundException::new);
+        log.debug("[BodyHistoryService] historyId로 기록 조회 요청: historyId={}", historyId);
+
+        BodyHistory foundHistory = bodyHistoryRepository.findById(historyId)
+                .orElseThrow(() -> {
+                    log.warn("[BodyHistoryService] historyId로 기록 조회 실패: historyId={}", historyId);
+                    return new BodyHistoryNotFoundException();
+                });
+
+        log.info("[BodyHistoryService] historyId로 기록 조회 완료: historyId={}", foundHistory.getId());
+        return bodyHistoryMapper.toResponse(foundHistory);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<BodyHistoryResponse> findAllBodyHistoriesByUserId(Long userId) {
-        return bodyHistoryRepository.findAllByUserId(userId).stream()
+        log.debug("[BodyHistoryService] 사용자의 전체 기록 조회 요청: userId={}", userId);
+
+        List<BodyHistory> histories = bodyHistoryRepository.findAllByUserId(userId);
+
+        log.info("[BodyHistoryService] 사용자의 전체 기록 조회 완료: userId={}, count={}", userId, histories.size());
+        return histories.stream()
                 .map(bodyHistoryMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BodyHistoryResponse> findMonthlyBodyHistories(Long userId, int year, int month) {
+        log.debug("[BodyHistoryService] 사용자의 월별 기록 조회 요청: userId={}, year={}, month={}", userId, year, month);
+
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate startDate = yearMonth.atDay(1);
         LocalDate endDate = yearMonth.atEndOfMonth();
 
-        return bodyHistoryRepository.findAllByUserIdAndDate(userId, startDate, endDate)
-                .stream()
+        List<BodyHistory> histories = bodyHistoryRepository.findAllByUserIdAndDate(userId, startDate, endDate);
+
+        log.info("[BodyHistoryService] 사용자의 월별 기록 조회 완료: userId={}, year={}, month={}, count={}",
+                userId, year, month, histories.size());
+        return histories.stream()
                 .map(bodyHistoryMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
     @Override
     public BodyHistoryResponse updateBodyHistory(Long historyId, BodyHistoryUpdateRequest req) {
+        log.debug("[BodyHistoryService] 기록 수정 요청: historyId={}", historyId);
+
         BodyHistory existingHistory = bodyHistoryRepository.findById(historyId)
-                .orElseThrow(BodyHistoryNotFoundException::new);
+                .orElseThrow(() -> {
+                    log.warn("[BodyHistoryService] 기록 수정 실패 - 대상 없음: historyId={}", historyId);
+                    return new BodyHistoryNotFoundException();
+                });
 
         bodyHistoryMapper.updateBodyHistory(req, existingHistory);
 
+        log.info("[BodyHistoryService] 기록 수정 완료: historyId={}", existingHistory.getId());
         return bodyHistoryMapper.toResponse(existingHistory);
     }
 
     @Override
     public void deleteBodyHistory(Long historyId) {
+        log.debug("[BodyHistoryService] 기록 삭제 요청: historyId={}", historyId);
+
         if (!bodyHistoryRepository.existsById(historyId)) {
+            log.warn("[BodyHistoryService] 기록 삭제 실패 - 대상 없음: historyId={}", historyId);
             throw new BodyHistoryNotFoundException();
         }
 
         bodyHistoryRepository.deleteById(historyId);
+        log.info("[BodyHistoryService] 기록 삭제 완료: historyId={}", historyId);
     }
 }
