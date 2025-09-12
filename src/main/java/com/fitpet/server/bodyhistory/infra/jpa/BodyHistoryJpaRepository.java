@@ -1,11 +1,13 @@
 package com.fitpet.server.bodyhistory.infra.jpa;
 
-import com.fitpet.server.bodyhistory.domain.entity.BodyHistory;
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import com.fitpet.server.bodyhistory.domain.entity.BodyHistory;
 
 public interface BodyHistoryJpaRepository extends JpaRepository<BodyHistory, Long> {
 
