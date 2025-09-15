@@ -9,4 +9,8 @@ public interface AuthService {
     TokenResponse refresh(String refreshToken);
 
     void logout(String accessToken);
+
+    TokenResponse loginWithGoogle(String idToken);
+
+    TokenResponse loginWithKakao(String kakaoAccessToken);
 }
