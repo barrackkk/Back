@@ -2,6 +2,7 @@ package com.fitpet.server.auth.presentation.controller;
 
 import com.fitpet.server.auth.application.service.AuthService;
 import com.fitpet.server.auth.presentation.dto.LoginRequest;
+import com.fitpet.server.auth.presentation.dto.SocialLoginRequest;
 import com.fitpet.server.auth.presentation.dto.TokenResponse;
 import com.fitpet.server.security.jwt.JwtTokenProvider;
 import java.time.Duration;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// AuthController
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -24,11 +26,7 @@ public class AuthController {
     private final AuthService authService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    // Login 시: Refresh를 쿠키로 내려주고, 응답 바디에는 access만 보냄
-    @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
-        TokenResponse tokens = authService.login(request);
-
+    private ResponseEntity<TokenResponse> withRefreshCookie(TokenResponse tokens) {
         ResponseCookie cookie = ResponseCookie.from("REFRESH_TOKEN", tokens.refreshToken())
             .httpOnly(true).secure(true)   // 운영할 때 반드시 true (HTTPS)
             .sameSite("None")              // 크로스 도메인일 때
@@ -36,9 +34,15 @@ public class AuthController {
             .maxAge(Duration.ofMillis(jwtTokenProvider.getRefreshExpirationMs()))
             .build();
 
+        // 바디에는 access만 싣고 refresh는 쿠키로만
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(new TokenResponse(tokens.accessToken(), null)); // refresh는 바디에 안 줌
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
+        return withRefreshCookie(authService.login(request));
     }
 
     // Refresh 시 쿠키에서 읽음
@@ -63,4 +67,15 @@ public class AuthController {
             .header(HttpHeaders.SET_COOKIE, expire.toString())
             .build();
     }
+
+    @PostMapping("/oauth/google")
+    public ResponseEntity<TokenResponse> google(@RequestBody SocialLoginRequest req) {
+        return withRefreshCookie(authService.loginWithGoogle(req.idToken()));
+    }
+
+    @PostMapping("/oauth/kakao")
+    public ResponseEntity<TokenResponse> kakao(@RequestBody SocialLoginRequest req) {
+        return withRefreshCookie(authService.loginWithKakao(req.accessToken()));
+    }
+
 }
