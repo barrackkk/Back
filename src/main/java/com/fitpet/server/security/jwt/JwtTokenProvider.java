@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
@@ -34,8 +35,8 @@ public class JwtTokenProvider {
 
     @PostConstruct
     public void init() {
-        this.accessKey = Keys.hmacShaKeyFor(accessSecret.getBytes());
-        this.refreshKey = Keys.hmacShaKeyFor(refreshSecret.getBytes());
+        this.accessKey = Keys.hmacShaKeyFor(accessSecret.getBytes(StandardCharsets.UTF_8));
+        this.refreshKey = Keys.hmacShaKeyFor(refreshSecret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateAccessToken(Long userId, String email, List<String> roles) {
