@@ -72,8 +72,9 @@ public class AuthServiceImpl implements AuthService {
             user.getEmail(),
             List.of("ROLE_USER")
         );
-
-        return new TokenResponse(newAccess, refreshToken); // refresh 그대로 재사용
+        String newRefresh = jwtTokenProvider.generateRefreshToken(user.getId(), user.getEmail());
+        redisTokenRepository.save(user.getId(), newRefresh, jwtTokenProvider.getRefreshExpirationMs());
+        return new TokenResponse(newAccess, newRefresh);
     }
 
     @Override
