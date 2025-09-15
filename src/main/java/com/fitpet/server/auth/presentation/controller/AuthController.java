@@ -48,7 +48,7 @@ public class AuthController {
     // Refresh 시 쿠키에서 읽음
     @PostMapping("/refresh")
     public ResponseEntity<TokenResponse> refresh(@CookieValue("REFRESH_TOKEN") String refreshToken) {
-        return ResponseEntity.ok(authService.refresh(refreshToken));
+        return withRefreshCookie(authService.refresh(refreshToken));
     }
 
     // Logout 시 서버에서 Redis 삭제 + 쿠키 만료
