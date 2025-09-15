@@ -7,6 +7,4 @@ public class InvalidLogin extends BusinessException {
     public InvalidLogin() {
         super(ErrorCode.INVALID_LOGIN);
     }
-
-
 }
