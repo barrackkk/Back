@@ -38,10 +38,9 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public TokenResponse login(LoginRequest request) {
         log.info("[AuthService] 로그인 시도");
-        User user = userRepository.findByEmail(request.email())
-            .orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findByEmail(request.email()).orElse(null);
 
-        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+        if (user == null || !passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new InvalidLogin();
         }
 
