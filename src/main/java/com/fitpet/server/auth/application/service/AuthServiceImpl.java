@@ -91,7 +91,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
     public TokenResponse loginWithGoogle(String idToken) {
         GoogleProfile profile = googleTokenVerifier.verifyIdToken(idToken);
         String email = profile.email();
@@ -102,7 +101,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
     public TokenResponse loginWithKakao(String kakaoAccessToken) {
         KakaoProfile profile = kakaoClient.getProfile(kakaoAccessToken);
         String email = (profile.email() == null || profile.email().isBlank())
