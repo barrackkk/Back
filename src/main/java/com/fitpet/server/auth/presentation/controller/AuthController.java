@@ -8,6 +8,7 @@ import com.fitpet.server.security.jwt.JwtTokenProvider;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -53,14 +54,20 @@ public class AuthController {
 
     // Logout 시 서버에서 Redis 삭제 + 쿠키 만료
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@RequestHeader("Authorization") String authHeader) {
-        String accessToken = authHeader.replace("Bearer ", "");
+    public ResponseEntity<Void> logout(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader
+    ) {
+        String accessToken = extractBearerToken(authHeader);
+        if (accessToken == null) {
+            return unauthorized();
+        }
+
         authService.logout(accessToken);
 
         ResponseCookie expire = ResponseCookie.from("REFRESH_TOKEN", "")
             .httpOnly(true).secure(true)
             .sameSite("None").path("/")
-            .maxAge(0) // 즉시 만료
+            .maxAge(0)
             .build();
 
         return ResponseEntity.noContent()
@@ -78,4 +85,25 @@ public class AuthController {
         return withRefreshCookie(authService.loginWithKakao(req.accessToken()));
     }
 
+    private static ResponseEntity<Void> unauthorized() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            .header(HttpHeaders.WWW_AUTHENTICATE, "Bearer")
+            .build();
+    }
+
+    private static String extractBearerToken(String authHeader) {
+        if (authHeader == null) {
+            return null;
+        }
+        int space = authHeader.indexOf(' ');
+        if (space <= 0) {
+            return null;
+        }
+        String scheme = authHeader.substring(0, space);
+        if (!"Bearer".equalsIgnoreCase(scheme)) {
+            return null;
+        }
+        String token = authHeader.substring(space + 1).trim();
+        return token.isEmpty() ? null : token;
+    }
 }
