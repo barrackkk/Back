@@ -18,6 +18,7 @@ public interface UserMapper {
         @Mapping(target = "providerUid", ignore = true),
         @Mapping(target = "deviceToken", ignore = true),
         @Mapping(target = "refreshToken", ignore = true),
+        @Mapping(target = "password", ignore = true),
         @Mapping(target = "createdAt", ignore = true),
         @Mapping(target = "updatedAt", ignore = true)
     })
