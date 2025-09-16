@@ -23,6 +23,7 @@ public class SecurityConfig {
                 .requestMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated()                 // 나머지는 인증 필요
             );
+
         return http.build();
     }
 
