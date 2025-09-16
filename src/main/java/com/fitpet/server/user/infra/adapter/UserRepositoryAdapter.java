@@ -57,5 +57,10 @@ public class UserRepositoryAdapter implements UserRepository {
         jpa.deleteById(user.getId());
     }
 
+    @Override
+    public Optional<User> findByProviderAndProviderUid(String provider, String providerUid) {
+        return jpa.findByProviderAndProviderUid(provider, providerUid);
+    }
+
 
 }

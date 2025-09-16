@@ -15,6 +15,7 @@ import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -113,17 +114,33 @@ public class AuthServiceImpl implements AuthService {
 
     // 구글, 카카오 로그인으로 한 사용자가 없으면 새로 만들어 저장 , 있으면 그대로 사용(업데이트x)
     private User upsertOAuthUser(String email, String provider, String providerUid) {
-        return userRepository.findByEmail(email)
-            .orElseGet(() -> {
-                String dummyPw = passwordEncoder.encode(UUID.randomUUID().toString());
-                User u = User.builder()
-                    .email(email)
-                    .password(dummyPw)      // password not null인 스키마 대응
-                    .nickname(email.split("@")[0])
-                    .provider(provider)     // 엔티티에 provider 필드 있음
-                    .build();
+        // 1) provider+uid로 1차 조회
+        Optional<User> byProvider = userRepository.findByProviderAndProviderUid(provider, providerUid);
+        if (byProvider.isPresent()) {
+            return byProvider.get();
+        }
+
+        // 2) 이메일로 기존 계정이 있으면 연결(정책상 허용 시)
+        if (email != null && !email.isBlank()) {
+            Optional<User> byEmail = userRepository.findByEmail(email);
+            if (byEmail.isPresent()) {
+                var u = byEmail.get();
+                u.linkSocial(provider, providerUid);
                 return userRepository.save(u);
-            });
+            }
+        }
+
+        // 3) 신규 생성
+        String dummyPw = passwordEncoder.encode(UUID.randomUUID().toString());
+        User u = User.builder()
+            .email(email != null ? email : ("anon+" + provider + "-" + providerUid + "@local"))
+            .password(dummyPw)
+            .nickname((email != null && email.contains("@")) ? email.substring(0, email.indexOf('@'))
+                : (provider.toLowerCase() + "_" + providerUid))
+            .provider(provider)
+            .providerUid(providerUid)
+            .build();
+        return userRepository.save(u);
     }
 
     private TokenResponse issueTokens(User user) {

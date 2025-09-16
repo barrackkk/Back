@@ -20,4 +20,7 @@ public interface UserRepository {
     void delete(User user);
 
     Optional<User> findByEmail(String email);
+
+    Optional<User> findByProviderAndProviderUid(String provider, String providerUid);
+
 }

@@ -5,11 +5,22 @@ import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+
+    @Mappings({
+        @Mapping(target = "id", ignore = true),
+        @Mapping(target = "provider", ignore = true),
+        @Mapping(target = "providerUid", ignore = true),
+        @Mapping(target = "deviceToken", ignore = true),
+        @Mapping(target = "refreshToken", ignore = true),
+        @Mapping(target = "createdAt", ignore = true),
+        @Mapping(target = "updatedAt", ignore = true)
+    })
     User toEntity(UserCreateRequest request);
 
     @Mapping(source = "id", target = "userId")
