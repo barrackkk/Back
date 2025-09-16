@@ -1,8 +1,8 @@
 package com.fitpet.server.auth.application.service;
 
 import com.fitpet.server.auth.domain.exception.InvalidAccessTokenException;
-import com.fitpet.server.auth.domain.exception.InvalidLogin;
-import com.fitpet.server.auth.domain.exception.InvalidRefreshToken;
+import com.fitpet.server.auth.domain.exception.InvalidLoginException;
+import com.fitpet.server.auth.domain.exception.InvalidRefreshTokenException;
 import com.fitpet.server.auth.infra.GoogleTokenVerifier;
 import com.fitpet.server.auth.infra.GoogleTokenVerifier.GoogleProfile;
 import com.fitpet.server.auth.infra.KakaoClient;
@@ -42,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.email()).orElse(null);
 
         if (user == null || !passwordEncoder.matches(request.password(), user.getPassword())) {
-            throw new InvalidLogin();
+            throw new InvalidLoginException();
         }
 
         // 임시로 ROLE_USER
@@ -57,14 +57,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public TokenResponse refresh(String refreshToken) {
         if (!jwtTokenProvider.validateRefreshToken(refreshToken)) {
-            throw new InvalidRefreshToken();
+            throw new InvalidRefreshTokenException();
         }
 
         Long userId = jwtTokenProvider.getUserId(refreshToken, true);
 
         String saved = redisTokenRepository.find(userId);
         if (saved == null || !saved.equals(refreshToken)) {
-            throw new InvalidRefreshToken();
+            throw new InvalidRefreshTokenException();
         }
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
