@@ -8,5 +8,9 @@ public record LoginRequest(
     @NotBlank @Email String email,
     @NotBlank @Size(min = 8, max = 72, message = "8자 이상이어야 합니다.") String password
 ) {
+    @Override
+    public String toString() {
+        return "LoginRequest[email=%s, password=****]".formatted(email);
+    }
 }
 
