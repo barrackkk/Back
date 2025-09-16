@@ -18,12 +18,14 @@ public class KakaoClient {
     @Value("${oauth.kakao.user-info-uri}")
     private String userInfoUri;
 
+    // TODO: WebClient 빈 주입 + 커넥트/읽기/쓰기/응답 타임아웃 구성
     public KakaoProfile getProfile(String accessToken) {
         KakaoMeResponse response = webClient.get()
             .uri(userInfoUri)
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
             .retrieve()
             .bodyToMono(KakaoMeResponse.class)
+            .timeout(java.time.Duration.ofSeconds(5))   // ← 이 줄 추가
             .onErrorResume(e -> Mono.error(new OAuthVerificationFailedException()))
             .block();
 
