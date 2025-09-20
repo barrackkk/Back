@@ -24,6 +24,7 @@ public interface PetMapper {
 
     // 엔티티 -> DTO
     @Mappings({
+        @Mapping(target = "petId", source = "id"),
         @Mapping(target = "ownerId", source = "owner.id")
     })
     PetDto toDto(Pet pet);
