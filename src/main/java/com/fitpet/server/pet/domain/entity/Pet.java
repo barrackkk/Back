@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "pet",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_pet_owner", columnNames = "user_id")
+    },
     indexes = {
         @Index(name = "idx_pet_owner", columnList = "user_id")
     }
@@ -45,6 +49,8 @@ public class Pet {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id",
+        nullable = false,
+        unique = true,
         foreignKey = @ForeignKey(name = "fk_pet_user"))
     private User owner;
 
