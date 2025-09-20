@@ -21,7 +21,7 @@ public class SecurityConfig {
                 .requestMatchers("/body-histories/**").permitAll() // 신체 변화 기록 관련 허용
                 .requestMatchers("/actuator/**").permitAll() // health, info 등 actuator 공개
                 .requestMatchers("/auth/**").permitAll()
-                .anyRequest().authenticated()                 // 나머지는 인증 필요
+                .anyRequest().permitAll()                 // 개발 편의를 위해 permitAll 처리
             );
 
         return http.build();

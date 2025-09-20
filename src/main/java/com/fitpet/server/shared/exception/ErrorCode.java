@@ -17,6 +17,8 @@ public enum ErrorCode {
     BODY_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "B001", "해당 신체 기록을 찾을 수 없습니다."),
     BODY_HISTORY_ALREADY_EXISTS(HttpStatus.CONFLICT, "B002", "해당 날짜의 신체 기록이 이미 존재합니다."),
 
+    PET_ALREADY_EXISTS(HttpStatus.CONFLICT, "P001", "사용자는 이미 펫을 보유하고 있습니다."),
+
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "C001", "잘못된 요청입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C999", "서버 에러가 발생했습니다."),
 
