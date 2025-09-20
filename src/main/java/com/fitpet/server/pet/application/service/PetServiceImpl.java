@@ -2,7 +2,9 @@ package com.fitpet.server.pet.application.service;
 
 import com.fitpet.server.pet.application.mapper.PetMapper;
 import com.fitpet.server.pet.domain.entity.Pet;
+import com.fitpet.server.pet.domain.exception.PetAccessDeniedException;
 import com.fitpet.server.pet.domain.exception.PetAlreadyExistsException;
+import com.fitpet.server.pet.domain.exception.PetNotFoundException;
 import com.fitpet.server.pet.domain.repository.PetRepository;
 import com.fitpet.server.pet.presentation.dto.PetCreateRequest;
 import com.fitpet.server.pet.presentation.dto.PetDto;
@@ -47,4 +49,25 @@ public class PetServiceImpl implements PetService {
             throw new PetAlreadyExistsException();
         }
     }
+
+    @Override
+    @Transactional
+    public void delete(Long ownerId, Long petId) {
+        log.info("[PetService] Pet 삭제 시작: ownerId={}, petId={}", ownerId, petId);
+
+        Pet pet = petRepository.findById(petId)
+            .orElseThrow(PetNotFoundException::new);
+
+        Long petOwnerId = pet.getOwner().getId();
+        if (!petOwnerId.equals(ownerId)) {
+            log.warn("[PetService] 삭제 권한 없음: 요청 ownerId={}, 실제 ownerId={}, petId={}",
+                ownerId, petOwnerId, petId);
+            throw new PetAccessDeniedException();
+        }
+
+        petRepository.delete(pet);
+
+        log.info("[PetService] Pet 삭제 완료: ownerId={}, petId={}", ownerId, petId);
+    }
+
 }
