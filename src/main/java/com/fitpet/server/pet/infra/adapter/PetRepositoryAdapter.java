@@ -3,6 +3,7 @@ package com.fitpet.server.pet.infra.adapter;
 import com.fitpet.server.pet.domain.entity.Pet;
 import com.fitpet.server.pet.domain.repository.PetRepository;
 import com.fitpet.server.pet.infra.jpa.PetJpaRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +20,16 @@ public class PetRepositoryAdapter implements PetRepository {
     @Override
     public boolean existsByOwnerId(Long ownerId) {
         return jpa.existsByOwnerId(ownerId);
+    }
+
+    @Override
+    public Optional<Pet> findById(Long petId) {
+        return jpa.findById(petId);
+    }
+
+    @Override
+    public void delete(Pet pet) {
+        jpa.delete(pet);
     }
 
 }
