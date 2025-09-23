@@ -11,8 +11,10 @@ import com.fitpet.server.pet.presentation.dto.PetDto;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
+import java.sql.SQLIntegrityConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,9 +41,11 @@ public class PetServiceImpl implements PetService {
             return petMapper.toDto(saved);
 
         } catch (DataIntegrityViolationException e) {
-
-            log.warn("[PetService] 중복 생성 감지: ownerId={}", ownerId, e);
-            throw new PetAlreadyExistsException();
+            if (isUniqueConstraintViolation(e)) {
+                log.warn("[PetService] 중복 생성 감지: ownerId={}", ownerId, e);
+                throw new PetAlreadyExistsException();
+            }
+            throw e;
         }
     }
 
@@ -85,5 +89,27 @@ public class PetServiceImpl implements PetService {
         return petMapper.toDto(pet);
     }
 
+
+    // 전달 받은 예외가 유니크 제약 조건 위반인지 확인하는 메서드
+    private boolean isUniqueConstraintViolation(Throwable throwable) {
+        Throwable current = throwable;
+        while (current != null) {
+            // current가 cve 타입인지 확인
+            if (current instanceof ConstraintViolationException cve) {
+                String constraintName = cve.getConstraintName();
+                if (constraintName != null) {
+                    String lowered = constraintName.toLowerCase();
+                    if (lowered.contains("unique") || lowered.contains("uk_")) {
+                        return true;
+                    }
+                }
+            }
+            if (current instanceof SQLIntegrityConstraintViolationException) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
 
 }
