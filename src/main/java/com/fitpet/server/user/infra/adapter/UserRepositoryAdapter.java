@@ -23,6 +23,12 @@ public class UserRepositoryAdapter implements UserRepository {
         return jpa.findById(id);
     }
 
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return jpa.findByEmail(email);
+    }
+
     @Override
     public boolean existsByEmail(String email) {
         return jpa.existsByEmail(email);
@@ -50,4 +56,11 @@ public class UserRepositoryAdapter implements UserRepository {
         }
         jpa.deleteById(user.getId());
     }
+
+    @Override
+    public Optional<User> findByProviderAndProviderUid(String provider, String providerUid) {
+        return jpa.findByProviderAndProviderUid(provider, providerUid);
+    }
+
+
 }

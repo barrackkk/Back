@@ -7,14 +7,36 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update   # 개발용: 스키마 자동 생성/업데이트 (운영에선 validate 권장)
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
   security:
     user:
       name: ${SECURITY_USER}
       password: ${SECURITY_PASSWORD}
+
+jwt:
+  access:
+    secret: ${JWT_ACCESS_SECRET}
+    expiration-ms: ${JWT_ACCESS_EXPIRATION_MS}
+  refresh:
+    secret: ${JWT_REFRESH_SECRET}
+    expiration-ms: ${JWT_REFRESH_EXPIRATION_MS}
+
+
+oauth:
+  google:
+    client-id: ${GOOGLE_CLIENT_ID}
+  kakao:
+    javascript-key: ${KAKAO_JAVASCRIPT_KEY}
+    user-info-uri: https://kapi.kakao.com/v2/user/me
+

@@ -18,4 +18,9 @@ public interface UserRepository {
     boolean existsByNicknameAndIdNot(String nickname, Long id);
 
     void delete(User user);
+
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByProviderAndProviderUid(String provider, String providerUid);
+
 }
