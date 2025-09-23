@@ -65,4 +65,25 @@ public class PetServiceImpl implements PetService {
         log.info("[PetService] Pet 삭제 완료: ownerId={}, petId={}", ownerId, petId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PetDto read(Long ownerId, Long petId) {
+        log.info("[PetService] Pet 조회 시작: petId={}", petId);
+
+        Pet pet = petRepository.findById(petId)
+            .orElseThrow(PetNotFoundException::new);
+
+        Long petOwnerId = pet.getOwner().getId();
+        if (!petOwnerId.equals(ownerId)) {
+            log.warn("[PetService] 조회 권한 없음: 요청 ownerId={}, 실제 ownerId={}, petId={}",
+                ownerId, petOwnerId, petId);
+            throw new PetAccessDeniedException();
+        }
+
+        log.info("[PetService] Pet 조회 완료: petId={}", petId);
+
+        return petMapper.toDto(pet);
+    }
+
+
 }

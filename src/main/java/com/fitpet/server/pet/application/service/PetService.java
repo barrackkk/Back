@@ -7,4 +7,6 @@ public interface PetService {
     PetDto create(Long ownerId, PetCreateRequest request);
 
     void delete(Long ownerId, Long petId);
+
+    PetDto read(Long ownerId, Long petId);
 }
