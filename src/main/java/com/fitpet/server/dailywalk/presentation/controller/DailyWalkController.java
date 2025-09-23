@@ -33,10 +33,6 @@ public class DailyWalkController {
 
     private final DailyWalkService dailyWalkService;
 
-    public DailyWalkController(DailyWalkService dailyWalkService) {
-        this.dailyWalkService = dailyWalkService;
-    }
-
     @GetMapping("/users/{userId}")
     public ResponseEntity<List<DailyWalkResponse>> listByUser(@PathVariable Long userId) {
         List<DailyWalkResponse> body = dailyWalkService.getAllByUserId(userId);
