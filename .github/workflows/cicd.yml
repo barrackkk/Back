@@ -3,7 +3,7 @@ name: Deploy To EC2 for FitPet
 on:
   push:
     branches:
-      - main # 최종 배포 브랜치로 변경 (예: main 또는 dev)
+      - feat/cicd # 최종 배포 브랜치로 변경 (예: main 또는 dev)
 
 jobs:
   deploy:
