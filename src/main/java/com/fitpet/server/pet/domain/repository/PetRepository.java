@@ -6,8 +6,6 @@ import java.util.Optional;
 public interface PetRepository {
     Pet save(Pet pet);
 
-    boolean existsByOwnerId(Long ownerId);
-
     Optional<Pet> findById(Long petId);
 
     void delete(Pet pet);

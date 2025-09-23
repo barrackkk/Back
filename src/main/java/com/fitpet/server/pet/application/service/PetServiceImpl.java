@@ -32,11 +32,6 @@ public class PetServiceImpl implements PetService {
         log.info("[PetService] Pet 생성 시작: ownerId ={}", ownerId);
         User owner = userRepository.findById(ownerId).orElseThrow(UserNotFoundException::new);
 
-        // 사용자가 펫을 이미 소유하고 있는 경우 예외처리
-        if (petRepository.existsByOwnerId(ownerId)) {
-            throw new PetAlreadyExistsException();
-        }
-
         try {
             Pet pet = petMapper.toEntity(request, owner);
             Pet saved = petRepository.save(pet);

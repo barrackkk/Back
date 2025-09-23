@@ -18,11 +18,6 @@ public class PetRepositoryAdapter implements PetRepository {
     }
 
     @Override
-    public boolean existsByOwnerId(Long ownerId) {
-        return jpa.existsByOwnerId(ownerId);
-    }
-
-    @Override
     public Optional<Pet> findById(Long petId) {
         return jpa.findById(petId);
     }
