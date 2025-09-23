@@ -20,6 +20,7 @@ public class SecurityConfig {
                         .requestMatchers("/daily/**").permitAll() // 하루 걸음수 관련 허용
                         .requestMatchers("/body-histories/**").permitAll() // 신체 변화 기록 관련 허용
                         .requestMatchers("/actuator/**").permitAll() // health, info 등 actuator 공개
+                        .requestMatchers("/swagger-ui.html").permitAll() // health, info 등 actuator 공개
                         .anyRequest().authenticated()                 // 나머지는 인증 필요
                 );
         return http.build();
