@@ -11,7 +11,6 @@ import com.fitpet.server.pet.presentation.dto.PetDto;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
-import java.sql.SQLIntegrityConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -104,12 +103,27 @@ public class PetServiceImpl implements PetService {
                     }
                 }
             }
-            if (current instanceof SQLIntegrityConstraintViolationException) {
-                return true;
+            if (current instanceof java.sql.SQLIntegrityConstraintViolationException sqlEx) {
+                if (isMysqlDuplicateKey(sqlEx)) {
+                    return true;
+                }
             }
             current = current.getCause();
         }
         return false;
+    }
+
+    private boolean isMysqlDuplicateKey(java.sql.SQLIntegrityConstraintViolationException sqlEx) {
+        // MySQL 중복키 에러코드: 1062
+        if (sqlEx.getErrorCode() == 1062) {
+            return true;
+        }
+        String message = sqlEx.getMessage();
+        if (message == null) {
+            return false;
+        }
+        String lowered = message.toLowerCase();
+        return lowered.contains("duplicate entry") || lowered.contains("duplicate key");
     }
 
 }
