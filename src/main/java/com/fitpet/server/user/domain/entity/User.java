@@ -25,7 +25,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users",
     uniqueConstraints = {
-        @UniqueConstraint(name = "uk_users_email", columnNames = "email")
+        @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
+        @UniqueConstraint(name = "uk_oauth_provider_uid", columnNames = {"provider", "provider_uid"})
     })
 @Getter
 @NoArgsConstructor
@@ -41,7 +42,7 @@ public class User {
     @Column(nullable = false, length = 255)
     private String email;
 
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String password;
 
     @Column(name = "nick_name", length = 60)
@@ -70,6 +71,9 @@ public class User {
 
     @Column(length = 50)
     private String provider; // OAuth provider
+
+    @Column(name = "provider_uid", length = 100)
+    private String providerUid; // 공급자 측 고유 ID
 
     @Column(name = "device_token", length = 255)
     private String deviceToken;
@@ -122,5 +126,10 @@ public class User {
         if (request.targetPbf() != null) {
             this.targetPbf = request.targetPbf();
         }
+    }
+
+    public void linkSocial(String provider, String providerUid) {
+        this.provider = provider;
+        this.providerUid = providerUid;
     }
 }
