@@ -1,9 +1,9 @@
-name: Deploy To EC2
+name: Deploy To EC2 for FitPet
 
 on:
   push:
     branches:
-      - feat/cicd
+      - main # 최종 배포 브랜치로 변경 (예: main 또는 dev)
 
 jobs:
   deploy:
@@ -15,17 +15,17 @@ jobs:
       - name: JDK 17버전 설치
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 17
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: application.yml 파일 만들기
         run: echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/application.yml
 
-      - name: 테스트 및 빌드하기 (캐시 x, test x)
+      - name: 테스트 제외하고 빌드하기 (캐시 x, test x)
         run: ./gradlew clean build -x test --no-build-cache
 
       - name: 빌드된 파일 이름 변경하기
-        run: mv ./build/libs/*SNAPSHOT.jar ./project.jar
+        run: mv ./build/libs/*SNAPSHOT.jar ./fitpet.jar
 
       - name: SCP로 EC2에 빌드된 파일 전송하기
         uses: appleboy/scp-action@v0.1.7
@@ -33,10 +33,10 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          source: project.jar
-          target: /home/ubuntu/instagram-server/tobe
+          source: fitpet.jar
+          target: /home/ubuntu/fitpet-server/tobe
 
-      - name: SSH로 EC2에 접속하기
+      - name: SSH로 EC2에 접속하여 배포 스크립트 실행
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -44,10 +44,11 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
-            rm -rf /home/ubuntu/instagram-server/current
-            mkdir /home/ubuntu/instagram-server/current
-            mv /home/ubuntu/instagram-server/tobe/project.jar /home/ubuntu/instagram-server/current/project.jar
-            cd /home/ubuntu/instagram-server/current
+            rm -rf /home/ubuntu/fitpet-server/current
+            mkdir -p /home/ubuntu/fitpet-server/current
+            mkdir -p /home/ubuntu/fitpet-server/tobe
+            mv /home/ubuntu/fitpet-server/tobe/fitpet.jar /home/ubuntu/fitpet-server/current/fitpet.jar
+            cd /home/ubuntu/fitpet-server/current
             sudo fuser -k -n tcp 8080 || true
-            nohup java -jar project.jar > ./output.log 2>&1 & 
-            rm -rf /home/ubuntu/instagram-server/tobe
+            nohup java -jar fitpet.jar > ./output.log 2>&1 &
+            rm -rf /home/ubuntu/fitpet-server/tobe

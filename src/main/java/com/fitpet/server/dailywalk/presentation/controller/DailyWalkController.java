@@ -1,9 +1,15 @@
 package com.fitpet.server.dailywalk.presentation.controller;
 
+import com.fitpet.server.dailywalk.application.service.DailyWalkService;
+import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
+import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
+import com.fitpet.server.dailywalk.presentation.dto.response.DailyWalkResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.PastOrPresent;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,15 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.fitpet.server.dailywalk.application.service.DailyWalkService;
-import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
-import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
-import com.fitpet.server.dailywalk.presentation.dto.response.DailyWalkResponse;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.PastOrPresent;
-import lombok.RequiredArgsConstructor;
-
 
 @RestController
 @RequestMapping("/daily/walks")
@@ -35,6 +32,10 @@ import lombok.RequiredArgsConstructor;
 public class DailyWalkController {
 
     private final DailyWalkService dailyWalkService;
+
+    public DailyWalkController(DailyWalkService dailyWalkService) {
+        this.dailyWalkService = dailyWalkService;
+    }
 
     @GetMapping("/users/{userId}")
     public ResponseEntity<List<DailyWalkResponse>> listByUser(@PathVariable Long userId) {
