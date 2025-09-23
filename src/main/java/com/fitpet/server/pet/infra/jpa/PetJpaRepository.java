@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PetJpaRepository extends JpaRepository<Pet, Long> {
-
-    boolean existsByOwnerId(Long ownerId);
 }

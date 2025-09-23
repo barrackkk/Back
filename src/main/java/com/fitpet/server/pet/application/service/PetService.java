@@ -5,4 +5,6 @@ import com.fitpet.server.pet.presentation.dto.PetDto;
 
 public interface PetService {
     PetDto create(Long ownerId, PetCreateRequest request);
+
+    void delete(Long ownerId, Long petId);
 }

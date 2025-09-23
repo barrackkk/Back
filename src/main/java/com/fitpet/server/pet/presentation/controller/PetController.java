@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,4 +41,17 @@ public class PetController {
             .body(createdPet);
     }
 
+    @DeleteMapping("/{userId}/{petId}")
+    public ResponseEntity<Void> delete(
+        @PathVariable Long userId,
+        @PathVariable Long petId
+    ) {
+        log.info("[PetController] 펫 삭제 요청 : userId = {}, petId = {}", userId, petId);
+        petService.delete(userId, petId);
+        log.info("[PetController] 펫 삭제 완료 : userId = {}, petId = {}", userId, petId);
+
+        return ResponseEntity
+            .noContent()
+            .build();
+    }
 }
