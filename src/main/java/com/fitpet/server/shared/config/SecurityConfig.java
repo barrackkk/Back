@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -11,17 +12,27 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
+    private static final String[] PERMIT_URL_ARRAY = {
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/users/**",
+            "/daily/**",
+            "/body-histories/**",
+            "/actuator/**"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable) // Postman 테스트 편하게 하기위해 일단 끔
+                .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/**").permitAll() // 회원가입/조회 허용
-                        .requestMatchers("/daily/**").permitAll() // 하루 걸음수 관련 허용
-                        .requestMatchers("/body-histories/**").permitAll() // 신체 변화 기록 관련 허용
-                        .requestMatchers("/actuator/**").permitAll() // health, info 등 actuator 공개
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()  // health, info 등 actuator 공개
-                        .anyRequest().authenticated()                 // 나머지는 인증 필요
+                        .requestMatchers(PERMIT_URL_ARRAY).permitAll()
+                        .anyRequest().authenticated()
                 );
         return http.build();
     }
