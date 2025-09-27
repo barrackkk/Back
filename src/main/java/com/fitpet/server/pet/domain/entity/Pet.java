@@ -72,7 +72,7 @@ public class Pet {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public void rename(String newName) {
+    public void updateName(String newName) {
         if (newName != null && !newName.isBlank()) {
             this.name = newName;
         }
