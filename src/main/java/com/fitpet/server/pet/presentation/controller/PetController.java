@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,5 +54,17 @@ public class PetController {
         return ResponseEntity
             .noContent()
             .build();
+    }
+
+    @GetMapping("/{userId}/{petId}")
+    public ResponseEntity<PetDto> read(
+        @PathVariable Long userId,
+        @PathVariable Long petId
+    ) {
+        log.info("[PetController] 펫 조회 요청 : userId = {}, petId = {}", userId, petId);
+        PetDto pet = petService.read(userId, petId);
+        log.info("[PetController] 펫 조회 완료 : userId = {}, petId = {}", userId, petId);
+        return ResponseEntity.ok().body(pet);
+
     }
 }

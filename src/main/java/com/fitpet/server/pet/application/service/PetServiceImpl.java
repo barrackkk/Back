@@ -13,6 +13,7 @@ import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,9 +40,11 @@ public class PetServiceImpl implements PetService {
             return petMapper.toDto(saved);
 
         } catch (DataIntegrityViolationException e) {
-
-            log.warn("[PetService] 중복 생성 감지: ownerId={}", ownerId, e);
-            throw new PetAlreadyExistsException();
+            if (isUniqueConstraintViolation(e)) {
+                log.warn("[PetService] 중복 생성 감지: ownerId={}", ownerId, e);
+                throw new PetAlreadyExistsException();
+            }
+            throw e;
         }
     }
 
@@ -63,6 +66,64 @@ public class PetServiceImpl implements PetService {
         petRepository.delete(pet);
 
         log.info("[PetService] Pet 삭제 완료: ownerId={}, petId={}", ownerId, petId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PetDto read(Long ownerId, Long petId) {
+        log.info("[PetService] Pet 조회 시작: petId={}", petId);
+
+        Pet pet = petRepository.findById(petId)
+            .orElseThrow(PetNotFoundException::new);
+
+        Long petOwnerId = pet.getOwner().getId();
+        if (!petOwnerId.equals(ownerId)) {
+            log.warn("[PetService] 조회 권한 없음: 요청 ownerId={}, 실제 ownerId={}, petId={}",
+                ownerId, petOwnerId, petId);
+            throw new PetAccessDeniedException();
+        }
+
+        log.info("[PetService] Pet 조회 완료: petId={}", petId);
+
+        return petMapper.toDto(pet);
+    }
+
+
+    // 전달 받은 예외가 유니크 제약 조건 위반인지 확인하는 메서드
+    private boolean isUniqueConstraintViolation(Throwable throwable) {
+        Throwable current = throwable;
+        while (current != null) {
+            // current가 cve 타입인지 확인
+            if (current instanceof ConstraintViolationException cve) {
+                String constraintName = cve.getConstraintName();
+                if (constraintName != null) {
+                    String lowered = constraintName.toLowerCase();
+                    if (lowered.contains("unique") || lowered.contains("uk_")) {
+                        return true;
+                    }
+                }
+            }
+            if (current instanceof java.sql.SQLIntegrityConstraintViolationException sqlEx) {
+                if (isMysqlDuplicateKey(sqlEx)) {
+                    return true;
+                }
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+
+    private boolean isMysqlDuplicateKey(java.sql.SQLIntegrityConstraintViolationException sqlEx) {
+        // MySQL 중복키 에러코드: 1062
+        if (sqlEx.getErrorCode() == 1062) {
+            return true;
+        }
+        String message = sqlEx.getMessage();
+        if (message == null) {
+            return false;
+        }
+        String lowered = message.toLowerCase();
+        return lowered.contains("duplicate entry") || lowered.contains("duplicate key");
     }
 
 }
