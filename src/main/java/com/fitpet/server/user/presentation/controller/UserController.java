@@ -1,12 +1,15 @@
 package com.fitpet.server.user.presentation.controller;
 
+import com.fitpet.server.security.jwt.JwtTokenProvider;
 import com.fitpet.server.user.application.service.UserService;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
+import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
 import com.fitpet.server.user.presentation.dto.UserUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class UserController {
     private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping
     public ResponseEntity<UserDto> create(
@@ -70,6 +75,35 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
+    @PatchMapping("/signUp/complete")
+    public ResponseEntity<UserDto> updateUserInfo(
+        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader,
+        @Valid @RequestBody UserInputInfoRequest userInputInfoRequest
+    ) {
+        String accessToken = extractBearerToken(authHeader);
+        if (accessToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        // 토큰 검증
+        if (!jwtTokenProvider.validateAccessToken(accessToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Long userId = jwtTokenProvider.getUserId(accessToken, false);
+        log.info("[UserController] 현재 사용자 수정 요청: id: {}", userId);
+
+        if (userService.isRegistrationComplete(userId)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        UserDto user = userService.inputInfo(userId, userInputInfoRequest);
+
+        log.info("[UserController] 현재 사용자 수정 완료: id: {}", userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> delete(
         @PathVariable Long userId
@@ -82,5 +116,21 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
+    }
+
+    private static String extractBearerToken(String authHeader) {
+        if (authHeader == null) {
+            return null;
+        }
+        int space = authHeader.indexOf(' ');
+        if (space <= 0) {
+            return null;
+        }
+        String scheme = authHeader.substring(0, space);
+        if (!"Bearer".equalsIgnoreCase(scheme)) {
+            return null;
+        }
+        String token = authHeader.substring(space + 1).trim();
+        return token.isEmpty() ? null : token;
     }
 }
