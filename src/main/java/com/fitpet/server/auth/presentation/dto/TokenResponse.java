@@ -1,12 +1,16 @@
 package com.fitpet.server.auth.presentation.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fitpet.server.user.domain.entity.RegistrationStatus;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record TokenResponse(
-        boolean success,
-        RegistrationStatus registrationStatus,
-        String serverAccessToken,
-        String serverRefreshToken
+    boolean success,
+    RegistrationStatus registrationStatus,
+    String serverAccessToken,
+    @JsonIgnore
+    String serverRefreshToken
 ) {
 
     public static TokenResponse success(RegistrationStatus registrationStatus,
