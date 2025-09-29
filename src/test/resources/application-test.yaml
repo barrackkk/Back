@@ -1,0 +1,16 @@
+spring:
+  # H2 데이터베이스 설정
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # 테스트가 끝나면 테이블 삭제
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: true
