@@ -2,11 +2,13 @@ package com.fitpet.server.dailyworkout.application.mapper;
 
 import com.fitpet.server.dailyworkout.domain.entity.GpsLog;
 import com.fitpet.server.dailyworkout.domain.entity.GpsSession;
+import com.fitpet.server.dailyworkout.presentation.dto.request.SessionEndRequest;
 import com.fitpet.server.dailyworkout.presentation.dto.response.GpsLogResponse;
 import com.fitpet.server.dailyworkout.presentation.dto.response.GpsSessionResponse;
 import com.fitpet.server.dailyworkout.presentation.dto.response.GpsSessionStartResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface GpsMapper {
@@ -19,4 +21,7 @@ public interface GpsMapper {
 
     @Mapping(source = "id", target = "sessionId")
     GpsSessionStartResponse toGpsSessionStartResponse(GpsSession gpsSession);
+
+    @Mapping(source = "distance", target = "totalDistance")
+    void updateSessionFromEndRequest(SessionEndRequest dto, @MappingTarget GpsSession session);
 }
