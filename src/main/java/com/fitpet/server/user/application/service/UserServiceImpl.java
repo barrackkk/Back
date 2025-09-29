@@ -1,6 +1,7 @@
 package com.fitpet.server.user.application.service;
 
 import com.fitpet.server.user.application.mapper.UserMapper;
+import com.fitpet.server.user.domain.entity.RegistrationStatus;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.exception.DuplicateEmailException;
 import com.fitpet.server.user.domain.exception.DuplicateNicknameException;
@@ -8,6 +9,7 @@ import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
+import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
 import com.fitpet.server.user.presentation.dto.UserUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserDto findUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(UserNotFoundException::new);
         return userMapper.toDto(user);
     }
 
@@ -50,7 +52,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto updateUser(Long userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(UserNotFoundException::new);
 
         validateUserUpdateRequest(userId, request);
 
@@ -66,8 +68,34 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(UserNotFoundException::new);
         userRepository.delete(user);
+    }
+
+    @Override
+    @Transactional
+    public UserDto inputInfo(Long userId, UserInputInfoRequest request) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(UserNotFoundException::new);
+
+        if (userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
+            log.warn("사용자 정보 입력 실패 - 닉네임 중복: {} (요청자 id: {})", maskNickname(request.nickname()), userId);
+            throw new DuplicateNicknameException();
+        }
+
+        user.userInformation(request);
+
+        userRepository.save(user);
+
+        return userMapper.toDto(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean isRegistrationComplete(Long userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(UserNotFoundException::new);
+        return user.getRegistrationStatus() == RegistrationStatus.COMPLETE;
     }
 
 
@@ -84,12 +112,12 @@ public class UserServiceImpl implements UserService {
 
     private void validateUserUpdateRequest(Long userId, UserUpdateRequest request) {
         if (StringUtils.hasText(request.email()) &&
-                userRepository.existsByEmailAndIdNot(request.email(), userId)) {
+            userRepository.existsByEmailAndIdNot(request.email(), userId)) {
             log.warn("사용자 수정 실패 - 이메일 중복: {} (요청자 id: {})", maskEmail(request.email()), userId);
             throw new DuplicateEmailException();
         }
         if (StringUtils.hasText(request.nickname()) &&
-                userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
+            userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
             log.warn("사용자 수정 실패 - 닉네임 중복: {} (요청자 id: {})", maskNickname(request.nickname()), userId);
             throw new DuplicateNicknameException();
         }
