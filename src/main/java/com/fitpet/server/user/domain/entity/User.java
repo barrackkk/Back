@@ -15,6 +15,7 @@ import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -81,6 +82,10 @@ public class User {
     @Column(name = "refresh_token", length = 255)
     private String refreshToken;
 
+    @Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "registration_status", nullable = false, length = 20)
+    private RegistrationStatus registrationStatus = RegistrationStatus.INCOMPLETE;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false,
