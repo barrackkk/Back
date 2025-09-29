@@ -11,6 +11,7 @@ import com.fitpet.server.auth.presentation.dto.GoogleProfile;
 import com.fitpet.server.auth.presentation.dto.LoginRequest;
 import com.fitpet.server.auth.presentation.dto.TokenResponse;
 import com.fitpet.server.security.jwt.JwtTokenProvider;
+import com.fitpet.server.user.domain.entity.RegistrationStatus;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
@@ -45,13 +46,7 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidLoginException();
         }
 
-        // 임시로 ROLE_USER
-        String access = jwtTokenProvider.generateAccessToken(user.getId(), user.getEmail(), List.of("ROLE_USER"));
-        String refresh = jwtTokenProvider.generateRefreshToken(user.getId(), user.getEmail());
-
-        redisTokenRepository.save(user.getId(), refresh, jwtTokenProvider.getRefreshExpirationMs());
-
-        return new TokenResponse(access, refresh);
+        return issueTokens(user);
     }
 
     @Override
@@ -68,14 +63,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
-        String newAccess = jwtTokenProvider.generateAccessToken(
-            user.getId(),
-            user.getEmail(),
-            List.of("ROLE_USER")
-        );
-        String newRefresh = jwtTokenProvider.generateRefreshToken(user.getId(), user.getEmail());
-        redisTokenRepository.save(user.getId(), newRefresh, jwtTokenProvider.getRefreshExpirationMs());
-        return new TokenResponse(newAccess, newRefresh);
+        return issueTokens(user);
     }
 
     @Override
@@ -139,6 +127,8 @@ public class AuthServiceImpl implements AuthService {
                 : (provider.toLowerCase() + "_" + providerUid))
             .provider(provider)
             .providerUid(providerUid)
+            // 정보 입력 받은 후 COMPLETE로 변경
+            .registrationStatus(RegistrationStatus.INCOMPLETE)
             .build();
         return userRepository.save(u);
     }
@@ -147,6 +137,11 @@ public class AuthServiceImpl implements AuthService {
         String access = jwtTokenProvider.generateAccessToken(user.getId(), user.getEmail(), List.of("ROLE_USER"));
         String refresh = jwtTokenProvider.generateRefreshToken(user.getId(), user.getEmail());
         redisTokenRepository.save(user.getId(), refresh, jwtTokenProvider.getRefreshExpirationMs());
-        return new TokenResponse(access, refresh);
+        return TokenResponse.success(resolveRegistrationStatus(user), access, refresh);
+    }
+
+    private RegistrationStatus resolveRegistrationStatus(User user) {
+        RegistrationStatus status = user.getRegistrationStatus();
+        return status != null ? status : RegistrationStatus.INCOMPLETE;
     }
 }
