@@ -1,6 +1,7 @@
 package com.fitpet.server.user.domain.entity;
 
 
+import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
 import com.fitpet.server.user.presentation.dto.UserUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -131,6 +132,18 @@ public class User {
         if (request.targetPbf() != null) {
             this.targetPbf = request.targetPbf();
         }
+    }
+
+    public void userInformation(UserInputInfoRequest request) {
+        this.nickname = request.nickname();
+        this.age = request.age();
+        this.gender = request.gender();
+        this.weightKg = request.weightKg();
+        this.targetWeightKg = request.targetWeightKg();
+        this.heightCm = request.heightCm();
+        this.pbf = null;
+        this.targetPbf = null;
+        this.registrationStatus = RegistrationStatus.COMPLETE;
     }
 
     public void linkSocial(String provider, String providerUid) {
