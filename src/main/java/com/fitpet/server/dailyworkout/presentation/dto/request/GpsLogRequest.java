@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class GpsLogDto {
+public class GpsLogRequest { // GpsLogDto -> GpsLogRequest
 
     @NotNull(message = "세션 ID는 필수입니다.")
     private Long sessionId;
