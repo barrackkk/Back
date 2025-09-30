@@ -126,7 +126,7 @@ public class UserController {
             return null;
         }
         int space = authHeader.indexOf(' ');
-        if (space <= 0) {
+        if (space < 0) {
             return null;
         }
         String scheme = authHeader.substring(0, space);
