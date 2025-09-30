@@ -91,6 +91,9 @@ public class UserController {
         }
 
         Long userId = jwtTokenProvider.getUserId(accessToken, false);
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
         log.info("[UserController] 현재 사용자 수정 요청: id: {}", userId);
 
         if (userService.isRegistrationComplete(userId)) {
