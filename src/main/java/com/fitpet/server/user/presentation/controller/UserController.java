@@ -82,19 +82,19 @@ public class UserController {
     ) {
         String accessToken = extractBearerToken(authHeader);
         if (accessToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
         // 토큰 검증
         if (!jwtTokenProvider.validateAccessToken(accessToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
         Long userId = jwtTokenProvider.getUserId(accessToken, false);
         log.info("[UserController] 현재 사용자 수정 요청: id: {}", userId);
 
         if (userService.isRegistrationComplete(userId)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
         UserDto user = userService.inputInfo(userId, userInputInfoRequest);
