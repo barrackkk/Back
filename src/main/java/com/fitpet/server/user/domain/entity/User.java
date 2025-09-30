@@ -139,10 +139,24 @@ public class User {
         this.age = request.age();
         this.gender = request.gender();
         this.weightKg = request.weightKg();
-        this.targetWeightKg = request.targetWeightKg();
         this.heightCm = request.heightCm();
-        this.pbf = null;
-        this.targetPbf = null;
+
+        if (request.targetWeightKg() == null) {
+            this.targetWeightKg = null;
+        } else {
+            this.targetWeightKg = request.targetWeightKg();
+
+        }
+        if (request.pbf() == null) {
+            this.pbf = null;
+        } else {
+            this.pbf = request.pbf();
+        }
+        if (request.targetPbf() == null) {
+            this.targetPbf = null;
+        } else {
+            this.targetPbf = request.targetPbf();
+        }
         this.registrationStatus = RegistrationStatus.COMPLETE;
     }
 
