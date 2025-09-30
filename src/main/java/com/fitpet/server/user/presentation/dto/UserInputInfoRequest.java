@@ -14,7 +14,7 @@ public record UserInputInfoRequest(
     String nickname,
 
     @Min(value = 1, message = "나이는 1세 이상이어야 합니다.")
-    @Max(value = 120, message = "나이는 150세 이하여야 합니다.")
+    @Max(value = 120, message = "나이는 120세 이하여야 합니다.")
     int age,
 
     @NotNull
