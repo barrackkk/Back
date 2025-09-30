@@ -259,7 +259,7 @@
             .then(r => r.json().then(b => ({ok: r.ok, body: b})))
             .then(({ok: okRes, body}) => {
                 if (!okRes) throw body;
-                setAccess(body.accessToken || '');
+                setAccess(body.serverAccessToken || '');
                 ok('구글 로그인 성공');
             })
             .catch(err);
@@ -285,7 +285,7 @@
                     });
                     const data = await res.json();
                     if (!res.ok) throw data;
-                    setAccess(data.accessToken || '');
+                    setAccess(data.serverAccessToken || '');
                     ok('카카오 로그인 성공');
                 },
                 fail: function (e) {
@@ -309,7 +309,7 @@
             });
             const data = await res.json();
             if (!res.ok) throw data;
-            setAccess(data.accessToken || '');
+            setAccess(data.serverAccessToken || '');
             ok('액세스 토큰 재발급 성공');
         } catch (e) {
             err(e);
