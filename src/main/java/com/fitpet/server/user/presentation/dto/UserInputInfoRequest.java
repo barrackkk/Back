@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 
 public record UserInputInfoRequest(
     @NotBlank(message = "닉네임은 공백일 수 없습니다.")
-    @Size(min = 5, max = 20, message = "닉네임은 5자 이상 20자 이하여야 합니다.")
+    @Size(min = 2, max = 20, message = "닉네임은 2자 이상 20자 이하여야 합니다.")
     String nickname,
 
     @Min(value = 1, message = "나이는 1세 이상이어야 합니다.")
