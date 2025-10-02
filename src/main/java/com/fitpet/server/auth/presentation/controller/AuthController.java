@@ -28,17 +28,16 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
 
     private ResponseEntity<TokenResponse> withRefreshCookie(TokenResponse tokens) {
-        ResponseCookie cookie = ResponseCookie.from("REFRESH_TOKEN", tokens.refreshToken())
+        ResponseCookie cookie = ResponseCookie.from("REFRESH_TOKEN", tokens.serverRefreshToken())
             .httpOnly(true).secure(true)   // 운영할 때 반드시 true (HTTPS)
             .sameSite("None")              // 크로스 도메인일 때
             .path("/")
             .maxAge(Duration.ofMillis(jwtTokenProvider.getRefreshExpirationMs()))
             .build();
 
-        // 바디에는 access만 싣고 refresh는 쿠키로만
         return ResponseEntity.ok()
             .header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .body(new TokenResponse(tokens.accessToken(), null)); // refresh는 바디에 안 줌
+            .body(tokens.withoutRefreshToken());// refresh는 바디에 안 줌
     }
 
     @PostMapping("/login")
@@ -96,7 +95,7 @@ public class AuthController {
             return null;
         }
         int space = authHeader.indexOf(' ');
-        if (space <= 0) {
+        if (space < 0) {
             return null;
         }
         String scheme = authHeader.substring(0, space);
