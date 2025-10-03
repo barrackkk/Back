@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GpsLogResponse {
+    private long logId;
     private BigDecimal latitude;
     private BigDecimal longitude;
     private LocalDateTime recordedAt;

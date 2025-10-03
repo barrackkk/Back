@@ -20,7 +20,7 @@ import org.hibernate.annotations.CreationTimestamp;
 @Entity
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name = "gps_log")
 public class GpsLog {
 
@@ -51,4 +51,7 @@ public class GpsLog {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    public void setGpsSession(GpsSession gpsSession) {
+    }
 }
