@@ -14,16 +14,16 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(
         componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE // 3. 설정 추가
+        unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public interface GpsMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "gpsSession", source = "session")
     GpsLog toGpsLogEntity(GpsLogRequest request, GpsSession session);
-    
+
     @Mapping(source = "id", target = "sessionId")
-    GpsSessionStartResponse toGpsSessionStartResponse(GpsSession session);
+    GpsSessionStartResponse toSessionStartResponse(GpsSession session);
 
     @Mapping(source = "id", target = "logId")
     GpsLogResponse toGpsLogResponse(GpsLog log);

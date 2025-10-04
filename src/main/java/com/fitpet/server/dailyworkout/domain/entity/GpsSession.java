@@ -17,15 +17,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
+
 @Entity
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "gps_session")
 public class GpsSession {
@@ -39,6 +43,7 @@ public class GpsSession {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Builder.Default
     @OneToMany(mappedBy = "gpsSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<GpsLog> gpsLogs = new ArrayList<>();
 
@@ -60,26 +65,4 @@ public class GpsSession {
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
-
-    @Builder
-    public GpsSession(User user, LocalDateTime startTime) {
-        this.user = user;
-        this.startTime = startTime;
-    }
-
-    //== 연관관계 편의 메서드 ==//
-    public void addGpsLog(GpsLog gpsLog) {
-        gpsLogs.add(gpsLog);
-        gpsLog.setGpsSession(this);
-    }
-
-    //== 비즈니스 로직 ==//
-    public void endSession(LocalDateTime endTime, BigDecimal totalDistance, BigDecimal avgSpeed, int stepCount,
-                           int burnCalories) {
-        this.endTime = endTime;
-        this.totalDistance = totalDistance;
-        this.avgSpeed = avgSpeed;
-        this.stepCount = stepCount;
-        this.burnCalories = burnCalories;
-    }
 }
