@@ -1,5 +1,6 @@
 package com.fitpet.server.dailyworkout.domain.entity;
 
+import com.fitpet.server.user.domain.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,20 +13,16 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
+@Table(name = "gps_log")
 @Getter
 @Setter
-@AllArgsConstructor
-@Builder
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
-@Table(name = "gps_log")
 public class GpsLog {
 
     @Id
@@ -34,26 +31,29 @@ public class GpsLog {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "session_id", nullable = false)
     private GpsSession gpsSession;
 
-    @Column(nullable = false, precision = 10, scale = 7)
-    private BigDecimal latitude; // 위도
+    @Column(name = "latitude", nullable = false)
+    private BigDecimal latitude;
 
-    @Column(nullable = false, precision = 10, scale = 7)
-    private BigDecimal longitude; // 경도
+    @Column(name = "longitude", nullable = false)
+    private BigDecimal longitude;
 
-    @Column(precision = 5, scale = 2)
-    private BigDecimal speed; // km/h
+    @Column(name = "speed")
+    private BigDecimal speed;
 
-    @Column(precision = 6, scale = 2)
-    private BigDecimal altitude; // m 단위 고도
+    @Column(name = "altitude")
+    private BigDecimal altitude;
 
-    @Column(nullable = false)
+    @Column(name = "recorded_at", nullable = false)
     private LocalDateTime recordedAt;
 
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
 }

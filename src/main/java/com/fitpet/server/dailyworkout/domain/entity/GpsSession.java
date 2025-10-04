@@ -24,14 +24,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
-
 @Entity
+@Table(name = "gps_session")
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "gps_session")
 public class GpsSession {
 
     @Id
@@ -43,26 +42,29 @@ public class GpsSession {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "gpsSession", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GpsLog> gpsLogs = new ArrayList<>();
-
-    @Column(nullable = false)
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
+    @Column(name = "end_time")
     private LocalDateTime endTime;
 
-    @Column(precision = 8, scale = 2)
+    @Column(name = "total_distance")
     private BigDecimal totalDistance;
 
-    @Column(precision = 5, scale = 2)
+    @Column(name = "avg_speed")
     private BigDecimal avgSpeed;
 
+    @Column(name = "step_count")
     private Integer stepCount;
 
+    @Column(name = "burn_calories")
     private Integer burnCalories;
 
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "gpsSession", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GpsLog> gpsLogs = new ArrayList<>();
 }

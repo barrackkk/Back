@@ -35,7 +35,6 @@ public class GpsSessionServiceImpl implements GpsSessionService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. userId: " + request.getUserId()));
 
-        // (수정) @Builder 어노테이션에 맞춰 빌더 패턴으로 객체 생성
         GpsSession newSession = GpsSession.builder()
                 .user(user)
                 .startTime(request.getStartTime())
@@ -67,5 +66,4 @@ public class GpsSessionServiceImpl implements GpsSessionService {
 
         return gpsMapper.toSessionEndResponse(session);
     }
-
 }

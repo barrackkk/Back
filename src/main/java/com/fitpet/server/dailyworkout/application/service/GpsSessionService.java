@@ -9,18 +9,9 @@ import com.fitpet.server.dailyworkout.presentation.dto.response.SessionEndRespon
 
 public interface GpsSessionService {
 
-    /**
-     * GPS 운동 세션을 시작합니다.
-     */
     GpsSessionStartResponse startSession(SessionStartRequest request);
 
-    /**
-     * GPS 로그를 기록합니다.
-     */
     GpsLogResponse logGps(GpsLogRequest request);
 
-    /**
-     * GPS 운동 세션을 종료합니다.
-     */
     SessionEndResponse endSession(SessionEndRequest request);
 }
