@@ -1,7 +1,11 @@
 package com.fitpet.server.dailyworkout.domain.repository;
 
 import com.fitpet.server.dailyworkout.domain.entity.GpsSession;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
-public interface GpsSessionRepository extends JpaRepository<GpsSession, Long> {
+
+public interface GpsSessionRepository {
+    GpsSession save(GpsSession gpsSession);
+
+    Optional<GpsSession> findById(Long id);
 }
