@@ -11,9 +11,10 @@ import com.fitpet.server.dailyworkout.presentation.dto.request.SessionStartReque
 import com.fitpet.server.dailyworkout.presentation.dto.response.GpsLogResponse;
 import com.fitpet.server.dailyworkout.presentation.dto.response.GpsSessionStartResponse;
 import com.fitpet.server.dailyworkout.presentation.dto.response.SessionEndResponse;
+import com.fitpet.server.shared.exception.BusinessException;
+import com.fitpet.server.shared.exception.ErrorCode;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ public class GpsSessionServiceImpl implements GpsSessionService {
     @Override
     public GpsSessionStartResponse startSession(SessionStartRequest request) {
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다. userId: " + request.getUserId()));
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         GpsSession newSession = GpsSession.builder()
                 .user(user)
@@ -48,7 +49,7 @@ public class GpsSessionServiceImpl implements GpsSessionService {
     @Override
     public GpsLogResponse logGps(GpsLogRequest request) {
         GpsSession session = gpsSessionRepository.findById(request.getSessionId())
-                .orElseThrow(() -> new EntityNotFoundException("세션을 찾을 수 없습니다. sessionId: " + request.getSessionId()));
+                .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
 
         GpsLog newLog = gpsMapper.toGpsLogEntity(request, session);
         GpsLog savedLog = gpsLogRepository.save(newLog);
@@ -59,7 +60,7 @@ public class GpsSessionServiceImpl implements GpsSessionService {
     @Override
     public SessionEndResponse endSession(SessionEndRequest request) {
         GpsSession session = gpsSessionRepository.findById(request.getSessionId())
-                .orElseThrow(() -> new EntityNotFoundException("세션을 찾을 수 없습니다. sessionId: " + request.getSessionId()));
+                .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
 
         gpsMapper.updateSessionFromEndRequest(request, session);
         session.setEndTime(request.getEndTime());
