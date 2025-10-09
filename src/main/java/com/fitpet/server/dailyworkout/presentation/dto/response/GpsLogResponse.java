@@ -12,4 +12,5 @@ public class GpsLogResponse {
     private BigDecimal latitude;
     private BigDecimal longitude;
     private LocalDateTime recordedAt;
+    private String message;
 }

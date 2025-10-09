@@ -20,15 +20,19 @@ public interface GpsMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "gpsSession", source = "session")
+    @Mapping(target = "user", source = "session.user")
     GpsLog toGpsLogEntity(GpsLogRequest request, GpsSession session);
 
     @Mapping(source = "id", target = "sessionId")
+    @Mapping(target = "message", constant = "GPS session started")
     GpsSessionStartResponse toSessionStartResponse(GpsSession session);
 
     @Mapping(source = "id", target = "logId")
+    @Mapping(target = "message", constant = "GPS log saved")
     GpsLogResponse toGpsLogResponse(GpsLog log);
 
     @Mapping(source = "id", target = "sessionId")
+    @Mapping(target = "message", constant = "GPS session ended")
     SessionEndResponse toSessionEndResponse(GpsSession session);
 
     @Mapping(source = "distance", target = "totalDistance")
