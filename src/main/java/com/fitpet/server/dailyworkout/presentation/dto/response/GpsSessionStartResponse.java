@@ -7,4 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class GpsSessionStartResponse {
     private Long sessionId;
+    private String message;
 }
