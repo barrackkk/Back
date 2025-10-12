@@ -33,8 +33,13 @@ public class GpsSessionServiceImpl implements GpsSessionService {
 
     @Override
     public GpsSessionStartResponse startSession(SessionStartRequest request) {
+        log.info("GPS 세션 시작 요청: userId={}", request.getUserId());
+
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+                .orElseThrow(() -> {
+                    log.warn("사용자를 찾을 수 없음: userId={}", request.getUserId());
+                    return new BusinessException(ErrorCode.USER_NOT_FOUND);
+                });
 
         GpsSession newSession = GpsSession.builder()
                 .user(user)
@@ -42,28 +47,41 @@ public class GpsSessionServiceImpl implements GpsSessionService {
                 .build();
 
         GpsSession savedSession = gpsSessionRepository.save(newSession);
+        log.info("GPS 세션 생성 완료: sessionId={}", savedSession.getId());
 
         return gpsMapper.toSessionStartResponse(savedSession);
     }
 
     @Override
     public GpsLogResponse logGps(GpsLogRequest request) {
+        log.debug("GPS 로그 기록 요청: sessionId={}", request.getSessionId());
+
         GpsSession session = gpsSessionRepository.findById(request.getSessionId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
+                .orElseThrow(() -> {
+                    log.warn("세션을 찾을 수 없음: sessionId={}", request.getSessionId());
+                    return new BusinessException(ErrorCode.SESSION_NOT_FOUND);
+                });
 
         GpsLog newLog = gpsMapper.toGpsLogEntity(request, session);
         GpsLog savedLog = gpsLogRepository.save(newLog);
+        log.debug("GPS 로그 저장 완료: logId={}", savedLog.getId());
 
         return gpsMapper.toGpsLogResponse(savedLog);
     }
 
     @Override
     public SessionEndResponse endSession(SessionEndRequest request) {
+        log.info("GPS 세션 종료 요청: sessionId={}", request.getSessionId());
+
         GpsSession session = gpsSessionRepository.findById(request.getSessionId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.SESSION_NOT_FOUND));
+                .orElseThrow(() -> {
+                    log.warn("세션을 찾을 수 없음: sessionId={}", request.getSessionId());
+                    return new BusinessException(ErrorCode.SESSION_NOT_FOUND);
+                });
 
         gpsMapper.updateSessionFromEndRequest(request, session);
         session.setEndTime(request.getEndTime());
+        log.info("GPS 세션 종료 완료: sessionId={}", session.getId());
 
         return gpsMapper.toSessionEndResponse(session);
     }
