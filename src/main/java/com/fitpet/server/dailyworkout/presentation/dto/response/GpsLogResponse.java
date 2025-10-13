@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Builder
 public class GpsLogResponse {
-    private long logId;
+    private Long logId;
     private BigDecimal latitude;
     private BigDecimal longitude;
     private LocalDateTime recordedAt;
