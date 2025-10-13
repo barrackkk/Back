@@ -3,11 +3,13 @@ package com.fitpet.server.dailyworkout.presentation.dto.response;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
+@AllArgsConstructor
+@Builder
 public class GpsSessionResponse {
     private Long sessionId;
     private LocalDateTime startTime;

@@ -2,11 +2,13 @@ package com.fitpet.server.dailyworkout.presentation.dto.response;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
+@AllArgsConstructor
+@Builder
 public class GpsLogResponse {
     private long logId;
     private BigDecimal latitude;
