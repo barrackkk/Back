@@ -31,13 +31,14 @@ public class GpsSessionServiceImpl implements GpsSessionService {
     private final UserRepository userRepository;
     private final GpsMapper gpsMapper;
 
+    //TODO 인증된 사용자의 UserId를 가져오도록 수정
     @Override
-    public GpsSessionStartResponse startSession(Long userId, SessionStartRequest request) {
-        log.info("GPS 세션 시작 요청: userId={}", userId);
+    public GpsSessionStartResponse startSession(SessionStartRequest request) {
+        log.info("GPS 세션 시작 요청: userId={}", request.getUserId());
 
-        User user = userRepository.findById(userId)
+        User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> {
-                    log.warn("사용자를 찾을 수 없음: userId={}", userId);
+                    log.warn("사용자를 찾을 수 없음: userId={}", request.getUserId());
                     return new BusinessException(ErrorCode.USER_NOT_FOUND);
                 });
 

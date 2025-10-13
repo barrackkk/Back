@@ -29,8 +29,8 @@ public class GpsController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody SessionStartRequest request
     ) {
-        Long currentUserId = userDetails.getUserId();
-        GpsSessionStartResponse response = gpsSessionService.startSession(currentUserId, request);
+        //Long currentUserId = userDetails.getUserId();
+        GpsSessionStartResponse response = gpsSessionService.startSession(request);
         return ResponseEntity.ok(response);
     }
 
