@@ -1,6 +1,5 @@
-package com.fitpet.server.dailyworkout.infra.jpa;
+package com.fitpet.server.dailyworkout.Infra.jpa;
 
-import com.fitpet.server.dailyworkout.Infra.jpa.GpsSessionJpaRepository;
 import com.fitpet.server.dailyworkout.domain.entity.GpsSession;
 import com.fitpet.server.dailyworkout.domain.repository.GpsSessionRepository;
 import java.util.Optional;
