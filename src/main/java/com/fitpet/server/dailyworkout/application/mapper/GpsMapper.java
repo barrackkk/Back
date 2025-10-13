@@ -35,6 +35,8 @@ public interface GpsMapper {
     @Mapping(target = "message", constant = "GPS session ended")
     SessionEndResponse toSessionEndResponse(GpsSession session);
 
+    @Mapping(source = "endTime", target = "endTime")
+    @Mapping(source = "stepCount", target = "stepCount")
     @Mapping(source = "distance", target = "totalDistance")
     void updateSessionFromEndRequest(SessionEndRequest dto, @MappingTarget GpsSession session);
 }
