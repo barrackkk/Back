@@ -7,9 +7,11 @@ import com.fitpet.server.dailyworkout.presentation.dto.request.SessionStartReque
 import com.fitpet.server.dailyworkout.presentation.dto.response.GpsLogResponse;
 import com.fitpet.server.dailyworkout.presentation.dto.response.GpsSessionStartResponse;
 import com.fitpet.server.dailyworkout.presentation.dto.response.SessionEndResponse;
+import com.fitpet.server.shared.security.UserDetailsImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +25,12 @@ public class GpsController {
     private final GpsSessionService gpsSessionService;
 
     @PostMapping("/start")
-    public ResponseEntity<GpsSessionStartResponse> startSession(@Valid @RequestBody SessionStartRequest request) {
-        GpsSessionStartResponse response = gpsSessionService.startSession(request);
+    public ResponseEntity<GpsSessionStartResponse> startSession(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @Valid @RequestBody SessionStartRequest request
+    ) {
+        Long currentUserId = userDetails.getUserId();
+        GpsSessionStartResponse response = gpsSessionService.startSession(currentUserId, request);
         return ResponseEntity.ok(response);
     }
 

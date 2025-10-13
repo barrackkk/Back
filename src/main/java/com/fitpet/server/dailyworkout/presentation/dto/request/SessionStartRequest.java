@@ -8,10 +8,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class SessionStartRequest {
-
-    @NotNull
-    private Long userId;
-
     @NotNull
     private LocalDateTime startTime;
 }

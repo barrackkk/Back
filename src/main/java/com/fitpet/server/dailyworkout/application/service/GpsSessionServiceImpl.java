@@ -32,12 +32,12 @@ public class GpsSessionServiceImpl implements GpsSessionService {
     private final GpsMapper gpsMapper;
 
     @Override
-    public GpsSessionStartResponse startSession(SessionStartRequest request) {
-        log.info("GPS 세션 시작 요청: userId={}", request.getUserId());
+    public GpsSessionStartResponse startSession(Long userId, SessionStartRequest request) {
+        log.info("GPS 세션 시작 요청: userId={}", userId);
 
-        User user = userRepository.findById(request.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
-                    log.warn("사용자를 찾을 수 없음: userId={}", request.getUserId());
+                    log.warn("사용자를 찾을 수 없음: userId={}", userId);
                     return new BusinessException(ErrorCode.USER_NOT_FOUND);
                 });
 

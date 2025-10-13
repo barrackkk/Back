@@ -9,7 +9,7 @@ import com.fitpet.server.dailyworkout.presentation.dto.response.SessionEndRespon
 
 public interface GpsSessionService {
 
-    GpsSessionStartResponse startSession(SessionStartRequest request);
+    GpsSessionStartResponse startSession(Long userId, SessionStartRequest request);
 
     GpsLogResponse logGps(GpsLogRequest request);
 
