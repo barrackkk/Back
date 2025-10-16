@@ -28,6 +28,7 @@ public class SecurityConfig {
             "/daily/**",
             "/body-histories/**",
             "/actuator/**",
+            "/gps/**",
             "/pets/**"
     };
 
