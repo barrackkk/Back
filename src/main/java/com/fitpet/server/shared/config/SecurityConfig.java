@@ -27,7 +27,8 @@ public class SecurityConfig {
             "/users/**",
             "/daily/**",
             "/body-histories/**",
-            "/actuator/**"
+            "/actuator/**",
+            "/pets/**"
     };
 
     @Bean
