@@ -61,6 +61,9 @@ public class Pet {
     @Column(name = "pet_type", nullable = false, length = 20)
     private PetType petType;
 
+    @Column(length = 9, nullable = false)
+    private String color;
+
     @Column(name = "exp", nullable = true)
     private Long exp; // 기본 0
 
