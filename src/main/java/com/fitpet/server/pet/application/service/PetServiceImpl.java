@@ -8,6 +8,7 @@ import com.fitpet.server.pet.domain.exception.PetNotFoundException;
 import com.fitpet.server.pet.domain.repository.PetRepository;
 import com.fitpet.server.pet.presentation.dto.PetCreateRequest;
 import com.fitpet.server.pet.presentation.dto.PetDto;
+import com.fitpet.server.pet.presentation.dto.PetUpdateRequest;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
@@ -88,6 +89,24 @@ public class PetServiceImpl implements PetService {
         return petMapper.toDto(pet);
     }
 
+    @Override
+    @Transactional
+    public PetDto updatePet(Long ownerId, Long petId, PetUpdateRequest request) {
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(PetNotFoundException::new);
+
+        Long petOwnerId = pet.getOwner().getId();
+        if (!petOwnerId.equals(ownerId)) {
+            log.warn("[PetService] 수정 권한 없음: 요청 ownerId={}, 실제 ownerId={}, petId={}",
+                    ownerId, petOwnerId, petId);
+            throw new PetAccessDeniedException();
+        }
+
+        pet.update(request);
+
+        return petMapper.toDto(pet);
+    }
+
 
     // 전달 받은 예외가 유니크 제약 조건 위반인지 확인하는 메서드
     private boolean isUniqueConstraintViolation(Throwable throwable) {
@@ -125,5 +144,4 @@ public class PetServiceImpl implements PetService {
         String lowered = message.toLowerCase();
         return lowered.contains("duplicate entry") || lowered.contains("duplicate key");
     }
-
 }
