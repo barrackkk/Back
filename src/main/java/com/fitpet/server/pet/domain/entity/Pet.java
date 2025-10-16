@@ -1,5 +1,6 @@
 package com.fitpet.server.pet.domain.entity;
 
+import com.fitpet.server.pet.presentation.dto.PetUpdateRequest;
 import com.fitpet.server.user.domain.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,12 +30,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "pet",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_pet_owner", columnNames = "user_id")
-    },
-    indexes = {
-        @Index(name = "idx_pet_owner", columnList = "user_id")
-    }
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_pet_owner", columnNames = "user_id")
+        },
+        indexes = {
+                @Index(name = "idx_pet_owner", columnList = "user_id")
+        }
 )
 @Getter
 @NoArgsConstructor
@@ -49,9 +50,9 @@ public class Pet {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id",
-        nullable = false,
-        unique = true,
-        foreignKey = @ForeignKey(name = "fk_pet_user"))
+            nullable = false,
+            unique = true,
+            foreignKey = @ForeignKey(name = "fk_pet_user"))
     private User owner;
 
     @Column(nullable = false, length = 60)
@@ -75,9 +76,15 @@ public class Pet {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public void updateName(String newName) {
-        if (newName != null && !newName.isBlank()) {
-            this.name = newName;
+    public void update(PetUpdateRequest request) {
+        if (request.name() != null && !request.name().isBlank()) {
+            this.name = request.name();
+        }
+        if (request.petType() != null) {
+            this.petType = request.petType();
+        }
+        if (request.color() != null && !request.color().isBlank()) {
+            this.color = request.color();
         }
     }
 
