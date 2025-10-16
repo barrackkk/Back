@@ -25,44 +25,44 @@ public class PetController {
 
     @PostMapping("/{userId}")
     public ResponseEntity<PetDto> create(
-        @PathVariable Long userId,
-        @Valid @RequestBody PetCreateRequest request
+            @PathVariable Long userId,
+            @Valid @RequestBody PetCreateRequest request
     ) {
 
         log.info("[PetController] 펫 생성 요청 : petName = {} , petType = {},  ownerId = {}",
-            request.name(), request.petType(), userId);
+                request.name(), request.petType(), userId);
 
-        PetDto createdPet = petService.create(userId, request);
+        PetDto createdPet = petService.createPet(userId, request);
 
         log.info("[PetController] 펫 생성 완료 : petName = {} , petType = {},  ownerId = {}",
-            request.name(), request.petType(), userId);
+                request.name(), request.petType(), userId);
 
         return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(createdPet);
+                .status(HttpStatus.CREATED)
+                .body(createdPet);
     }
 
     @DeleteMapping("/{userId}/{petId}")
     public ResponseEntity<Void> delete(
-        @PathVariable Long userId,
-        @PathVariable Long petId
+            @PathVariable Long userId,
+            @PathVariable Long petId
     ) {
         log.info("[PetController] 펫 삭제 요청 : userId = {}, petId = {}", userId, petId);
-        petService.delete(userId, petId);
+        petService.deletePet(userId, petId);
         log.info("[PetController] 펫 삭제 완료 : userId = {}, petId = {}", userId, petId);
 
         return ResponseEntity
-            .noContent()
-            .build();
+                .noContent()
+                .build();
     }
 
     @GetMapping("/{userId}/{petId}")
     public ResponseEntity<PetDto> read(
-        @PathVariable Long userId,
-        @PathVariable Long petId
+            @PathVariable Long userId,
+            @PathVariable Long petId
     ) {
         log.info("[PetController] 펫 조회 요청 : userId = {}, petId = {}", userId, petId);
-        PetDto pet = petService.read(userId, petId);
+        PetDto pet = petService.findPet(userId, petId);
         log.info("[PetController] 펫 조회 완료 : userId = {}, petId = {}", userId, petId);
         return ResponseEntity.ok().body(pet);
 
