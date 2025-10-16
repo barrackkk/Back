@@ -92,6 +92,8 @@ public class PetServiceImpl implements PetService {
     @Override
     @Transactional
     public PetDto updatePet(Long ownerId, Long petId, PetUpdateRequest request) {
+        log.info("[PetService] Pet 수정 시작: ownerId={}, petId={}", ownerId, petId);
+
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(PetNotFoundException::new);
 
@@ -104,6 +106,7 @@ public class PetServiceImpl implements PetService {
 
         pet.update(request);
 
+        log.info("[PetService] Pet 수정 완료: ownerId={}, petId={}", ownerId, petId);
         return petMapper.toDto(pet);
     }
 
