@@ -3,6 +3,7 @@ package com.fitpet.server.pet.presentation.controller;
 import com.fitpet.server.pet.application.service.PetService;
 import com.fitpet.server.pet.presentation.dto.PetCreateRequest;
 import com.fitpet.server.pet.presentation.dto.PetDto;
+import com.fitpet.server.pet.presentation.dto.PetUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,6 +67,17 @@ public class PetController {
         PetDto pet = petService.findPet(userId, petId);
         log.info("[PetController] 펫 조회 완료 : userId = {}, petId = {}", userId, petId);
         return ResponseEntity.ok().body(pet);
+    }
 
+    @PatchMapping("/{userId}/{petId}")
+    public ResponseEntity<PetDto> update(
+            @PathVariable Long userId,
+            @PathVariable Long petId,
+            @Valid @RequestBody PetUpdateRequest request
+    ) {
+        log.info("[PetController] 펫 수정 요청 : userId = {}, petId = {}", userId, petId);
+        PetDto pet = petService.updatePet(userId, petId, request);
+        log.info("[PetController] 펫 수정 완료 : userId = {}, petId = {}", userId, petId);
+        return ResponseEntity.ok().body(pet);
     }
 }
