@@ -11,5 +11,5 @@ public interface PetService {
 
     PetDto findPet(Long ownerId, Long petId);
 
-    PetDto updatePet(Long owerId, Long petId, PetUpdateRequest request);
+    PetDto updatePet(Long ownerId, Long petId, PetUpdateRequest request);
 }
