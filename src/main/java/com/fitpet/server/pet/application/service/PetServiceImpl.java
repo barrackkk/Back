@@ -104,7 +104,7 @@ public class PetServiceImpl implements PetService {
             throw new PetAccessDeniedException();
         }
 
-        pet.update(request);
+        pet.update(request.name(), request.petType(), request.color());
 
         log.info("[PetService] Pet 수정 완료: ownerId={}, petId={}", ownerId, petId);
         return petMapper.toDto(pet);

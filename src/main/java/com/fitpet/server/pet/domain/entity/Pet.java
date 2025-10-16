@@ -1,6 +1,5 @@
 package com.fitpet.server.pet.domain.entity;
 
-import com.fitpet.server.pet.presentation.dto.PetUpdateRequest;
 import com.fitpet.server.user.domain.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -76,15 +75,15 @@ public class Pet {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public void update(PetUpdateRequest request) {
-        if (request.name() != null && !request.name().isBlank()) {
-            this.name = request.name();
+    public void update(String name, PetType petType, String color) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
         }
-        if (request.petType() != null) {
-            this.petType = request.petType();
+        if (petType != null) {
+            this.petType = petType;
         }
-        if (request.color() != null && !request.color().isBlank()) {
-            this.color = request.color();
+        if (color != null && !color.isBlank()) {
+            this.color = color;
         }
     }
 
