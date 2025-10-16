@@ -7,6 +7,6 @@ import jakarta.validation.constraints.NotNull;
 public record PetCreateRequest(
         @NotBlank String name,
         @NotNull PetType petType,
-        @NotNull String color
+        @NotBlank String color
 ) {
 }
