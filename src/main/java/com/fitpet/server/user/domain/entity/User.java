@@ -1,8 +1,6 @@
 package com.fitpet.server.user.domain.entity;
 
-
 import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
-import com.fitpet.server.user.presentation.dto.UserUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -26,10 +24,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "users",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
-        @UniqueConstraint(name = "uk_oauth_provider_uid", columnNames = {"provider", "provider_uid"})
-    })
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
+                @UniqueConstraint(name = "uk_oauth_provider_uid", columnNames = {"provider", "provider_uid"})
+        })
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -88,14 +86,17 @@ public class User {
     @Column(name = "registration_status", nullable = false, length = 20)
     private RegistrationStatus registrationStatus = RegistrationStatus.INCOMPLETE;
 
+    @Column(name = "target_step_count")
+    private Integer targetStepCount;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false,
-        columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
+            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at",
-        columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+            columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
 
 
@@ -104,33 +105,47 @@ public class User {
     }
 
     // 사용자가 입력을 하지 않은 경우(빈값) 대비
-    public void update(UserUpdateRequest request) {
-        if (request.email() != null) {
-            this.email = request.email();
+    public void update(
+        String email,
+        String nickname,
+        Integer age,
+        Gender gender,
+        Double weightKg,
+        Double targetWeightKg,
+        Double heightCm,
+        Double pbf,
+        Double targetPbf,
+        Integer targetStepCount
+    ) {
+        if (email != null && !email.isBlank()) {
+            this.email = email;
         }
-        if (request.nickname() != null) {
-            this.nickname = request.nickname();
+        if (nickname != null && !nickname.isBlank()) {
+            this.nickname = nickname;
         }
-        if (request.age() != null) {
-            this.age = request.age();
+        if (age != null) {
+            this.age = age;
         }
-        if (request.gender() != null) {
-            this.gender = request.gender();
+        if (gender != null) {
+            this.gender = gender;
         }
-        if (request.weightKg() != null) {
-            this.weightKg = request.weightKg();
+        if (weightKg != null) {
+            this.weightKg = weightKg;
         }
-        if (request.targetWeightKg() != null) {
-            this.targetWeightKg = request.targetWeightKg();
+        if (targetWeightKg != null) {
+            this.targetWeightKg = targetWeightKg;
         }
-        if (request.heightCm() != null) {
-            this.heightCm = request.heightCm();
+        if (heightCm != null) {
+            this.heightCm = heightCm;
         }
-        if (request.pbf() != null) {
-            this.pbf = request.pbf();
+        if (pbf != null) {
+            this.pbf = pbf;
         }
-        if (request.targetPbf() != null) {
-            this.targetPbf = request.targetPbf();
+        if (targetPbf != null) {
+            this.targetPbf = targetPbf;
+        }
+        if (targetStepCount != null) {
+            this.targetStepCount = targetStepCount;
         }
     }
 
@@ -157,6 +172,7 @@ public class User {
         } else {
             this.targetPbf = request.targetPbf();
         }
+        this.targetStepCount = request.targetStepCount();
         this.registrationStatus = RegistrationStatus.COMPLETE;
     }
 
