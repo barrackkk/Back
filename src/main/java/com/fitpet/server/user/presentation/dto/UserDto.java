@@ -17,6 +17,7 @@ public record UserDto(
         Double pbf,
         Double targetPbf,
         Integer targetStepCount,
+        Integer dailyStepCount,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

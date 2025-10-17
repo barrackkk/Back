@@ -89,6 +89,10 @@ public class User {
     @Column(name = "target_step_count")
     private Integer targetStepCount;
 
+    @Default
+    @Column(name = "daily_step_count")
+    private Integer dailyStepCount = 0;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false,
             columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
@@ -106,16 +110,17 @@ public class User {
 
     // 사용자가 입력을 하지 않은 경우(빈값) 대비
     public void update(
-        String email,
-        String nickname,
-        Integer age,
-        Gender gender,
-        Double weightKg,
-        Double targetWeightKg,
-        Double heightCm,
-        Double pbf,
-        Double targetPbf,
-        Integer targetStepCount
+            String email,
+            String nickname,
+            Integer age,
+            Gender gender,
+            Double weightKg,
+            Double targetWeightKg,
+            Double heightCm,
+            Double pbf,
+            Double targetPbf,
+            Integer targetStepCount,
+            Integer dailyStepCount
     ) {
         if (email != null && !email.isBlank()) {
             this.email = email;
@@ -147,6 +152,9 @@ public class User {
         if (targetStepCount != null) {
             this.targetStepCount = targetStepCount;
         }
+        if (dailyStepCount != null) {
+            this.dailyStepCount = dailyStepCount;
+        }
     }
 
     public void userInformation(UserInputInfoRequest request) {
@@ -173,6 +181,7 @@ public class User {
             this.targetPbf = request.targetPbf();
         }
         this.targetStepCount = request.targetStepCount();
+        this.dailyStepCount = 0;
         this.registrationStatus = RegistrationStatus.COMPLETE;
     }
 
