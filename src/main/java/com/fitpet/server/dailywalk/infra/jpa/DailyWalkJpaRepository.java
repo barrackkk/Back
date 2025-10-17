@@ -1,7 +1,9 @@
 package com.fitpet.server.dailywalk.infra.jpa;
 
 import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
+import com.fitpet.server.user.domain.entity.User;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +16,8 @@ public interface DailyWalkJpaRepository extends JpaRepository<DailyWalk, Long> {
     List<DailyWalk> findAllByUser_Id(Long userId);
 
     Optional<DailyWalk> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
+
+    List<DailyWalk> findByUserAndDateBetween(User user, LocalDate start, LocalDate end);
 
     boolean existsById(Long id);
 
