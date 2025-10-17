@@ -8,7 +8,7 @@ import lombok.Getter;
 
 public class ReportResponseDto {
 
-    // 오늘의 러닝(운동) 조회 응답 DTO
+    // 오늘의 운동 조회
     @Getter
     @Builder
     public static class TodayWorkoutResponse {
@@ -21,7 +21,7 @@ public class ReportResponseDto {
         private Integer burnCalories;
     }
 
-    // 주간 걸음량 요약 응답 DTO
+    // 주간 걸음량 요약
     @Getter
     @Builder
     public static class DailyWalkSummaryResponse {
