@@ -60,7 +60,18 @@ public class UserServiceImpl implements UserService {
             user.changePassword(passwordEncoder.encode(request.password()));
         }
 
-        user.update(request);
+        user.update(
+            request.email(),
+            request.nickname(),
+            request.age(),
+            request.gender(),
+            request.weightKg(),
+            request.targetWeightKg(),
+            request.heightCm(),
+            request.pbf(),
+            request.targetPbf(),
+            request.targetStepCount()
+        );
         return userMapper.toDto(user);
     }
 
