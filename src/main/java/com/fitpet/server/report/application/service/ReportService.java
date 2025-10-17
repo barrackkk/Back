@@ -1,12 +1,12 @@
 package com.fitpet.server.report.application.service;
 
-import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.DailyWalkSummaryResponse;
-import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.TodayWorkoutResponse;
+import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.ActivityRangeResponse;
+import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.TodayActivityResponse;
 import java.time.LocalDate;
 import java.util.List;
 
 public interface ReportService {
-    List<TodayWorkoutResponse> getTodayWorkouts(Long userId, LocalDate date);
+    TodayActivityResponse getTodayActivity(Long userId, LocalDate date);
 
-    List<DailyWalkSummaryResponse> getWeeklyWalks(Long userId);
+    List<ActivityRangeResponse> getActivityRange(Long userId, LocalDate from, LocalDate to);
 }
