@@ -6,17 +6,18 @@ import lombok.Builder;
 
 @Builder
 public record UserDto(
-    Long userId,
-    String email,
-    String nickname,
-    Integer age,
-    Gender gender,
-    Double weightKg,
-    Double targetWeightKg,
-    Double heightCm,
-    Double pbf,
-    Double targetPbf,
-    LocalDateTime createdAt,
-    LocalDateTime updatedAt
+        Long userId,
+        String email,
+        String nickname,
+        Integer age,
+        Gender gender,
+        Double weightKg,
+        Double targetWeightKg,
+        Double heightCm,
+        Double pbf,
+        Double targetPbf,
+        Integer targetStepCount,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 }
