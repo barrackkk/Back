@@ -29,6 +29,7 @@ public class SecurityConfig {
             "/body-histories/**",
             "/actuator/**",
             "/gps/**",
+            "/pets/**"
     };
 
     @Bean

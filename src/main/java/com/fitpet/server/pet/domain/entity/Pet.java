@@ -29,12 +29,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "pet",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_pet_owner", columnNames = "user_id")
-    },
-    indexes = {
-        @Index(name = "idx_pet_owner", columnList = "user_id")
-    }
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_pet_owner", columnNames = "user_id")
+        },
+        indexes = {
+                @Index(name = "idx_pet_owner", columnList = "user_id")
+        }
 )
 @Getter
 @NoArgsConstructor
@@ -49,9 +49,9 @@ public class Pet {
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id",
-        nullable = false,
-        unique = true,
-        foreignKey = @ForeignKey(name = "fk_pet_user"))
+            nullable = false,
+            unique = true,
+            foreignKey = @ForeignKey(name = "fk_pet_user"))
     private User owner;
 
     @Column(nullable = false, length = 60)
@@ -60,6 +60,9 @@ public class Pet {
     @Enumerated(EnumType.STRING)
     @Column(name = "pet_type", nullable = false, length = 20)
     private PetType petType;
+
+    @Column(length = 9, nullable = false)
+    private String color;
 
     @Column(name = "exp", nullable = true)
     private Long exp; // 기본 0
@@ -72,9 +75,15 @@ public class Pet {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public void updateName(String newName) {
-        if (newName != null && !newName.isBlank()) {
-            this.name = newName;
+    public void update(String name, PetType petType, String color) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+        if (petType != null) {
+            this.petType = petType;
+        }
+        if (color != null && !color.isBlank()) {
+            this.color = color;
         }
     }
 
