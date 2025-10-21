@@ -157,6 +157,13 @@ public class User {
         }
     }
 
+    public void updateDailyStepCount(int dailyStepCount) {
+        if (dailyStepCount < 0) {
+            throw new IllegalArgumentException("일일 걸음수는 음수일 수 없습니다.");
+        }
+        this.dailyStepCount = dailyStepCount;
+    }
+
     public void userInformation(UserInputInfoRequest request) {
         this.nickname = request.nickname();
         this.age = request.age();
