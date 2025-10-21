@@ -23,4 +23,5 @@ public interface UserRepository {
 
     Optional<User> findByProviderAndProviderUid(String provider, String providerUid);
 
+    int resetDailyStepCount();
 }
