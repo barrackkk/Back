@@ -15,6 +15,10 @@ public interface DailyWalkJpaRepository extends JpaRepository<DailyWalk, Long> {
 
     Optional<DailyWalk> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
 
+    List<DailyWalk> findAllByUserIdAndCreatedAtBetweenOrderByCreatedAtAsc(Long userId,
+                                                                          LocalDateTime start,
+                                                                          LocalDateTime end);
+
     boolean existsById(Long id);
 
     void deleteById(Long id);

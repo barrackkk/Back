@@ -11,6 +11,8 @@ public interface DailyWalkRepository {
 
     Optional<DailyWalk> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
 
+    List<DailyWalk> findAllByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
+
     DailyWalk save(DailyWalk dailyWalk);
 
     boolean existsById(Long id);
