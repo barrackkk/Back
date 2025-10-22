@@ -17,7 +17,14 @@ public interface DailyWalkJpaRepository extends JpaRepository<DailyWalk, Long> {
 
     Optional<DailyWalk> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
 
-    List<DailyWalk> findByUserAndDateBetween(User user, LocalDate start, LocalDate end);
+    @Query("SELECT dw FROM DailyWalk dw " +
+            "WHERE dw.user = :user " +
+            "AND FUNCTION('DATE', dw.createdAt) BETWEEN :start AND :end")
+    List<DailyWalk> findByUserAndDateBetween(
+            @Param("user") User user,
+            @Param("start") LocalDate start,
+            @Param("end") LocalDate end
+    );
 
     boolean existsById(Long id);
 
