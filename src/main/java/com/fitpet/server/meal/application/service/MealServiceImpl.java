@@ -3,15 +3,19 @@ package com.fitpet.server.meal.application.service;
 import com.fitpet.server.meal.application.mapper.MealMapper;
 import com.fitpet.server.meal.domain.entity.Meal;
 import com.fitpet.server.meal.domain.repository.MealRepository;
-import com.fitpet.server.meal.presetation.dto.MealDto.CreateRequest;
-import com.fitpet.server.meal.presetation.dto.MealDto.CreateResponse;
-import com.fitpet.server.meal.presetation.dto.MealDto.UpdateRequest;
-import com.fitpet.server.meal.presetation.dto.MealDto.UpdateResponse;
+import com.fitpet.server.meal.presentation.dto.MealDto.CreateRequest;
+import com.fitpet.server.meal.presentation.dto.MealDto.CreateResponse;
+import com.fitpet.server.meal.presentation.dto.MealDto.MealResponse;
+import com.fitpet.server.meal.presentation.dto.MealDto.UpdateRequest;
+import com.fitpet.server.meal.presentation.dto.MealDto.UpdateResponse;
 import com.fitpet.server.shared.exception.BusinessException;
 import com.fitpet.server.shared.exception.ErrorCode;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,6 +72,29 @@ public class MealServiceImpl implements MealService {
                     .build();
         }
         return null;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MealResponse> getMealsByDate(Long userId, LocalDate date) {
+        User user = findUserById(userId);
+        List<Meal> meals = mealRepository.findByUserAndDate(user, date);
+
+        return meals.stream()
+                .map(meal -> {
+                    MealResponse dto = MealResponse.builder()
+                            .mealId(meal.getId())
+                            .title(meal.getTitle())
+                            .kcal(meal.getKcal())
+                            .sequence(meal.getSequence())
+                            .date(meal.getDate())
+                            .build();
+
+                    String viewableUrl = s3Service.generatePresignedGetUrl(meal.getImageUrl());
+                    dto.setImageUrl(viewableUrl);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
