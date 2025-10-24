@@ -1,11 +1,11 @@
 package com.fitpet.server.meal.presentation.controller;
 
 import com.fitpet.server.meal.application.service.MealService;
-import com.fitpet.server.meal.presentation.dto.MealDto.CreateRequest;
-import com.fitpet.server.meal.presentation.dto.MealDto.CreateResponse;
-import com.fitpet.server.meal.presentation.dto.MealDto.MealResponse;
-import com.fitpet.server.meal.presentation.dto.MealDto.UpdateRequest;
-import com.fitpet.server.meal.presentation.dto.MealDto.UpdateResponse;
+import com.fitpet.server.meal.presentation.dto.request.MealCreateRequest;
+import com.fitpet.server.meal.presentation.dto.request.MealUpdateRequest;
+import com.fitpet.server.meal.presentation.dto.response.MealCreateResponse;
+import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
+import com.fitpet.server.meal.presentation.dto.response.MealUpdateResponse;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,29 +28,30 @@ import org.springframework.web.bind.annotation.RestController;
 public class MealController {
 
     private final MealService mealService;
-    private final Long userId = 3L; // 임시 UserId
+    private final Long userId = 3L;
 
     @GetMapping
-    public ResponseEntity<List<MealResponse>> getMealsByDate(
+    public ResponseEntity<List<MealDetailResponse>> getMealsByDate(
             // @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
-        List<MealResponse> response = mealService.getMealsByDate(userId, date);
+        Long tempUserId = 3L;
+        List<MealDetailResponse> response = mealService.getMealsByDate(tempUserId, date);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<CreateResponse> createMeal(
-            @Valid @RequestBody CreateRequest request) {
-        CreateResponse response = mealService.createMeal(userId, request);
+    public ResponseEntity<MealCreateResponse> createMeal(
+            @Valid @RequestBody MealCreateRequest request) {
+        MealCreateResponse response = mealService.createMeal(userId, request);
         return ResponseEntity.ok(response);
     }
-햣
+
     @PutMapping("/{mealId}")
-    public ResponseEntity<UpdateResponse> updateMeal(
+    public ResponseEntity<MealUpdateResponse> updateMeal(
             @PathVariable Long mealId,
-            @Valid @RequestBody UpdateRequest request) {
-        UpdateResponse response = mealService.updateMeal(userId, mealId, request);
+            @Valid @RequestBody MealUpdateRequest request) {
+        MealUpdateResponse response = mealService.updateMeal(userId, mealId, request);
         return ResponseEntity.ok(response);
     }
 

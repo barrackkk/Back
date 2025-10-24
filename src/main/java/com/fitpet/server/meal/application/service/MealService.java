@@ -1,20 +1,19 @@
 package com.fitpet.server.meal.application.service;
 
-
-import com.fitpet.server.meal.presentation.dto.MealDto.CreateRequest;
-import com.fitpet.server.meal.presentation.dto.MealDto.CreateResponse;
-import com.fitpet.server.meal.presentation.dto.MealDto.MealResponse;
-import com.fitpet.server.meal.presentation.dto.MealDto.UpdateRequest;
-import com.fitpet.server.meal.presentation.dto.MealDto.UpdateResponse;
+import com.fitpet.server.meal.presentation.dto.request.MealCreateRequest;
+import com.fitpet.server.meal.presentation.dto.request.MealUpdateRequest;
+import com.fitpet.server.meal.presentation.dto.response.MealCreateResponse;
+import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
+import com.fitpet.server.meal.presentation.dto.response.MealUpdateResponse;
 import java.time.LocalDate;
 import java.util.List;
 
 public interface MealService {
-    CreateResponse createMeal(Long userId, CreateRequest request);
+    MealCreateResponse createMeal(Long userId, MealCreateRequest request);
 
-    UpdateResponse updateMeal(Long userId, Long mealId, UpdateRequest request);
+    MealUpdateResponse updateMeal(Long userId, Long mealId, MealUpdateRequest request);
 
-    List<MealResponse> getMealsByDate(Long userId, LocalDate date);
+    List<MealDetailResponse> getMealsByDate(Long userId, LocalDate date);
 
     void deleteMeal(Long userId, Long mealId);
 }

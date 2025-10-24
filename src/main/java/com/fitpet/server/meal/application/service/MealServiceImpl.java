@@ -3,16 +3,15 @@ package com.fitpet.server.meal.application.service;
 import com.fitpet.server.meal.application.mapper.MealMapper;
 import com.fitpet.server.meal.domain.entity.Meal;
 import com.fitpet.server.meal.domain.repository.MealRepository;
-import com.fitpet.server.meal.presentation.dto.MealDto.CreateRequest;
-import com.fitpet.server.meal.presentation.dto.MealDto.CreateResponse;
-import com.fitpet.server.meal.presentation.dto.MealDto.MealResponse;
-import com.fitpet.server.meal.presentation.dto.MealDto.UpdateRequest;
-import com.fitpet.server.meal.presentation.dto.MealDto.UpdateResponse;
+import com.fitpet.server.meal.presentation.dto.request.MealCreateRequest;
+import com.fitpet.server.meal.presentation.dto.request.MealUpdateRequest;
+import com.fitpet.server.meal.presentation.dto.response.MealCreateResponse;
+import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
+import com.fitpet.server.meal.presentation.dto.response.MealUpdateResponse;
 import com.fitpet.server.shared.exception.BusinessException;
 import com.fitpet.server.shared.exception.ErrorCode;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +30,7 @@ public class MealServiceImpl implements MealService {
     private final S3Service s3Service;
 
     @Override
-    public CreateResponse createMeal(Long userId, CreateRequest request) {
+    public MealCreateResponse createMeal(Long userId, MealCreateRequest request) {
         User user = findUserById(userId);
         Meal meal = mealMapper.toEntity(request, user);
 
@@ -41,15 +40,11 @@ public class MealServiceImpl implements MealService {
 
         String uploadUrl = s3Service.generatePresignedPutUrl(imageKey);
 
-        return CreateResponse.builder()
-                .mealId(savedMeal.getId())
-                .imageUrl(imageKey)
-                .uploadUrl(uploadUrl)
-                .build();
+        return mealMapper.toCreateResponse(savedMeal, uploadUrl);
     }
 
     @Override
-    public UpdateResponse updateMeal(Long userId, Long mealId, UpdateRequest request) {
+    public MealUpdateResponse updateMeal(Long userId, Long mealId, MealUpdateRequest request) {
         User user = findUserById(userId);
         Meal meal = findMealById(mealId);
         authorizeMealOwner(user, meal);
@@ -66,34 +61,19 @@ public class MealServiceImpl implements MealService {
             meal.setImageUrl(newImageKey);
             String uploadUrl = s3Service.generatePresignedPutUrl(newImageKey);
 
-            return UpdateResponse.builder()
-                    .imageUrl(newImageKey)
-                    .uploadUrl(uploadUrl)
-                    .build();
+            return mealMapper.toUpdateResponse(newImageKey, uploadUrl);
         }
         return null;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<MealResponse> getMealsByDate(Long userId, LocalDate date) {
+    public List<MealDetailResponse> getMealsByDate(Long userId, LocalDate date) {
         User user = findUserById(userId);
         List<Meal> meals = mealRepository.findByUserAndDate(user, date);
 
         return meals.stream()
-                .map(meal -> {
-                    MealResponse dto = MealResponse.builder()
-                            .mealId(meal.getId())
-                            .title(meal.getTitle())
-                            .kcal(meal.getKcal())
-                            .sequence(meal.getSequence())
-                            .date(meal.getDate())
-                            .build();
-
-                    String viewableUrl = s3Service.generatePresignedGetUrl(meal.getImageUrl());
-                    dto.setImageUrl(viewableUrl);
-                    return dto;
-                })
+                .map(meal -> mealMapper.toMealResponse(meal, s3Service))
                 .collect(Collectors.toList());
     }
 
@@ -116,12 +96,12 @@ public class MealServiceImpl implements MealService {
 
     private Meal findMealById(Long mealId) {
         return mealRepository.findById(mealId)
-                .orElseThrow(() -> new EntityNotFoundException("식단을 찾을 수 없습니다."));
+                .orElseThrow(() -> new BusinessException(ErrorCode.MEAL_NOT_FOUND));
     }
 
     private void authorizeMealOwner(User user, Meal meal) {
         if (!meal.getUser().getId().equals(user.getId())) {
-            throw new BusinessException(ErrorCode.PET_ACCESS_DENIED);
+            throw new BusinessException(ErrorCode.MEAL_ACCESS_DENIED);
         }
     }
 }
