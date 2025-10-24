@@ -1,4 +1,4 @@
-package com.fitpet.server.meal.presentation.dto;
+package com.fitpet.server.meal.presetation;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

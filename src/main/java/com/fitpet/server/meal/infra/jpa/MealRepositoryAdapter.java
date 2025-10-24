@@ -1,0 +1,36 @@
+package com.fitpet.server.meal.infra.jpa;
+
+import com.fitpet.server.meal.domain.entity.Meal;
+import com.fitpet.server.meal.domain.repository.MealRepository;
+import com.fitpet.server.user.domain.entity.User;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RequiredArgsConstructor
+public class MealRepositoryAdapter implements MealRepository {
+    private final MealJpaRepository mealJpaRepository;
+
+    @Override
+    public Meal save(Meal meal) {
+        return mealJpaRepository.save(meal);
+    }
+
+    @Override
+    public Optional<Meal> findById(Long id) {
+        return mealJpaRepository.findById(id);
+    }
+
+    @Override
+    public void delete(Meal meal) {
+        mealJpaRepository.delete(meal);
+    }
+
+    @Override
+    public List<Meal> findByUserAndDate(User user, LocalDate date) {
+        return mealJpaRepository.findByUserAndDate(user, date);
+    }
+}
