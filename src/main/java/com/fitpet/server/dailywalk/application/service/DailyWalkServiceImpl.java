@@ -56,7 +56,7 @@ public class DailyWalkServiceImpl implements DailyWalkService {
         LocalDateTime end = start.plusDays(1);
 
         DailyWalk found = dailyWalkRepository
-                .findByUserIdAndCreatedAtBetween(userId, start, end)
+                .findByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(userId, start, end)
                 .orElseThrow(DailyWalkNotFoundException::new);
 
         log.info("[DailyWalkService] 사용자의 해당 날짜 조회 성공 : id={}, userId={}, date={} ",
@@ -77,7 +77,8 @@ public class DailyWalkServiceImpl implements DailyWalkService {
             throw new UserNotFoundException();
         }
 
-        List<DailyWalk> walks = dailyWalkRepository.findAllByUserIdAndCreatedAtBetween(userId, start, end);
+        List<DailyWalk> walks = dailyWalkRepository
+                .findAllByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(userId, start, end);
         Map<LocalDate, DailyWalk> byDate = new HashMap<>();
         for (DailyWalk walk : walks) {
             LocalDate walkDate = walk.getCreatedAt().toLocalDate();
@@ -110,7 +111,8 @@ public class DailyWalkServiceImpl implements DailyWalkService {
         LocalDateTime endOfDay = startOfDay.plusDays(1);
 
         Optional<DailyWalk> existing =
-                dailyWalkRepository.findByUserIdAndCreatedAtBetween(req.userId(), startOfDay, endOfDay);
+                dailyWalkRepository.findByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+                        req.userId(), startOfDay, endOfDay);
 
         if (existing.isPresent()) {
             DailyWalk walk = existing.get();

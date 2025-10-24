@@ -13,11 +13,13 @@ import org.springframework.data.repository.query.Param;
 public interface DailyWalkJpaRepository extends JpaRepository<DailyWalk, Long> {
     List<DailyWalk> findAllByUser_Id(Long userId);
 
-    Optional<DailyWalk> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
+    Optional<DailyWalk> findByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(Long userId,
+                                                                                      LocalDateTime start,
+                                                                                      LocalDateTime end);
 
-    List<DailyWalk> findAllByUserIdAndCreatedAtBetweenOrderByCreatedAtAsc(Long userId,
-                                                                          LocalDateTime start,
-                                                                          LocalDateTime end);
+    List<DailyWalk> findAllByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByCreatedAtAsc(Long userId,
+                                                                                                        LocalDateTime start,
+                                                                                                        LocalDateTime end);
 
     boolean existsById(Long id);
 

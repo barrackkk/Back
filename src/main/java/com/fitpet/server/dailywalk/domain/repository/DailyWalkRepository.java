@@ -9,9 +9,13 @@ import java.util.Optional;
 public interface DailyWalkRepository {
     List<DailyWalk> findAllByUser_Id(Long userId);
 
-    Optional<DailyWalk> findByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
+    Optional<DailyWalk> findByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(Long userId,
+                                                                                      LocalDateTime start,
+                                                                                      LocalDateTime end);
 
-    List<DailyWalk> findAllByUserIdAndCreatedAtBetween(Long userId, LocalDateTime start, LocalDateTime end);
+    List<DailyWalk> findAllByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(Long userId,
+                                                                                     LocalDateTime start,
+                                                                                     LocalDateTime end);
 
     DailyWalk save(DailyWalk dailyWalk);
 
