@@ -183,7 +183,11 @@ public class User {
         } else {
             this.targetPbf = request.targetPbf();
         }
-        this.targetStepCount = request.targetStepCount();
+        if (request.targetStepCount() == null) {
+            this.targetStepCount = null;
+        } else {
+            this.targetStepCount = request.targetStepCount();
+        }
         this.dailyStepCount = 0;
         this.registrationStatus = RegistrationStatus.COMPLETE;
     }
