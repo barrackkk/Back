@@ -23,7 +23,6 @@ public record UserUpdateRequest(
         Double heightCm,
         Double pbf,
         Double targetPbf,
-        Integer targetStepCount,
-        Integer dailyStepCount
+        Integer targetStepCount
 ) {
 }

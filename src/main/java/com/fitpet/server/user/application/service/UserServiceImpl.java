@@ -70,8 +70,7 @@ public class UserServiceImpl implements UserService {
                 request.heightCm(),
                 request.pbf(),
                 request.targetPbf(),
-                request.targetStepCount(),
-                request.dailyStepCount()
+                request.targetStepCount()
         );
         return userMapper.toDto(user);
     }

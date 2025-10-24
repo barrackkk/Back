@@ -119,8 +119,7 @@ public class User {
             Double heightCm,
             Double pbf,
             Double targetPbf,
-            Integer targetStepCount,
-            Integer dailyStepCount
+            Integer targetStepCount
     ) {
         if (email != null && !email.isBlank()) {
             this.email = email;
@@ -151,9 +150,6 @@ public class User {
         }
         if (targetStepCount != null) {
             this.targetStepCount = targetStepCount;
-        }
-        if (dailyStepCount != null) {
-            this.dailyStepCount = dailyStepCount;
         }
     }
 
