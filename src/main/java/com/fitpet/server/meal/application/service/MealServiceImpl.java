@@ -68,9 +68,9 @@ public class MealServiceImpl implements MealService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MealDetailResponse> getMealsByDate(Long userId, LocalDate date) {
+    public List<MealDetailResponse> getMealsByDate(Long userId, LocalDate day) {
         User user = findUserById(userId);
-        List<Meal> meals = mealRepository.findByUserAndDate(user, date);
+        List<Meal> meals = mealRepository.findByUserAndDate(user, day);
 
         return meals.stream()
                 .map(meal -> mealMapper.toMealResponse(meal, s3Service))

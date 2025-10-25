@@ -12,7 +12,7 @@ public class MealCreateRequest {
     @NotNull
     @PastOrPresent
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate date;
+    private LocalDate day;
     @NotBlank
     private String title;
     @NotNull

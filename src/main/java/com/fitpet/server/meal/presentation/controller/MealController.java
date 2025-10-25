@@ -32,11 +32,11 @@ public class MealController {
 
     @GetMapping
     public ResponseEntity<List<MealDetailResponse>> getMealsByDate(
-            // @AuthenticationPrincipal UserDetailsImpl userDetails,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+            // @AuthenticationPrincipal UserDetailsImpl userDetails, // 구현 후 활성화
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day) {
 
         Long tempUserId = 3L;
-        List<MealDetailResponse> response = mealService.getMealsByDate(tempUserId, date);
+        List<MealDetailResponse> response = mealService.getMealsByDate(tempUserId, day);
         return ResponseEntity.ok(response);
     }
 

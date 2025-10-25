@@ -36,7 +36,7 @@ public class Meal {
     private User user;
 
     @Column(name = "day", nullable = false)
-    private LocalDate date;
+    private LocalDate day;
 
     @Column(nullable = false)
     @Setter

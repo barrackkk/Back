@@ -13,7 +13,7 @@ public interface MealService {
 
     MealUpdateResponse updateMeal(Long userId, Long mealId, MealUpdateRequest request);
 
-    List<MealDetailResponse> getMealsByDate(Long userId, LocalDate date);
+    List<MealDetailResponse> getMealsByDate(Long userId, LocalDate day);
 
     void deleteMeal(Long userId, Long mealId);
 }

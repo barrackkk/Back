@@ -14,5 +14,5 @@ public class MealDetailResponse {
     private String imageUrl;
     private Integer kcal;
     private Integer sequence;
-    private LocalDate date;
+    private LocalDate day;
 }

@@ -30,7 +30,7 @@ public class MealRepositoryAdapter implements MealRepository {
     }
 
     @Override
-    public List<Meal> findByUserAndDate(User user, LocalDate date) {
-        return mealJpaRepository.findByUserAndDate(user, date);
+    public List<Meal> findByUserAndDate(User user, LocalDate day) {
+        return mealJpaRepository.findByUserAndDay(user, day);
     }
 }

@@ -7,5 +7,5 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MealJpaRepository extends JpaRepository<Meal, Long> {
-    List<Meal> findByUserAndDate(User user, LocalDate date);
+    List<Meal> findByUserAndDay(User user, LocalDate day);
 }

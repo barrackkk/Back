@@ -20,7 +20,7 @@ import org.mapstruct.ReportingPolicy;
 public interface MealMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "date", source = "request.date")
+    @Mapping(target = "day", source = "request.day")
     @Mapping(target = "imageUrl", ignore = true)
     Meal toEntity(MealCreateRequest request, User user);
 
