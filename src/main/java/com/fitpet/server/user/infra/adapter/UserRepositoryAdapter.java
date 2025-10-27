@@ -62,5 +62,9 @@ public class UserRepositoryAdapter implements UserRepository {
         return jpa.findByProviderAndProviderUid(provider, providerUid);
     }
 
+    @Override
+    public int resetDailyStepCount() {
+        return jpa.resetDailyStepCount();
+    }
 
 }

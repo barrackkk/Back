@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserDto findUser(Long userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(UserNotFoundException::new);
         return userMapper.toDto(user);
     }
 
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto updateUser(Long userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         validateUserUpdateRequest(userId, request);
 
@@ -60,7 +60,18 @@ public class UserServiceImpl implements UserService {
             user.changePassword(passwordEncoder.encode(request.password()));
         }
 
-        user.update(request);
+        user.update(
+                request.email(),
+                request.nickname(),
+                request.age(),
+                request.gender(),
+                request.weightKg(),
+                request.targetWeightKg(),
+                request.heightCm(),
+                request.pbf(),
+                request.targetPbf(),
+                request.targetStepCount()
+        );
         return userMapper.toDto(user);
     }
 
@@ -68,7 +79,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(Long userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(UserNotFoundException::new);
         userRepository.delete(user);
     }
 
@@ -76,7 +87,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserDto inputInfo(Long userId, UserInputInfoRequest request) {
         User user = userRepository.findById(userId)
-            .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(UserNotFoundException::new);
 
         if (userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
             log.warn("사용자 정보 입력 실패 - 닉네임 중복: {} (요청자 id: {})", maskNickname(request.nickname()), userId);
@@ -94,7 +105,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public boolean isRegistrationComplete(Long userId) {
         User user = userRepository.findById(userId)
-            .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(UserNotFoundException::new);
         return user.getRegistrationStatus() == RegistrationStatus.COMPLETE;
     }
 
@@ -112,12 +123,12 @@ public class UserServiceImpl implements UserService {
 
     private void validateUserUpdateRequest(Long userId, UserUpdateRequest request) {
         if (StringUtils.hasText(request.email()) &&
-            userRepository.existsByEmailAndIdNot(request.email(), userId)) {
+                userRepository.existsByEmailAndIdNot(request.email(), userId)) {
             log.warn("사용자 수정 실패 - 이메일 중복: {} (요청자 id: {})", maskEmail(request.email()), userId);
             throw new DuplicateEmailException();
         }
         if (StringUtils.hasText(request.nickname()) &&
-            userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
+                userRepository.existsByNicknameAndIdNot(request.nickname(), userId)) {
             log.warn("사용자 수정 실패 - 닉네임 중복: {} (요청자 id: {})", maskNickname(request.nickname()), userId);
             throw new DuplicateNicknameException();
         }

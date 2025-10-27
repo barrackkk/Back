@@ -3,6 +3,7 @@ package com.fitpet.server.dailywalk.application.service;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
 import com.fitpet.server.dailywalk.presentation.dto.response.DailyWalkResponse;
+import com.fitpet.server.dailywalk.presentation.dto.response.DailyStepSummaryResponse;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
@@ -17,6 +18,8 @@ public interface DailyWalkService {
             @NotNull Long userId,
             @NotNull @PastOrPresent LocalDate date
     );
+
+    List<DailyStepSummaryResponse> getWeeklySteps(@NotNull Long userId);
 
     DailyWalkResponse createDailyWalk(DailyWalkCreateRequest req);
 

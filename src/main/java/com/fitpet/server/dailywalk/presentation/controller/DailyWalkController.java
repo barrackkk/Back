@@ -3,6 +3,7 @@ package com.fitpet.server.dailywalk.presentation.controller;
 import com.fitpet.server.dailywalk.application.service.DailyWalkService;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkCreateRequest;
 import com.fitpet.server.dailywalk.presentation.dto.request.DailyWalkStepUpdateRequest;
+import com.fitpet.server.dailywalk.presentation.dto.response.DailyStepSummaryResponse;
 import com.fitpet.server.dailywalk.presentation.dto.response.DailyWalkResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.PastOrPresent;
@@ -36,6 +37,12 @@ public class DailyWalkController {
     @GetMapping("/users/{userId}")
     public ResponseEntity<List<DailyWalkResponse>> listByUser(@PathVariable Long userId) {
         List<DailyWalkResponse> body = dailyWalkService.getAllByUserId(userId);
+        return ResponseEntity.ok(body);
+    }
+
+    @GetMapping("/users/{userId}/steps/weekly")
+    public ResponseEntity<List<DailyStepSummaryResponse>> getWeeklySteps(@PathVariable Long userId) {
+        List<DailyStepSummaryResponse> body = dailyWalkService.getWeeklySteps(userId);
         return ResponseEntity.ok(body);
     }
 
