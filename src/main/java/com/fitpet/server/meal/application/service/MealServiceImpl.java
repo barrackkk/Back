@@ -7,7 +7,6 @@ import com.fitpet.server.meal.presentation.dto.request.MealCreateRequest;
 import com.fitpet.server.meal.presentation.dto.request.MealUpdateRequest;
 import com.fitpet.server.meal.presentation.dto.response.MealCreateResponse;
 import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
-import com.fitpet.server.meal.presentation.dto.response.MealUpdateResponse;
 import com.fitpet.server.shared.exception.BusinessException;
 import com.fitpet.server.shared.exception.ErrorCode;
 import com.fitpet.server.user.domain.entity.User;
@@ -44,17 +43,23 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public MealUpdateResponse updateMeal(Long userId, Long mealId, MealUpdateRequest request) {
+    public Object updateMeal(Long userId, Long mealId, MealUpdateRequest request) {
         User user = findUserById(userId);
         Meal meal = findMealById(mealId);
         authorizeMealOwner(user, meal);
 
-        meal.setTitle(request.getTitle());
-        meal.setKcal(request.getKcal());
-        meal.setSequence(request.getSequence());
+        if (request.getTitle() != null) {
+            meal.setTitle(request.getTitle());
+        }
+        if (request.getKcal() != null) {
+            meal.setKcal(request.getKcal());
+        }
+        if (request.getSequence() != null) {
+            meal.setSequence(request.getSequence());
+        }
 
-        if (request.getChangeImage()) {
-            if (meal.getImageUrl() != null) {
+        if (request.getChangeImage() != null && request.getChangeImage()) {
+            if (meal.getImageUrl() != null && !meal.getImageUrl().isBlank()) {
                 s3Service.deleteObject(meal.getImageUrl());
             }
             String newImageKey = s3Service.createImageKey(userId);
@@ -62,8 +67,10 @@ public class MealServiceImpl implements MealService {
             String uploadUrl = s3Service.generatePresignedPutUrl(newImageKey);
 
             return mealMapper.toUpdateResponse(newImageKey, uploadUrl);
+
+        } else {
+            return mealMapper.toMealResponse(meal, s3Service);
         }
-        return null;
     }
 
     @Override
