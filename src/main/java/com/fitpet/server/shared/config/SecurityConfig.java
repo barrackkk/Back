@@ -30,7 +30,8 @@ public class SecurityConfig {
             "/actuator/**",
             "/gps/**",
             "/report/**",
-            "/meal/**"
+            "/meal/**",
+            "/pets/**"
     };
 
     @Bean
