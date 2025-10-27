@@ -8,6 +8,7 @@ import com.fitpet.server.pet.domain.exception.PetNotFoundException;
 import com.fitpet.server.pet.domain.repository.PetRepository;
 import com.fitpet.server.pet.presentation.dto.PetCreateRequest;
 import com.fitpet.server.pet.presentation.dto.PetDto;
+import com.fitpet.server.pet.presentation.dto.PetUpdateRequest;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
@@ -29,7 +30,7 @@ public class PetServiceImpl implements PetService {
 
     @Override
     @Transactional
-    public PetDto create(Long ownerId, PetCreateRequest request) {
+    public PetDto createPet(Long ownerId, PetCreateRequest request) {
         log.info("[PetService] Pet 생성 시작: ownerId ={}", ownerId);
         User owner = userRepository.findById(ownerId).orElseThrow(UserNotFoundException::new);
 
@@ -50,16 +51,16 @@ public class PetServiceImpl implements PetService {
 
     @Override
     @Transactional
-    public void delete(Long ownerId, Long petId) {
+    public void deletePet(Long ownerId, Long petId) {
         log.info("[PetService] Pet 삭제 시작: ownerId={}, petId={}", ownerId, petId);
 
         Pet pet = petRepository.findById(petId)
-            .orElseThrow(PetNotFoundException::new);
+                .orElseThrow(PetNotFoundException::new);
 
         Long petOwnerId = pet.getOwner().getId();
         if (!petOwnerId.equals(ownerId)) {
             log.warn("[PetService] 삭제 권한 없음: 요청 ownerId={}, 실제 ownerId={}, petId={}",
-                ownerId, petOwnerId, petId);
+                    ownerId, petOwnerId, petId);
             throw new PetAccessDeniedException();
         }
 
@@ -70,21 +71,42 @@ public class PetServiceImpl implements PetService {
 
     @Override
     @Transactional(readOnly = true)
-    public PetDto read(Long ownerId, Long petId) {
+    public PetDto findPet(Long ownerId, Long petId) {
         log.info("[PetService] Pet 조회 시작: petId={}", petId);
 
         Pet pet = petRepository.findById(petId)
-            .orElseThrow(PetNotFoundException::new);
+                .orElseThrow(PetNotFoundException::new);
 
         Long petOwnerId = pet.getOwner().getId();
         if (!petOwnerId.equals(ownerId)) {
             log.warn("[PetService] 조회 권한 없음: 요청 ownerId={}, 실제 ownerId={}, petId={}",
-                ownerId, petOwnerId, petId);
+                    ownerId, petOwnerId, petId);
             throw new PetAccessDeniedException();
         }
 
         log.info("[PetService] Pet 조회 완료: petId={}", petId);
 
+        return petMapper.toDto(pet);
+    }
+
+    @Override
+    @Transactional
+    public PetDto updatePet(Long ownerId, Long petId, PetUpdateRequest request) {
+        log.info("[PetService] Pet 수정 시작: ownerId={}, petId={}", ownerId, petId);
+
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(PetNotFoundException::new);
+
+        Long petOwnerId = pet.getOwner().getId();
+        if (!petOwnerId.equals(ownerId)) {
+            log.warn("[PetService] 수정 권한 없음: 요청 ownerId={}, 실제 ownerId={}, petId={}",
+                    ownerId, petOwnerId, petId);
+            throw new PetAccessDeniedException();
+        }
+
+        pet.update(request.name(), request.petType(), request.color());
+
+        log.info("[PetService] Pet 수정 완료: ownerId={}, petId={}", ownerId, petId);
         return petMapper.toDto(pet);
     }
 
@@ -125,5 +147,4 @@ public class PetServiceImpl implements PetService {
         String lowered = message.toLowerCase();
         return lowered.contains("duplicate entry") || lowered.contains("duplicate key");
     }
-
 }

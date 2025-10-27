@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <title>FitPet OAuth/JWT 테스트</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <!-- Kakao JS SDK (JS 키 필요: REST 키 아님) -->
+    <script src="https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <style>
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system;
+            max-width: 920px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+
+        h1 {
+            font-size: 22px;
+            margin: 0 0 8px;
+        }
+
+        fieldset {
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px;
+            margin: 14px 0;
+        }
+
+        legend {
+            padding: 0 6px;
+            color: #374151;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            color: #6b7280;
+            margin: 6px 0 4px;
+        }
+
+        input, button {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        input[type=text] {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .grow {
+            flex: 1;
+            min-width: 240px;
+        }
+
+        .btn {
+            cursor: pointer;
+            background: #111827;
+            color: white;
+            border: none;
+        }
+
+        .btn.light {
+            background: #f3f4f6;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+        }
+
+        .token {
+            word-break: break-all;
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px dashed #e5e7eb;
+            min-height: 38px;
+        }
+
+        .ok {
+            color: #137333;
+            white-space: pre-wrap;
+        }
+
+        .err {
+            color: #c5221f;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+<h1>FitPet OAuth/JWT 테스트</h1>
+
+<fieldset>
+    <legend>환경</legend>
+    <div class="row">
+        <div class="grow">
+            <label>Backend Base URL</label>
+            <input id="baseUrl" type="text" value="https://localhost:8443">
+        </div>
+    </div>
+    <div class="row">
+        <div class="grow">
+            <label>Google Client ID (웹)</label>
+            <input id="googleClientId" type="text"
+                   value="env 파일 확인 후 복붙">
+        </div>
+        <div class="grow">
+            <label>Kakao JavaScript Key (앱 설정의 JS 키)</label>
+            <input id="kakaoJsKey" type="text" value="env 파일 확인 후 복붙">
+        </div>
+    </div>
+    <div class="row" style="margin-top:8px">
+        <button class="btn light" onclick="initProviders()">Google/Kakao 초기화</button>
+    </div>
+    <small>
+        ※ 로컬 http 환경에서 refresh 쿠키가 안 보이면 서버가 <code>secure(true)</code>로 내려서 그럴 수 있어요(HTTPS 전용).<br/>
+        개발용으로는 서버에서 refresh 쿠키를 <code>secure(false)</code>로 내려 테스트하세요.
+    </small>
+</fieldset>
+
+<fieldset>
+    <legend>로그인</legend>
+    <div class="row" style="gap:12px">
+        <button class="btn" onclick="googlePopup()">구글 로그인 팝업</button>
+        <div id="googleButtonContainer"></div>
+        <button class="btn" style="background:#fee500; color:#191600" onclick="kakaoPopup()">카카오 로그인 팝업</button>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>토큰/세션</legend>
+    <div class="row">
+        <button class="btn light" onclick="refresh()">리프레시로 Access 재발급</button>
+        <button class="btn light" onclick="logout()">로그아웃</button>
+        <button class="btn light" onclick="clearAccess()">Access 지우기(프론트 저장)</button>
+    </div>
+    <label>Access Token</label>
+    <div id="access" class="token"></div>
+</fieldset>
+
+<fieldset>
+    <legend>로그</legend>
+    <div class="ok" id="ok"></div>
+    <div class="err" id="err"></div>
+</fieldset>
+
+<script>
+    // -----------------------------
+    // 상태/도움 함수
+    // -----------------------------
+    const $ = (id) => document.getElementById(id);
+    const ok = (t) => {
+        $('ok').textContent = t || '';
+        $('err').textContent = '';
+    };
+    const err = (t) => {
+        $('err').textContent = (typeof t === 'string') ? t : JSON.stringify(t, null, 2);
+        $('ok').textContent = '';
+    };
+    const getBase = () => $('baseUrl').value.trim();
+
+    function setAccess(t) {
+        localStorage.setItem('fitpet_access', t || '');
+        $('access').textContent = t || '';
+    }
+
+    function getAccess() {
+        return localStorage.getItem('fitpet_access') || '';
+    }
+
+    function clearAccess() {
+        setAccess('');
+        ok('Access 토큰 삭제됨(로컬 저장소)');
+    }
+
+    // -----------------------------
+    // Provider 초기화
+    // -----------------------------
+    let googleInitialized = false;
+    let kakaoInitialized = false;
+
+    function initProviders() {
+        // Google
+        const gid = $('googleClientId').value.trim();
+        if (gid) {
+            try {
+                google.accounts.id.initialize({
+                    client_id: gid,
+                    callback: onGoogleCredential,
+                    ux_mode: 'popup'
+                });
+                // 공식 버튼 렌더(선택)
+                const container = $('googleButtonContainer');
+                container.innerHTML = '';
+                google.accounts.id.renderButton(container, {theme: 'outline', size: 'large'});
+                googleInitialized = true;
+            } catch (e) {
+                err('Google 초기화 실패: ' + e.message);
+            }
+        } else {
+            err('Google Client ID를 입력하세요.');
+        }
+
+        // Kakao
+        const kkey = $('kakaoJsKey').value.trim();
+        if (kkey) {
+            try {
+                if (!window.Kakao) throw new Error('Kakao SDK 로드 실패');
+                if (!Kakao.isInitialized()) Kakao.init(kkey);
+                kakaoInitialized = true;
+                ok('초기화 완료');
+            } catch (e) {
+                err('Kakao 초기화 실패: ' + e.message);
+            }
+        } else {
+            err('Kakao JavaScript 키를 입력하세요.');
+        }
+    }
+
+    // -----------------------------
+    // Google 로그인
+    // -----------------------------
+    function googlePopup() {
+        if (!googleInitialized) {
+            return err('먼저 Google/Kakao 초기화 버튼을 눌러 초기화하세요.');
+        }
+        try {
+            // 팝업 호출 (원탭/프롬프트)
+            google.accounts.id.prompt((notification) => {
+                if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                    // 버튼 클릭 유도(이미 렌더됨)
+                    ok('팝업이 차단되었거나 표시되지 않았습니다. 옆의 Google 버튼을 클릭해보세요.');
+                }
+            });
+        } catch (e) {
+            err('Google 팝업 실패: ' + e.message);
+        }
+    }
+
+    function onGoogleCredential(resp) {
+        const idToken = resp.credential; // Google ID Token
+        ok('구글 id_token 수신 → 서버로 전송 중...');
+        fetch(getBase() + '/auth/oauth/google', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            credentials: 'include', // refresh 쿠키 수신
+            body: JSON.stringify({idToken})
+        })
+            .then(r => r.json().then(b => ({ok: r.ok, body: b})))
+            .then(({ok: okRes, body}) => {
+                if (!okRes) throw body;
+                setAccess(body.serverAccessToken || '');
+                ok('구글 로그인 성공');
+            })
+            .catch(err);
+    }
+
+    // -----------------------------
+    // Kakao 로그인
+    // -----------------------------
+    function kakaoPopup() {
+        if (!kakaoInitialized) {
+            return err('먼저 Google/Kakao 초기화 버튼을 눌러 초기화하세요.');
+        }
+        try {
+            Kakao.Auth.login({
+                scope: 'account_email', // 필요시 확장
+                success: async function (authObj) {
+                    ok('카카오 access_token 수신 → 서버로 전송 중...');
+                    const res = await fetch(getBase() + '/auth/oauth/kakao', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        credentials: 'include', // refresh 쿠키 수신
+                        body: JSON.stringify({accessToken: authObj.access_token})
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw data;
+                    setAccess(data.serverAccessToken || '');
+                    ok('카카오 로그인 성공');
+                },
+                fail: function (e) {
+                    err(e);
+                }
+            });
+        } catch (e) {
+            err('Kakao 팝업 실패: ' + e.message);
+        }
+    }
+
+    // -----------------------------
+    // 세션 조작 (리프레시/로그아웃)
+    // -----------------------------
+    async function refresh() {
+        ok('리프레시 중...');
+        try {
+            const res = await fetch(getBase() + '/auth/refresh', {
+                method: 'POST',
+                credentials: 'include' // 쿠키 전송
+            });
+            const data = await res.json();
+            if (!res.ok) throw data;
+            setAccess(data.serverAccessToken || '');
+            ok('액세스 토큰 재발급 성공');
+        } catch (e) {
+            err(e);
+        }
+    }
+
+    async function logout() {
+        ok('로그아웃 중...');
+        try {
+            const at = getAccess();
+            const res = await fetch(getBase() + '/auth/logout', {
+                method: 'POST',
+                headers: {'Authorization': 'Bearer ' + at},
+                credentials: 'include' // 쿠키 만료 수신
+            });
+            if (!res.ok) throw await res.text();
+            clearAccess();
+            ok('로그아웃 성공');
+        } catch (e) {
+            err(e);
+        }
+    }
+
+    // 초기 표시
+    document.addEventListener('DOMContentLoaded', () => {
+        setAccess(getAccess());
+    });
+</script>
+</body>
+</html>
