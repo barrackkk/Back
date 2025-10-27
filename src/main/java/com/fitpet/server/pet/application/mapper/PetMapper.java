@@ -14,18 +14,20 @@ public interface PetMapper {
 
     // 생성: 요청 + 소유자(User) -> 엔티티
     @Mappings({
-        @Mapping(target = "id", ignore = true),
-        @Mapping(target = "exp", expression = "java(0L)"),
-        @Mapping(target = "createdAt", ignore = true),
-        @Mapping(target = "updatedAt", ignore = true),
-        @Mapping(target = "owner", source = "owner")   // 소유자
+            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "exp", expression = "java(0L)"),
+            @Mapping(target = "createdAt", ignore = true),
+            @Mapping(target = "updatedAt", ignore = true),
+            @Mapping(target = "color", source = "request.color"),
+            @Mapping(target = "owner", source = "owner")   // 소유자
     })
     Pet toEntity(PetCreateRequest request, User owner);
 
     // 엔티티 -> DTO
     @Mappings({
-        @Mapping(target = "petId", source = "id"),
-        @Mapping(target = "ownerId", source = "owner.id")
+            @Mapping(target = "petId", source = "id"),
+            @Mapping(target = "ownerId", source = "owner.id"),
+            @Mapping(target = "color", source = "color")
     })
     PetDto toDto(Pet pet);
 }

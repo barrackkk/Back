@@ -8,6 +8,7 @@ public record PetDto(
     Long ownerId,
     String name,
     PetType petType,
+    String color,
     Long exp,
     LocalDateTime createdAt,
     LocalDateTime updatedAt

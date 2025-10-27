@@ -1,6 +1,7 @@
 package com.fitpet.server.user.domain.entity;
 
 
+import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
 import com.fitpet.server.user.presentation.dto.UserUpdateRequest;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,6 +16,7 @@ import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -81,6 +83,10 @@ public class User {
     @Column(name = "refresh_token", length = 255)
     private String refreshToken;
 
+    @Default
+    @Enumerated(EnumType.STRING)
+    @Column(name = "registration_status", nullable = false, length = 20)
+    private RegistrationStatus registrationStatus = RegistrationStatus.INCOMPLETE;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false,
@@ -126,6 +132,32 @@ public class User {
         if (request.targetPbf() != null) {
             this.targetPbf = request.targetPbf();
         }
+    }
+
+    public void userInformation(UserInputInfoRequest request) {
+        this.nickname = request.nickname();
+        this.age = request.age();
+        this.gender = request.gender();
+        this.weightKg = request.weightKg();
+        this.heightCm = request.heightCm();
+
+        if (request.targetWeightKg() == null) {
+            this.targetWeightKg = null;
+        } else {
+            this.targetWeightKg = request.targetWeightKg();
+
+        }
+        if (request.pbf() == null) {
+            this.pbf = null;
+        } else {
+            this.pbf = request.pbf();
+        }
+        if (request.targetPbf() == null) {
+            this.targetPbf = null;
+        } else {
+            this.targetPbf = request.targetPbf();
+        }
+        this.registrationStatus = RegistrationStatus.COMPLETE;
     }
 
     public void linkSocial(String provider, String providerUid) {

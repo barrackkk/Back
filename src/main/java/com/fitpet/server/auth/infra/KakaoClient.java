@@ -2,6 +2,7 @@ package com.fitpet.server.auth.infra;
 
 import com.fitpet.server.auth.domain.exception.OAuthProfileNotFoundException;
 import com.fitpet.server.auth.domain.exception.OAuthVerificationFailedException;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +26,7 @@ public class KakaoClient {
             .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
             .retrieve()
             .bodyToMono(KakaoMeResponse.class)
-            .timeout(java.time.Duration.ofSeconds(5))   // ← 이 줄 추가
+            .timeout(Duration.ofSeconds(5))
             .onErrorResume(e -> Mono.error(new OAuthVerificationFailedException()))
             .block();
 
