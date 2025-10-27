@@ -3,6 +3,8 @@ package com.fitpet.server.report.application.service;
 import com.fitpet.server.dailywalk.domain.repository.DailyWalkRepository;
 import com.fitpet.server.dailyworkout.domain.entity.GpsSession;
 import com.fitpet.server.dailyworkout.domain.repository.GpsSessionRepository;
+import com.fitpet.server.meal.application.service.MealService;
+import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
 import com.fitpet.server.report.application.mapper.ReportMapper;
 import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.ActivityRangeResponse;
 import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.TodayActivityResponse;
@@ -26,6 +28,8 @@ public class ReportServiceImpl implements ReportService {
     private final UserRepository userRepository;
     private final GpsSessionRepository gpsSessionRepository;
     private final DailyWalkRepository dailyWalkRepository;
+    private final MealService mealService;
+
     private final ReportMapper reportMapper;
 
     @Override
@@ -51,6 +55,11 @@ public class ReportServiceImpl implements ReportService {
         return dailyWalkRepository.findByUserAndDateBetween(user, from, to).stream()
                 .map(reportMapper::toActivityRangeResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<MealDetailResponse> getTodayMeals(Long userId, LocalDate date) {
+        return mealService.getMealsByDate(userId, date);
     }
 
     private User findUserById(Long userId) {

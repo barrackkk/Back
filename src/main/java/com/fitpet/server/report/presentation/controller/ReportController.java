@@ -1,5 +1,6 @@
 package com.fitpet.server.report.presentation.controller;
 
+import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
 import com.fitpet.server.report.application.service.ReportService;
 import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.ActivityRangeResponse;
 import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.TodayActivityResponse;
@@ -35,6 +36,15 @@ public class ReportController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         List<ActivityRangeResponse> response = reportService.getActivityRange(testUserId, from, to);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/meals") // 경로 예시: /report/meals
+    public ResponseEntity<List<MealDetailResponse>> getTodayMeals(
+            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day) {
+
+        List<MealDetailResponse> response = reportService.getTodayMeals(testUserId, day);
         return ResponseEntity.ok(response);
     }
 }

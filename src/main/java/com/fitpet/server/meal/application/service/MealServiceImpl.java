@@ -59,15 +59,17 @@ public class MealServiceImpl implements MealService {
         }
 
         if (request.getChangeImage() != null && request.getChangeImage()) {
+
             if (meal.getImageUrl() != null && !meal.getImageUrl().isBlank()) {
                 s3Service.deleteObject(meal.getImageUrl());
             }
+
             String newImageKey = s3Service.createImageKey(userId);
             meal.setImageUrl(newImageKey);
+
             String uploadUrl = s3Service.generatePresignedPutUrl(newImageKey);
 
             return mealMapper.toUpdateResponse(newImageKey, uploadUrl);
-
         } else {
             return mealMapper.toMealResponse(meal, s3Service);
         }
