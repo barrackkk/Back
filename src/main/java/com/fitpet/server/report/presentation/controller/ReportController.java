@@ -2,6 +2,8 @@ package com.fitpet.server.report.presentation.controller;
 
 import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
 import com.fitpet.server.report.application.service.ReportService;
+import com.fitpet.server.report.presentation.dto.response.DailyMealSummaryResponse;
+import com.fitpet.server.report.presentation.dto.response.MealCalendarResponse;
 import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.ActivityRangeResponse;
 import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.TodayActivityResponse;
 import java.time.LocalDate;
@@ -45,6 +47,27 @@ public class ReportController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day) {
 
         List<MealDetailResponse> response = reportService.getTodayMeals(testUserId, day);
+        return ResponseEntity.ok(response);
+    }
+
+    // (수정) 일별 식단 상세 조회
+    @GetMapping("/meal/day") // 명세서 경로: /api/meal/day (Base URL에 /api가 있다면 /meal/day)
+    public ResponseEntity<DailyMealSummaryResponse> getDailyMealsReport(
+            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam("day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day) {
+
+        DailyMealSummaryResponse response = reportService.getDailyMealsReport(testUserId, day);
+        return ResponseEntity.ok(response);
+    }
+
+    // (수정) 월별 식단 캘린더 조회
+    @GetMapping("/meal/calendar")
+    public ResponseEntity<MealCalendarResponse> getMealCalendarReport(
+            //@AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam int year,
+            @RequestParam int month) {
+
+        MealCalendarResponse response = reportService.getMealCalendarReport(testUserId, year, month);
         return ResponseEntity.ok(response);
     }
 }

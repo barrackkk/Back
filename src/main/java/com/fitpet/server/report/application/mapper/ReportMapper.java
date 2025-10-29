@@ -1,11 +1,19 @@
 package com.fitpet.server.report.application.mapper;
 
 import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
+import com.fitpet.server.dailyworkout.domain.entity.GpsSession;
 import com.fitpet.server.meal.domain.entity.Meal;
 import com.fitpet.server.meal.presentation.dto.response.MealDetailInfo;
+import com.fitpet.server.report.presentation.dto.response.DailyMealSummaryResponse;
+import com.fitpet.server.report.presentation.dto.response.DayInfo;
+import com.fitpet.server.report.presentation.dto.response.MealCalendarResponse;
 import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.ActivityRangeResponse;
+import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.TodayActivityResponse;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -31,5 +39,40 @@ public interface ReportMapper {
             return null;
         }
         return dateTime.toLocalDate();
+    }
+
+    @Mapping(target = "date", source = "day")
+    @Mapping(target = "totalKcal", source = "totalKcal")
+    @Mapping(target = "mealList", source = "mealList")
+    DailyMealSummaryResponse toDailyMealSummaryResponse(LocalDate day, Integer totalKcal,
+                                                        List<MealDetailInfo> mealList);
+
+    @Mapping(target = "date", source = "date")
+    @Mapping(target = "distanceKm", source = "sessions", qualifiedByName = "sumDistance")
+    @Mapping(target = "burnCalories", source = "sessions", qualifiedByName = "sumCalories")
+    TodayActivityResponse toTodayActivityResponse(List<GpsSession> sessions, LocalDate date);
+
+
+    @Mapping(target = "imageUrls", ignore = true)
+    DayInfo toDayInfo(LocalDate date, int count);
+
+    MealCalendarResponse toMealCalendarResponse(int year, int month, List<DayInfo> days);
+
+    // TODO : Helper로 분리하기
+    @Named("sumDistance")
+    default BigDecimal sumDistance(List<GpsSession> sessions) {
+        return sessions.stream()
+                .map(GpsSession::getTotalDistance)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    // TODO : Helper로 분리하기
+    @Named("sumCalories")
+    default Integer sumCalories(List<GpsSession> sessions) {
+        return sessions.stream()
+                .filter(s -> s.getBurnCalories() != null)
+                .mapToInt(GpsSession::getBurnCalories)
+                .sum();
     }
 }

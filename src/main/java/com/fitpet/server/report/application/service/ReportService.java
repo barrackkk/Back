@@ -18,5 +18,4 @@ public interface ReportService {
     DailyMealSummaryResponse getDailyMealsReport(Long userId, LocalDate day);
 
     MealCalendarResponse getMealCalendarReport(Long userId, int year, int month);
-
 }
