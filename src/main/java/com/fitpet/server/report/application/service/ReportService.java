@@ -12,4 +12,5 @@ public interface ReportService {
     List<ActivityRangeResponse> getActivityRange(Long userId, LocalDate from, LocalDate to);
 
     List<MealDetailResponse> getTodayMeals(Long userId, LocalDate date);
+
 }

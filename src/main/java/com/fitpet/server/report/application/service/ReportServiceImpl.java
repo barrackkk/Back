@@ -4,6 +4,8 @@ import com.fitpet.server.dailywalk.domain.repository.DailyWalkRepository;
 import com.fitpet.server.dailyworkout.domain.entity.GpsSession;
 import com.fitpet.server.dailyworkout.domain.repository.GpsSessionRepository;
 import com.fitpet.server.meal.application.service.MealService;
+import com.fitpet.server.meal.application.service.S3Service;
+import com.fitpet.server.meal.domain.repository.MealRepository;
 import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
 import com.fitpet.server.report.application.mapper.ReportMapper;
 import com.fitpet.server.report.presentation.dto.response.ReportResponseDto.ActivityRangeResponse;
@@ -29,6 +31,8 @@ public class ReportServiceImpl implements ReportService {
     private final GpsSessionRepository gpsSessionRepository;
     private final DailyWalkRepository dailyWalkRepository;
     private final MealService mealService;
+    private final MealRepository mealRepository;
+    private final S3Service s3Service;
 
     private final ReportMapper reportMapper;
 
