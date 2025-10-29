@@ -39,7 +39,7 @@ public class ReportController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/meals") // 경로 예시: /report/meals
+    @GetMapping("/meals")
     public ResponseEntity<List<MealDetailResponse>> getTodayMeals(
             //@AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day) {

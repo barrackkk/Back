@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MealJpaRepository extends JpaRepository<Meal, Long> {
     List<Meal> findByUserAndDay(User user, LocalDate day);
+
+    List<Meal> findByUserAndDayBetweenOrderByDayAsc(User user, LocalDate startOfMonth, LocalDate endOfMonth);
 }
