@@ -17,7 +17,6 @@ import org.mapstruct.ReportingPolicy;
 )
 public interface ReportMapper {
 
-
     @Mapping(source = "step", target = "steps")
     @Mapping(source = "createdAt", target = "date", qualifiedByName = "toLocalDate")
     ActivityRangeResponse toActivityRangeResponse(DailyWalk dailyWalk);
@@ -33,5 +32,4 @@ public interface ReportMapper {
         }
         return dateTime.toLocalDate();
     }
-
 }
