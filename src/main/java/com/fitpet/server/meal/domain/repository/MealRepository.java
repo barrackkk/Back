@@ -13,5 +13,7 @@ public interface MealRepository {
 
     void delete(Meal meal);
 
-    List<Meal> findByUserAndDate(User user, LocalDate day);
+    List<Meal> findByUserAndDay(User user, LocalDate day);
+
+    List<Meal> findByUserAndDayBetweenOrderByDayAsc(User user, LocalDate startOfMonth, LocalDate endOfMonth);
 }

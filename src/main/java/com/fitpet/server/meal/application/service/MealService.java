@@ -15,4 +15,5 @@ public interface MealService {
     List<MealDetailResponse> getMealsByDate(Long userId, LocalDate day);
 
     void deleteMeal(Long userId, Long mealId);
+
 }

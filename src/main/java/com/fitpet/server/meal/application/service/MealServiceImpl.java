@@ -59,17 +59,15 @@ public class MealServiceImpl implements MealService {
         }
 
         if (request.getChangeImage() != null && request.getChangeImage()) {
-
             if (meal.getImageUrl() != null && !meal.getImageUrl().isBlank()) {
                 s3Service.deleteObject(meal.getImageUrl());
             }
-
             String newImageKey = s3Service.createImageKey(userId);
             meal.setImageUrl(newImageKey);
-
             String uploadUrl = s3Service.generatePresignedPutUrl(newImageKey);
 
             return mealMapper.toUpdateResponse(newImageKey, uploadUrl);
+
         } else {
             return mealMapper.toMealResponse(meal, s3Service);
         }
@@ -79,7 +77,7 @@ public class MealServiceImpl implements MealService {
     @Transactional(readOnly = true)
     public List<MealDetailResponse> getMealsByDate(Long userId, LocalDate day) {
         User user = findUserById(userId);
-        List<Meal> meals = mealRepository.findByUserAndDate(user, day);
+        List<Meal> meals = mealRepository.findByUserAndDay(user, day);
 
         return meals.stream()
                 .map(meal -> mealMapper.toMealResponse(meal, s3Service))
@@ -92,7 +90,7 @@ public class MealServiceImpl implements MealService {
         Meal meal = findMealById(mealId);
         authorizeMealOwner(user, meal);
 
-        if (meal.getImageUrl() != null) {
+        if (meal.getImageUrl() != null && !meal.getImageUrl().isBlank()) {
             s3Service.deleteObject(meal.getImageUrl());
         }
         mealRepository.delete(meal);

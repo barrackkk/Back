@@ -10,6 +10,5 @@ import lombok.Getter;
 public class DailyMealSummaryResponse {
     private LocalDate date;
     private Integer totalKcal;
-    private List<MealDetailInfo> mealList;
+    private List<MealDetailResponse> mealList;
 }
-

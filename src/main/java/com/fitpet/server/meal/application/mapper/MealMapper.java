@@ -4,6 +4,7 @@ import com.fitpet.server.meal.application.service.S3Service;
 import com.fitpet.server.meal.domain.entity.Meal;
 import com.fitpet.server.meal.presentation.dto.request.MealCreateRequest;
 import com.fitpet.server.meal.presentation.dto.response.MealCreateResponse;
+import com.fitpet.server.meal.presentation.dto.response.MealDetailInfo;
 import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
 import com.fitpet.server.meal.presentation.dto.response.MealUpdateResponse;
 import com.fitpet.server.user.domain.entity.User;
@@ -36,6 +37,10 @@ public interface MealMapper {
     @Mapping(source = "newImageKey", target = "imageUrl")
     @Mapping(source = "uploadUrl", target = "uploadUrl")
     MealUpdateResponse toUpdateResponse(String newImageKey, String uploadUrl);
+
+    @Mapping(source = "id", target = "mealId")
+    @Mapping(target = "imageUrl", ignore = true)
+    MealDetailInfo toMealDetailInfo(Meal meal);
 
     @Named("generateGetUrl")
     default String generateGetUrl(String objectKey, @Context S3Service s3Service) {
