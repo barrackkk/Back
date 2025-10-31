@@ -3,7 +3,7 @@ name: Deploy To EC2 for FitPet (using Environment Variables)
 on:
   push:
     branches:
-      - feature/meal #main으로 수정 필요함
+      - dev
 
 jobs:
   deploy:
