@@ -114,7 +114,6 @@ public class ReportServiceImpl implements ReportService {
                     List<String> imageUrls = mealsOnDate.stream()
                             .map(meal -> s3Service.generatePresignedGetUrl(meal.getImageUrl()))
                             .filter(Objects::nonNull)
-                            .limit(3)
                             .collect(Collectors.toList());
 
                     DayInfo dayInfo = reportMapper.toDayInfo(date, mealsOnDate.size());
