@@ -26,6 +26,8 @@ import org.mapstruct.ReportingPolicy;
 public interface ReportMapper {
 
     @Mapping(source = "step", target = "steps")
+    @Mapping(source = "burnCalories", target = "burnCalories")
+    @Mapping(source = "distanceKm", target = "distanceKm")
     @Mapping(source = "createdAt", target = "date", qualifiedByName = "toLocalDate")
     ActivityRangeResponse toActivityRangeResponse(DailyWalk dailyWalk);
 
