@@ -4,6 +4,7 @@ import com.fitpet.server.meal.application.service.MealService;
 import com.fitpet.server.meal.presentation.dto.request.MealCreateRequest;
 import com.fitpet.server.meal.presentation.dto.request.MealUpdateRequest;
 import com.fitpet.server.meal.presentation.dto.response.MealCreateResponse;
+import com.fitpet.server.meal.presentation.dto.response.MealUpdateResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class MealController {
             @PathVariable Long mealId,
             @RequestBody MealUpdateRequest request) {
 
-        Object response = mealService.updateMeal(userId, mealId, request);
+        MealUpdateResponse response = mealService.updateMeal(userId, mealId, request);
         return ResponseEntity.ok(response);
     }
 

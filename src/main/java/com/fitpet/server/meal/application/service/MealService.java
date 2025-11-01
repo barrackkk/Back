@@ -4,13 +4,14 @@ import com.fitpet.server.meal.presentation.dto.request.MealCreateRequest;
 import com.fitpet.server.meal.presentation.dto.request.MealUpdateRequest;
 import com.fitpet.server.meal.presentation.dto.response.MealCreateResponse;
 import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
+import com.fitpet.server.meal.presentation.dto.response.MealUpdateResponse;
 import java.time.LocalDate;
 import java.util.List;
 
 public interface MealService {
     MealCreateResponse createMeal(Long userId, MealCreateRequest request);
 
-    Object updateMeal(Long userId, Long mealId, MealUpdateRequest request);
+    MealUpdateResponse updateMeal(Long userId, Long mealId, MealUpdateRequest request);
 
     List<MealDetailResponse> getMealsByDate(Long userId, LocalDate day);
 

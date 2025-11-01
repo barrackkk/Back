@@ -7,6 +7,7 @@ import com.fitpet.server.meal.presentation.dto.request.MealCreateRequest;
 import com.fitpet.server.meal.presentation.dto.request.MealUpdateRequest;
 import com.fitpet.server.meal.presentation.dto.response.MealCreateResponse;
 import com.fitpet.server.meal.presentation.dto.response.MealDetailResponse;
+import com.fitpet.server.meal.presentation.dto.response.MealUpdateResponse;
 import com.fitpet.server.shared.exception.BusinessException;
 import com.fitpet.server.shared.exception.ErrorCode;
 import com.fitpet.server.user.domain.entity.User;
@@ -43,7 +44,7 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public Object updateMeal(Long userId, Long mealId, MealUpdateRequest request) {
+    public MealUpdateResponse updateMeal(Long userId, Long mealId, MealUpdateRequest request) {
         User user = findUserById(userId);
         Meal meal = findMealById(mealId);
         authorizeMealOwner(user, meal);
@@ -69,7 +70,7 @@ public class MealServiceImpl implements MealService {
             return mealMapper.toUpdateResponse(newImageKey, uploadUrl);
 
         } else {
-            return mealMapper.toMealResponse(meal, s3Service);
+            return MealUpdateResponse.builder().build();
         }
     }
 
