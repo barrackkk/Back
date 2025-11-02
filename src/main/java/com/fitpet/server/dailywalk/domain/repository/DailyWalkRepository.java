@@ -1,7 +1,9 @@
 package com.fitpet.server.dailywalk.domain.repository;
 
 import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
+import com.fitpet.server.user.domain.entity.User;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +20,8 @@ public interface DailyWalkRepository {
                                                                                      LocalDateTime end);
 
     DailyWalk save(DailyWalk dailyWalk);
+
+    List<DailyWalk> findByUserAndDateBetween(User user, LocalDate start, LocalDate end);
 
     boolean existsById(Long id);
 

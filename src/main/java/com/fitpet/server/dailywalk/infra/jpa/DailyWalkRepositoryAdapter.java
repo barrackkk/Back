@@ -2,7 +2,9 @@ package com.fitpet.server.dailywalk.infra.jpa;
 
 import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
 import com.fitpet.server.dailywalk.domain.repository.DailyWalkRepository;
+import com.fitpet.server.user.domain.entity.User;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +41,11 @@ public class DailyWalkRepositoryAdapter implements DailyWalkRepository {
     @Override
     public DailyWalk save(DailyWalk dailyWalk) {
         return jpaRepository.save(dailyWalk);
+    }
+
+    @Override
+    public List<DailyWalk> findByUserAndDateBetween(User user, LocalDate start, LocalDate end) {
+        return jpaRepository.findByUserAndDateBetween(user, start, end);
     }
 
     @Override
