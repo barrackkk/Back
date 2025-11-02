@@ -34,7 +34,7 @@ public class MealController {
     @PatchMapping("/{mealId}")
     public ResponseEntity<Object> updateMeal(
             @PathVariable Long mealId,
-            @RequestBody MealUpdateRequest request) {
+            @Valid @RequestBody MealUpdateRequest request) {
 
         MealUpdateResponse response = mealService.updateMeal(userId, mealId, request);
         return ResponseEntity.ok(response);
