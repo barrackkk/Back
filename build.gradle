@@ -79,6 +79,9 @@ dependencies {
     // S3
     implementation platform('software.amazon.awssdk:bom:2.20.41')
     implementation 'software.amazon.awssdk:s3'
+
+    //FCM
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
 }
 
 tasks.named('test') { useJUnitPlatform() }
