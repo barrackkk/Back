@@ -3,7 +3,7 @@ name: Deploy To EC2 for FitPet (using Environment Variables)
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   deploy:

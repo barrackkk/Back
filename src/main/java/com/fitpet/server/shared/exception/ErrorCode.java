@@ -31,6 +31,9 @@ public enum ErrorCode {
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, "C001", "잘못된 요청입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C999", "서버 에러가 발생했습니다."),
 
+    MEAL_NOT_FOUND(HttpStatus.NOT_FOUND, "M001", "해당 식단 기록을 찾을 수 없습니다."),
+    MEAL_ACCESS_DENIED(HttpStatus.FORBIDDEN, "M002", "해당 식단 기록에 대한 권한이 없습니다."),
+
     INVALID_LOGIN(HttpStatus.UNAUTHORIZED, "A001", "아이디 또는 비밀번호가 일치하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "유효하지 않은 리프레시 토큰입니다."),
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "A003", "유효하지 않은 액세스 토큰입니다."),
