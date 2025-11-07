@@ -33,14 +33,28 @@ public class AlramServiceImpl implements AlramService {
         User user = userRepository.findById(requestDto.getUserId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
+        String deviceToken = user.getDeviceToken();
+
+        if (deviceToken == null || deviceToken.isBlank()) {
+            log.warn("FCM 알림 발송 실패: 사용자(ID: {})의 디바이스 토큰이 없습니다.", user.getId());
+            // TODO: DEVICE_TOKEN_NOT_FOUND와 같은 ErrorCode를 정의하여 BusinessException 처리
+            throw new RuntimeException("사용자의 디바이스 토큰이 존재하지 않습니다.");
+        }
+
         Notification notification = Notification.builder()
                 .setTitle(requestDto.getTitle())
                 .setBody(requestDto.getBody())
                 .build();
-        Message fcmMessage = Message.builder()
-                .setToken(requestDto.getTargetDeviceToken())
-                .setNotification(notification)
-                .build();
+
+        Message.Builder fcmMessageBuilder = Message.builder()
+                .setToken(deviceToken)
+                .setNotification(notification);
+
+        if (requestDto.getData() != null && !requestDto.getData().isEmpty()) {
+            fcmMessageBuilder.putAllData(requestDto.getData());
+        }
+
+        Message fcmMessage = fcmMessageBuilder.build();
 
         String fcmMessageId;
         try {
@@ -60,6 +74,11 @@ public class AlramServiceImpl implements AlramService {
 
         AlramMessage savedAlram = alramRepository.save(alramToSave);
 
-        return new AlramResponseDto(savedAlram.getId(), fcmMessageId, "알림 발송 및 저장 성공");
+        return new AlramResponseDto(
+                savedAlram.getId(),
+                fcmMessageId,
+                "알림 발송 및 저장 성공",
+                requestDto.getData()
+        );
     }
 }
