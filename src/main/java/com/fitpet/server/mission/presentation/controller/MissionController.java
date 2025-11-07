@@ -54,7 +54,7 @@ public class MissionController {
 
     @PatchMapping("/{missionId}")
     public ResponseEntity<MissionDto> updateMission(@PathVariable Long missionId,
-                                                    @RequestBody MissionUpdateRequest request) {
+                                                    @Valid @RequestBody MissionUpdateRequest request) {
         return ResponseEntity.ok(missionService.updateMission(missionId, request));
     }
 
