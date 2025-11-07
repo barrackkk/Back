@@ -1,4 +1,4 @@
-package com.fitpet.server.alram.presentation.dto;
+package com.fitpet.server.alram.presentation.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

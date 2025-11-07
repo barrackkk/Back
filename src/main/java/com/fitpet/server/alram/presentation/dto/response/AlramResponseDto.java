@@ -1,4 +1,4 @@
-package com.fitpet.server.alram.presentation.dto;
+package com.fitpet.server.alram.presentation.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
