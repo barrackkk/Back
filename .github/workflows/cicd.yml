@@ -3,7 +3,7 @@ name: Deploy To EC2 for FitPet (using Environment Variables)
 on:
   push:
     branches:
-      - dev
+      - feature/meal
 
 jobs:
   deploy:
@@ -41,25 +41,44 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
+            # 1. Spring Profile 설정
+            export SPRING_PROFILES_ACTIVE=prod
+
+            # 2. DB 설정
             export DB_URL="${{ secrets.DB_URL }}"
             export DB_USERNAME="${{ secrets.DB_USERNAME }}"
             export DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+
+            # 3. Security 설정
             export SECURITY_USER="${{ secrets.SECURITY_USER }}"
             export SECURITY_PASSWORD="${{ secrets.SECURITY_PASSWORD }}"
+
+            # 4. JWT 설정
             export JWT_ACCESS_SECRET="${{ secrets.JWT_ACCESS_SECRET }}"
             export JWT_REFRESH_SECRET="${{ secrets.JWT_REFRESH_SECRET }}"
             export JWT_ACCESS_EXPIRATION_MS="${{ secrets.JWT_ACCESS_EXPIRATION_MS }}"
             export JWT_REFRESH_EXPIRATION_MS="${{ secrets.JWT_REFRESH_EXPIRATION_MS }}"
+
+            # 5. OAuth 설정
             export GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}"
             export GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}"
             export KAKAO_CLIENT_ID="${{ secrets.KAKAO_CLIENT_ID }}"
+            export KAKAO_JAVASCRIPT_KEY="${{ secrets.KAKAO_JAVASCRIPT_KEY }}"
 
+            # 6. AWS S3 설정 (이전 오류의 원인)
+            export AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}"
+            export AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+            
+            # 7. 배포 디렉토리 정리 및 이동
             rm -rf /home/ubuntu/fitpet-server/current
             mkdir -p /home/ubuntu/fitpet-server/current
             mv /home/ubuntu/fitpet-server/tobe/fitpet.jar /home/ubuntu/fitpet-server/current/fitpet.jar
             
+            # 8. 애플리케이션 실행
             cd /home/ubuntu/fitpet-server/current
             
+            # 기존 프로세스 종료
             sudo fuser -k -n tcp 8080 || true
             
+            # 새 프로세스 시작
             nohup java -jar fitpet.jar > ./output.log 2>&1 &
