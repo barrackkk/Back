@@ -96,6 +96,5 @@ jobs:
             # 기존 프로세스 종료
             sudo fuser -k -n tcp 8080 || true
             
-            # 9. 새 프로세스 시작
-            # -Dloader.path=./ : Spring Boot에게 현재 디렉토리(.)도 클래스패스에 포함하도록 지시
-            nohup java -Dloader.path=./ -jar fitpet.jar > ./output.log 2>&1 &
+            # 9. 새 프로세스 시작 
+            nohup java -cp ".:fitpet.jar" org.springframework.boot.loader.launch.JarLauncher > ./output.log 2>&1 &
