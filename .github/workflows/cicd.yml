@@ -1,4 +1,4 @@
-name: Deploy To EC2 for FitPet (using Environment Variables)
+name: Deploy To EC2 for FitPet
 
 on:
   push:
@@ -96,7 +96,6 @@ jobs:
             # 기존 프로세스 종료
             sudo fuser -k -n tcp 8080 || true
             
-            # 9. 새 프로세스 시작 
-            # -cp ".:fitpet.jar" : 현재폴더(.)와 fitpet.jar를 모두 클래스패스로 지정
-            # com.fitpet.server.FitPetApplication : Main 클래스 직접 지정
-            nohup java -cp ".:fitpet.jar" com.fitpet.server.FitPetApplication > ./output.log 2>&1 &
+            # 9. 새 프로세스 시작
+            # -Dloader.path=./ : Spring Boot에게 현재 디렉토리(.)도 클래스패스에 포함하도록 지시
+            nohup java -Dloader.path=./ -jar fitpet.jar > ./output.log 2>&1 &
