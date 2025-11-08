@@ -25,7 +25,10 @@ jobs:
         run: mv ./build/libs/*SNAPSHOT.jar ./fitpet.jar
 
       - name: FCM 키 파일을 로컬에 생성
-        run: printf "%s" "${{ secrets.FCM_KEY_JSON }}" > ./firebase-service-account-key.json
+        run: |
+          cat <<EOF > ./firebase-service-account-key.json
+          ${{ secrets.FCM_KEY_JSON }}
+          EOF
 
       - name: SCP로 EC2에 빌드 파일(jar) 전송
         uses: appleboy/scp-action@v0.1.7
