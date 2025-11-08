@@ -24,13 +24,25 @@ jobs:
       - name: 빌드된 파일 이름 변경
         run: mv ./build/libs/*SNAPSHOT.jar ./fitpet.jar
 
-      - name: SCP로 EC2에 빌드 파일 전송
+      - name: FCM 키 파일을 로컬에 생성
+        run: echo "${{ secrets.FCM_KEY_JSON }}" > ./firebase-service-account-key.json
+
+      - name: SCP로 EC2에 빌드 파일(jar) 전송
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           source: fitpet.jar
+          target: /home/ubuntu/fitpet-server/tobe
+
+      - name: SCP로 EC2에 FCM 키 파일 전송
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          source: ./firebase-service-account-key.json
           target: /home/ubuntu/fitpet-server/tobe
 
       - name: EC2에서 환경변수 설정 및 배포 스크립트 실행
@@ -69,23 +81,22 @@ jobs:
             export AWS_ACCESS_KEY_ID="${{ secrets.AWS_ACCESS_KEY_ID }}"
             export AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
             
-            # 7. 배포 디렉토리 정리 및 이동 (✨✨✨ 순서 변경 ✨✨✨)
+            # 7. 배포 디렉토리 정리 및 파일 이동
             rm -rf /home/ubuntu/fitpet-server/current
             mkdir -p /home/ubuntu/fitpet-server/current
-            mv /home/ubuntu/fitpet-server/tobe/fitpet.jar /home/ubuntu/fitpet-server/current/fitpet.jar
-            
-            # 8. FCM 설정 (✨✨✨ jar 파일 이동 후, 이 위치에서 생성해야 합니다 ✨✨✨)
-            # "current" 폴더 "안에" fcm 디렉토리를 생성합니다.
             mkdir -p /home/ubuntu/fitpet-server/current/fcm
             
-            # "current/fcm" 폴더 "안에" json 파일을 생성합니다.
-            echo "${{ secrets.FCM_KEY_JSON }}" > /home/ubuntu/fitpet-server/current/fcm/firebase-service-account-key.json
+            # tobe에 있던 파일들을 current로 이동
+            mv /home/ubuntu/fitpet-server/tobe/fitpet.jar /home/ubuntu/fitpet-server/current/fitpet.jar
+            mv /home/ubuntu/fitpet-server/tobe/firebase-service-account-key.json /home/ubuntu/fitpet-server/current/fcm/firebase-service-account-key.json
             
-            # 9. 애플리케이션 실행
+            # 8. 애플리케이션 실행 디렉토리로 이동
             cd /home/ubuntu/fitpet-server/current
             
             # 기존 프로세스 종료
             sudo fuser -k -n tcp 8080 || true
             
-            # 새 프로세스 시작
-            nohup java -jar fitpet.jar > ./output.log 2>&1 &
+            # 9. 새 프로세스 시작 
+            # -cp ".:fitpet.jar" : 현재폴더(.)와 fitpet.jar를 모두 클래스패스로 지정
+            # com.fitpet.server.FitPetApplication : Main 클래스 직접 지정
+            nohup java -cp ".:fitpet.jar" com.fitpet.server.FitPetApplication > ./output.log 2>&1 &
