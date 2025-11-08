@@ -70,9 +70,11 @@ jobs:
             export AWS_SECRET_ACCESS_KEY="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
             
             # FCM 설정
-            # fcm 디렉토리를 만들고, GitHub Secret의 "내용"을 파일로 쓰
-            mkdir -p fcm
-            echo "${{ secrets.FCM_KEY_PATH }}" > ./fcm/firebase-service-account-key.json
+            # fcm 디렉토리를 만들고, GitHub Secret의 "내용"을 파일로 쓰기
+            mkdir -p /home/ubuntu/fitpet-server/current/fcm
+            
+            # "current/fcm" 폴더 "안에" json 파일을 생성합니다.
+            echo "${{ secrets.FCM_KEY_JSON }}" > /home/ubuntu/fitpet-server/current/fcm/firebase-service-account-key.json
             
             
             # 7. 배포 디렉토리 정리 및 이동
