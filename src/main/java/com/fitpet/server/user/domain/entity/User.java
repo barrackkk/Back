@@ -205,4 +205,12 @@ public class User {
         this.provider = provider;
         this.providerUid = providerUid;
     }
+
+    public void updateLastAccessedAt() {
+        this.lastAccessedAt = LocalDateTime.now();
+    }
+    
+    public void changeActivityNotificationSetting(boolean allowed) {
+        this.allowActivityNotification = allowed;
+    }
 }
