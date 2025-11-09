@@ -1,7 +1,10 @@
 package com.fitpet.server.user.domain.repository;
 
 import com.fitpet.server.user.domain.entity.User;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 public interface UserRepository {
@@ -24,4 +27,8 @@ public interface UserRepository {
     Optional<User> findByProviderAndProviderUid(String provider, String providerUid);
 
     int resetDailyStepCount();
+
+    Page<User> findUsersBelowStepTarget(Pageable pageable);
+
+    Page<User> findInactiveUsers(LocalDateTime inactiveSince, Pageable pageable);
 }
