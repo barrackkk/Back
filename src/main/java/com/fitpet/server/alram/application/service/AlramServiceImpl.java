@@ -34,6 +34,7 @@ public class AlramServiceImpl implements AlramService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         String deviceToken = user.getDeviceToken();
+        log.info("🔥디바이스 토큰 {}", user.getDeviceToken());
 
         if (deviceToken == null || deviceToken.isBlank()) {
             log.warn("FCM 알림 발송 실패: 사용자(ID: {})의 디바이스 토큰이 없습니다.", user.getId());
