@@ -48,7 +48,7 @@ public class MissionServiceImpl implements MissionService {
     public MissionDto updateMission(Long missionId, MissionUpdateRequest request) {
         Mission mission = missionRepository.findById(missionId)
                 .orElseThrow(MissionNotFoundException::new);
-        missionMapper.updateFromRequest(request, mission);
+        mission.update(request.title(), request.content(), request.type(), request.goal());
         Mission updated = missionRepository.save(mission);
         log.info("[MissionService] 미션 수정: missionId={}", updated.getId());
         return missionMapper.toDto(updated);
