@@ -20,6 +20,7 @@ public interface UserMapper {
         @Mapping(target = "refreshToken", ignore = true),
         @Mapping(target = "registrationStatus", ignore = true),
         @Mapping(target = "password", ignore = true),
+        @Mapping(target = "dailyStepCount", ignore = true),
         @Mapping(target = "createdAt", ignore = true),
         @Mapping(target = "updatedAt", ignore = true)
     })
