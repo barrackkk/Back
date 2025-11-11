@@ -38,16 +38,8 @@ public class MissionCheckServiceImpl implements MissionCheckService {
 
         MissionCheck missionCheck = missionCheckRepository
                 .findByMissionIdAndUserIdAndCheckAt(missionId, userId, request.checkDate())
-                .map(existing -> {
-                    existing.updateCompletion(request.completed(), request.checkDate());
-                    return existing;
-                })
-                .orElseGet(() -> MissionCheck.builder()
-                        .mission(mission)
-                        .user(user)
-                        .completed(request.completed())
-                        .checkAt(request.checkDate())
-                        .build());
+                .map(existing -> missionCheckMapper.updateFromRequest(existing, request))
+                .orElseGet(() -> missionCheckMapper.create(mission, user, request));
 
         MissionCheck saved = missionCheckRepository.save(missionCheck);
         log.info("[MissionCheckService] 수행 여부 저장: missionCheckId={}, missionId={}, userId={}",

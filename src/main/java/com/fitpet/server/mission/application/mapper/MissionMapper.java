@@ -3,20 +3,29 @@ package com.fitpet.server.mission.application.mapper;
 import com.fitpet.server.mission.domain.entity.Mission;
 import com.fitpet.server.mission.presentation.dto.MissionCreateRequest;
 import com.fitpet.server.mission.presentation.dto.MissionDto;
+import com.fitpet.server.mission.presentation.dto.MissionUpdateRequest;
 import java.util.List;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface MissionMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    Mission toEntity(MissionCreateRequest request);
-
+    // Entity -> DTO
     @Mapping(target = "missionId", source = "id")
     MissionDto toDto(Mission mission);
 
     List<MissionDto> toDtos(List<Mission> missions);
+
+    // CreateRequest -> Entity (신규 생성)
+    @Mapping(target = "id", ignore = true)
+    Mission toEntity(MissionCreateRequest request);
+
+    // UpdateRequest -> Entity (부분 갱신; null은 무시)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateFromRequest(MissionUpdateRequest request, @MappingTarget Mission target);
 }

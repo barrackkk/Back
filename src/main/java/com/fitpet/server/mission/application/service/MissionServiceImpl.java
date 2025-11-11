@@ -32,35 +32,33 @@ public class MissionServiceImpl implements MissionService {
 
     @Override
     @Transactional(readOnly = true)
-    public MissionDto getMission(Long missionId) {
-        Mission mission = findMission(missionId);
-        return missionMapper.toDto(mission);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<MissionDto> getMissions() {
         return missionMapper.toDtos(missionRepository.findAll());
     }
 
     @Override
-    @Transactional
-    public MissionDto updateMission(Long missionId, MissionUpdateRequest request) {
-        Mission mission = findMission(missionId);
-        mission.update(request.title(), request.content(), request.type(), request.goal());
-        log.info("[MissionService] 미션 수정: missionId={}", missionId);
+    @Transactional(readOnly = true)
+    public MissionDto getMission(Long missionId) {
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(MissionNotFoundException::new);
         return missionMapper.toDto(mission);
     }
 
     @Override
-    public void deleteMission(Long missionId) {
-        Mission mission = findMission(missionId);
-        missionRepository.delete(mission);
-        log.info("[MissionService] 미션 삭제: missionId={}", missionId);
+    public MissionDto updateMission(Long missionId, MissionUpdateRequest request) {
+        Mission mission = missionRepository.findById(missionId)
+                .orElseThrow(MissionNotFoundException::new);
+        missionMapper.updateFromRequest(request, mission);
+        Mission updated = missionRepository.save(mission);
+        log.info("[MissionService] 미션 수정: missionId={}", updated.getId());
+        return missionMapper.toDto(updated);
     }
 
-    private Mission findMission(Long missionId) {
-        return missionRepository.findById(missionId)
+    @Override
+    public void deleteMission(Long missionId) {
+        Mission mission = missionRepository.findById(missionId)
                 .orElseThrow(MissionNotFoundException::new);
+        missionRepository.delete(mission);
+        log.info("[MissionService] 미션 삭제: missionId={}", missionId);
     }
 }
