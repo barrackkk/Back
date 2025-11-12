@@ -20,6 +20,9 @@ public class FcmConfig {
     @Value("${fcm.service-account-key-path}")
     private String serviceAccountKeyPath;
 
+    @Value("${fcm.project-id}")
+    private String fcmProjectId;
+
     private FirebaseApp firebaseApp;
 
     @PostConstruct
@@ -30,14 +33,16 @@ public class FcmConfig {
             try (InputStream serviceAccountStream = resource.getInputStream()) {
                 FirebaseOptions options = FirebaseOptions.builder()
                         .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
+                        .setProjectId(fcmProjectId)
                         .build();
 
                 if (FirebaseApp.getApps().isEmpty()) {
                     this.firebaseApp = FirebaseApp.initializeApp(options);
-                    log.info("FirebaseApp 초기화 성공");
+                    log.info("FirebaseApp 초기화 성공 (Project ID: {})", fcmProjectId);
                 } else {
                     this.firebaseApp = FirebaseApp.getInstance();
-                    log.info("FirebaseApp 이미 초기화됨");
+                    log.info("FirebaseApp 이미 초기화됨 (Loaded Project ID: {})",
+                            this.firebaseApp.getOptions().getProjectId());
                 }
             }
         } catch (IOException e) {
