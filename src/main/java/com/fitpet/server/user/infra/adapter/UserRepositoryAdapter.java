@@ -3,8 +3,11 @@ package com.fitpet.server.user.infra.adapter;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.repository.UserRepository;
 import com.fitpet.server.user.infra.jpa.UserJpaRepository;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -65,6 +68,16 @@ public class UserRepositoryAdapter implements UserRepository {
     @Override
     public int resetDailyStepCount() {
         return jpa.resetDailyStepCount();
+    }
+
+    @Override
+    public Page<User> findUsersBelowStepTarget(Pageable pageable) {
+        return jpa.findUsersBelowStepTarget(pageable);
+    }
+
+    @Override
+    public Page<User> findInactiveUsers(LocalDateTime inactiveSince, Pageable pageable) {
+        return jpa.findInactiveUsers(inactiveSince, pageable);
     }
 
 }

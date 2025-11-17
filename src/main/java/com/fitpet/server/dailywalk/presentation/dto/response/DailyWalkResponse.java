@@ -1,12 +1,13 @@
 package com.fitpet.server.dailywalk.presentation.dto.response;
 
-import java.time.LocalDateTime;
 import com.fitpet.server.dailywalk.domain.entity.DailyWalk;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public record DailyWalkResponse(
         Long id,
         Integer step,
-        java.math.BigDecimal distanceKm,
+        BigDecimal distanceKm,
         Integer burnCalories,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

@@ -17,12 +17,14 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@DynamicUpdate
 @Table(name = "users",
         uniqueConstraints = {
                 @UniqueConstraint(name = "uk_users_email", columnNames = "email"),
@@ -102,6 +104,13 @@ public class User {
     @Column(name = "updated_at",
             columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
     private LocalDateTime updatedAt;
+
+    @Default
+    @Column(name = "allow_activity_notification", nullable = false)
+    private Boolean allowActivityNotification = true;
+
+    @Column(name = "last_accessed_at")
+    private LocalDateTime lastAccessedAt; // 마지막 접속 시간
 
 
     public void changePassword(String encodedPassword) {
@@ -195,5 +204,13 @@ public class User {
     public void linkSocial(String provider, String providerUid) {
         this.provider = provider;
         this.providerUid = providerUid;
+    }
+
+    public void updateLastAccessedAt() {
+        this.lastAccessedAt = LocalDateTime.now();
+    }
+    
+    public void changeActivityNotificationSetting(boolean allowed) {
+        this.allowActivityNotification = allowed;
     }
 }

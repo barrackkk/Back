@@ -11,6 +11,7 @@ public class ReportResponseDto {
     @Builder
     public static class TodayActivityResponse {
         private LocalDate date;
+        private Integer steps;
         private BigDecimal distanceKm;
         private Integer burnCalories;
     }

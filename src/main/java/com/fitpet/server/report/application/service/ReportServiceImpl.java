@@ -46,6 +46,7 @@ public class ReportServiceImpl implements ReportService {
 
     private final ReportMapper reportMapper;
 
+
     @Override
     public TodayActivityResponse getTodayActivity(Long userId, LocalDate date) {
         User user = findUserById(userId);

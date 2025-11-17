@@ -50,8 +50,7 @@ public class ReportController {
         return ResponseEntity.ok(response);
     }
 
-    // (수정) 일별 식단 상세 조회
-    @GetMapping("/meal/day") // 명세서 경로: /api/meal/day (Base URL에 /api가 있다면 /meal/day)
+    @GetMapping("/meal/day")
     public ResponseEntity<DailyMealSummaryResponse> getDailyMealsReport(
             //@AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestParam("day") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate day) {
