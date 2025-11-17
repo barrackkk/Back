@@ -27,6 +27,8 @@ public interface MissionCheckMapper {
     @Mapping(target = "user", source = "user")
     @Mapping(target = "completed", source = "request.completed")
     @Mapping(target = "checkAt", source = "request.checkDate")
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     MissionCheck create(Mission mission, User user, MissionCheckRequest request);
 
     default MissionCheck updateFromRequest(@MappingTarget MissionCheck target, MissionCheckRequest request) {

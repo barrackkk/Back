@@ -34,7 +34,10 @@ public class MissionController {
 
     @PostMapping
     public ResponseEntity<MissionDto> createMission(@Valid @RequestBody MissionCreateRequest request) {
+        log.info("[MissionController] 미션 생성 요청: title={}, type={}", request.title(), request.type());
         MissionDto created = missionService.createMission(request);
+        log.info("[MissionController] 미션 생성 완료: missionId={}, title={}, type={}", created.missionId(),
+            created.title(), created.type());
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{missionId}")
                 .buildAndExpand(created.missionId())
@@ -44,23 +47,34 @@ public class MissionController {
 
     @GetMapping
     public ResponseEntity<List<MissionDto>> getMissions() {
-        return ResponseEntity.ok(missionService.getMissions());
+        log.info("[MissionController] 미션 전체 조회 요청");
+        List<MissionDto> responses = missionService.getMissions();
+        log.info("[MissionController] 미션 전체 조회 완료: count={}", responses.size());
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/{missionId}")
     public ResponseEntity<MissionDto> getMission(@PathVariable Long missionId) {
-        return ResponseEntity.ok(missionService.getMission(missionId));
+        log.info("[MissionController] 미션 단건 조회 요청: missionId={}", missionId);
+        MissionDto response = missionService.getMission(missionId);
+        log.info("[MissionController] 미션 단건 조회 완료: missionId={}", missionId);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{missionId}")
     public ResponseEntity<MissionDto> updateMission(@PathVariable Long missionId,
                                                     @Valid @RequestBody MissionUpdateRequest request) {
-        return ResponseEntity.ok(missionService.updateMission(missionId, request));
+        log.info("[MissionController] 미션 수정 요청: missionId={}, title={}, type={}", missionId, request.title(),
+            request.type());
+        MissionDto updated = missionService.updateMission(missionId, request);
+        log.info("[MissionController] 미션 수정 완료: missionId={}", missionId);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{missionId}")
     public ResponseEntity<Void> deleteMission(@PathVariable Long missionId) {
         missionService.deleteMission(missionId);
+        log.info("[MissionController] 미션 삭제 완료: missionId={}", missionId);
         return ResponseEntity.noContent().build();
     }
 
@@ -68,18 +82,26 @@ public class MissionController {
     public ResponseEntity<MissionCheckDto> upsertMissionCheck(@PathVariable Long missionId,
                                                               @PathVariable Long userId,
                                                               @Valid @RequestBody MissionCheckRequest request) {
+        log.info("[MissionController] 미션 수행 여부 저장 요청: missionId={}, userId={}, date={}, completed={}",
+            missionId, userId, request.checkDate(), request.completed());
         MissionCheckDto response = missionCheckService.upsertMissionCheck(missionId, userId, request);
+        log.info("[MissionController] 미션 수행 여부 저장 완료: missionCheckId={}, missionId={}, userId={}",
+            response.missionCheckId(), missionId, userId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/users/{userId}/checks")
     public ResponseEntity<List<MissionCheckDto>> getMissionChecks(@PathVariable Long userId) {
-        return ResponseEntity.ok(missionCheckService.getMissionChecks(userId));
+        log.info("[MissionController] 사용자 수행 기록 조회 요청: userId={}", userId);
+        List<MissionCheckDto> responses = missionCheckService.getMissionChecks(userId);
+        log.info("[MissionController] 사용자 수행 기록 조회 완료: userId={}, count={}", userId, responses.size());
+        return ResponseEntity.ok(responses);
     }
 
     @DeleteMapping("/checks/{missionCheckId}")
     public ResponseEntity<Void> deleteMissionCheck(@PathVariable Long missionCheckId) {
         missionCheckService.deleteMissionCheck(missionCheckId);
+        log.info("[MissionController] 미션 수행 기록 삭제 완료: missionCheckId={}", missionCheckId);
         return ResponseEntity.noContent().build();
     }
 }
