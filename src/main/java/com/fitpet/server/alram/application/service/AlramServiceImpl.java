@@ -1,5 +1,6 @@
 package com.fitpet.server.alram.application.service;
 
+import com.fitpet.server.alram.application.mapper.AlramMapper;
 import com.fitpet.server.alram.domain.entity.AlramMessage;
 import com.fitpet.server.alram.domain.repository.AlramRepository;
 import com.fitpet.server.alram.presentation.dto.request.AlramRequestDto;
@@ -25,6 +26,7 @@ public class AlramServiceImpl implements AlramService {
     private final FirebaseMessaging firebaseMessaging;
     private final UserRepository userRepository;
     private final AlramRepository alramRepository;
+    private final AlramMapper alramMapper;
 
     @Override
     @Transactional
@@ -39,14 +41,11 @@ public class AlramServiceImpl implements AlramService {
 
         if (deviceToken == null || deviceToken.isBlank()) {
             log.warn("[AlramService] FCM 알림 발송 실패: 사용자(ID: {})의 디바이스 토큰이 없습니다.", user.getId());
-            // TODO: DEVICE_TOKEN_NOT_FOUND와 같은 ErrorCode를 정의하여 BusinessException 처리
-            throw new RuntimeException("사용자의 디바이스 토큰이 존재하지 않습니다.");
+
+            throw new BusinessException(ErrorCode.DEVICE_TOKEN_NOT_FOUND);
         }
 
-        Notification notification = Notification.builder()
-                .setTitle(requestDto.getTitle())
-                .setBody(requestDto.getBody())
-                .build();
+        Notification notification = alramMapper.toNotification(requestDto);
 
         Message.Builder fcmMessageBuilder = Message.builder()
                 .setToken(deviceToken)
@@ -64,25 +63,22 @@ public class AlramServiceImpl implements AlramService {
             log.info("[AlramService] FCM 알림 발송 성공. Message ID: {}", fcmMessageId);
         } catch (FirebaseMessagingException e) {
             log.error("[AlramService] FCM 알림 발송 실패: {}", e.getMessage(), e);
-            // TODO: FCM_SEND_FAILED와 같은 ErrorCode를 정의하여 BusinessException 처리
-            throw new RuntimeException("FCM 알림 발송에 실패했습니다.", e);
+
+            throw new BusinessException(ErrorCode.FCM_SEND_FAILED);
         }
 
-        AlramMessage alramToSave = AlramMessage.builder()
-                .user(user)
-                .title(requestDto.getTitle())
-                .message(requestDto.getBody())
-                .build();
+        AlramMessage alramToSave = alramMapper.toAlramMessage(requestDto, user);
 
         AlramMessage savedAlram = alramRepository.save(alramToSave);
 
         log.info("[AlramService] 알림 발송 내역 저장 완료");
 
-        return new AlramResponseDto(
-                savedAlram.getId(),
+        return alramMapper.toAlramResponseDto(
+                savedAlram,
                 fcmMessageId,
                 "알림 발송 및 저장 성공",
                 requestDto.getData()
+
         );
     }
 }

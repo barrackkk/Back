@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'com.fitpet'
@@ -85,6 +86,7 @@ dependencies {
 
     //FCM
     implementation 'com.google.firebase:firebase-admin:9.3.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
 tasks.named('test') { useJUnitPlatform() }
