@@ -31,7 +31,8 @@ public class SecurityConfig {
             "/report/**",
             "/meal/**",
             "/alram/**",
-            "/pets/**"
+            "/missions/**"
+
     };
 
     @Bean
