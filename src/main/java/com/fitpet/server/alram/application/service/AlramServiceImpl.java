@@ -29,15 +29,16 @@ public class AlramServiceImpl implements AlramService {
     @Override
     @Transactional
     public AlramResponseDto sendAndSaveAlram(AlramRequestDto requestDto) {
+        log.info("[AlramService] FCM 알림 전송 시작");
 
         User user = userRepository.findById(requestDto.getUserId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         String deviceToken = user.getDeviceToken();
-        log.info("🔥디바이스 토큰 {}", user.getDeviceToken());
+        log.info("[AlramService] 사용자(ID: {}) 디바이스 토큰: {}", user.getId(), deviceToken);
 
         if (deviceToken == null || deviceToken.isBlank()) {
-            log.warn("FCM 알림 발송 실패: 사용자(ID: {})의 디바이스 토큰이 없습니다.", user.getId());
+            log.warn("[AlramService] FCM 알림 발송 실패: 사용자(ID: {})의 디바이스 토큰이 없습니다.", user.getId());
             // TODO: DEVICE_TOKEN_NOT_FOUND와 같은 ErrorCode를 정의하여 BusinessException 처리
             throw new RuntimeException("사용자의 디바이스 토큰이 존재하지 않습니다.");
         }
@@ -60,9 +61,9 @@ public class AlramServiceImpl implements AlramService {
         String fcmMessageId;
         try {
             fcmMessageId = firebaseMessaging.send(fcmMessage);
-            log.info("FCM 알림 발송 성공: {}", fcmMessageId);
+            log.info("[AlramService] FCM 알림 발송 성공. Message ID: {}", fcmMessageId);
         } catch (FirebaseMessagingException e) {
-            log.error("FCM 알림 발송 실패: {}", e.getMessage(), e);
+            log.error("[AlramService] FCM 알림 발송 실패: {}", e.getMessage(), e);
             // TODO: FCM_SEND_FAILED와 같은 ErrorCode를 정의하여 BusinessException 처리
             throw new RuntimeException("FCM 알림 발송에 실패했습니다.", e);
         }
@@ -74,6 +75,8 @@ public class AlramServiceImpl implements AlramService {
                 .build();
 
         AlramMessage savedAlram = alramRepository.save(alramToSave);
+
+        log.info("[AlramService] 알림 발송 내역 저장 완료");
 
         return new AlramResponseDto(
                 savedAlram.getId(),
