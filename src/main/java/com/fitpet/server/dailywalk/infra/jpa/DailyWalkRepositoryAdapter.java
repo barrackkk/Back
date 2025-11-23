@@ -25,8 +25,8 @@ public class DailyWalkRepositoryAdapter implements DailyWalkRepository {
 
     @Override
     public Optional<DailyWalk> findByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(Long userId,
-                                                                                            LocalDateTime start,
-                                                                                            LocalDateTime end) {
+                                                                                             LocalDateTime start,
+                                                                                             LocalDateTime end) {
         return jpaRepository.findByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(userId, start, end);
     }
 
@@ -35,7 +35,8 @@ public class DailyWalkRepositoryAdapter implements DailyWalkRepository {
                                                                                             LocalDateTime start,
                                                                                             LocalDateTime end) {
         return jpaRepository
-            .findAllByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByCreatedAtAsc(userId, start, end);
+                .findAllByUser_IdAndCreatedAtGreaterThanEqualAndCreatedAtLessThanOrderByCreatedAtAsc(userId, start,
+                        end);
     }
 
     @Override

@@ -31,6 +31,7 @@ public class SecurityConfig {
             "/gps/**",
             "/report/**",
             "/meal/**",
+            "/alram/**",
             "/pets/**",
             "/missions/**",
             "/badges/**"
