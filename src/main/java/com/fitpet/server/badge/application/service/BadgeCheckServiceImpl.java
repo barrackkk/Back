@@ -32,13 +32,14 @@ public class BadgeCheckServiceImpl implements BadgeCheckService {
     @Override
     public BadgeCheckDto assignBadge(Long userId, BadgeCheckCreateRequest request) {
         log.info("[BadgeCheckService] 뱃지 부여 요청: userId={}, badgeId={}", userId, request.badgeId());
-        Badge badge = badgeRepository.findById(request.badgeId())
-                .orElseThrow(BadgeNotFoundException::new);
-        User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
-
         BadgeCheck badgeCheck = badgeCheckRepository.findByUserIdAndBadgeId(userId, request.badgeId())
-                .orElseGet(() -> badgeCheckMapper.toEntity(user, badge));
+                .orElseGet(() -> {
+                    Badge badge = badgeRepository.findById(request.badgeId())
+                            .orElseThrow(BadgeNotFoundException::new);
+                    User user = userRepository.findById(userId)
+                            .orElseThrow(UserNotFoundException::new);
+                    return badgeCheckMapper.toEntity(user, badge);
+                });
 
         BadgeCheck saved = badgeCheckRepository.save(badgeCheck);
         log.info("[BadgeCheckService] 뱃지 부여 완료: badgeCheckId={}, userId={}, badgeId={}",
