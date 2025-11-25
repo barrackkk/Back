@@ -4,6 +4,7 @@ import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.repository.UserRepository;
 import com.fitpet.server.user.infra.jpa.UserJpaRepository;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -80,4 +81,13 @@ public class UserRepositoryAdapter implements UserRepository {
         return jpa.findInactiveUsers(inactiveSince, pageable);
     }
 
+    @Override
+    public List<User> findTop10ByOrderByDailyStepCountDesc() {
+        return jpa.findTop10ByOrderByDailyStepCountDesc();
+    }
+
+    @Override
+    public long countByDailyStepCountGreaterThan(int dailyStepCount) {
+        return jpa.countByDailyStepCountGreaterThan(dailyStepCount);
+    }
 }

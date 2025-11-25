@@ -2,6 +2,7 @@ package com.fitpet.server.user.infra.jpa;
 
 import com.fitpet.server.user.domain.entity.User;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,4 +46,8 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
             @Param("inactiveSince") LocalDateTime inactiveSince,
             Pageable pageable
     );
+
+    List<User> findTop10ByOrderByDailyStepCountDesc();
+
+    long countByDailyStepCountGreaterThan(Integer dailyStepCount);
 }
