@@ -1,12 +1,14 @@
 package com.fitpet.server.user.application.service;
 
 import com.fitpet.server.user.application.mapper.UserMapper;
+import com.fitpet.server.user.domain.entity.Gender;
 import com.fitpet.server.user.domain.entity.RegistrationStatus;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.exception.DuplicateEmailException;
 import com.fitpet.server.user.domain.exception.DuplicateNicknameException;
 import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
+import com.fitpet.server.user.presentation.dto.GenderRankingResponse;
 import com.fitpet.server.user.presentation.dto.RankingResponse;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
@@ -134,6 +136,22 @@ public class UserServiceImpl implements UserService {
         int myRank = (int) higherCount + 1;
 
         return new RankingResponse(top10, myRank);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GenderRankingResponse getGenderDailyStepRanking(Gender gender) {
+
+        List<UserRankingDto> top10 = userRepository.findTop10ByGenderOrderByDailyStepCountDesc(gender)
+                .stream()
+                .map(u -> new UserRankingDto(
+                        u.getId(),
+                        u.getNickname(),
+                        u.getDailyStepCount() == null ? 0 : u.getDailyStepCount()
+                ))
+                .toList();
+
+        return new GenderRankingResponse(top10);
     }
 
     private void validateUserCreateRequest(UserCreateRequest request) {
