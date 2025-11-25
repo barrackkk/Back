@@ -1,5 +1,6 @@
 package com.fitpet.server.user.infra.adapter;
 
+import com.fitpet.server.user.domain.entity.Gender;
 import com.fitpet.server.user.domain.entity.User;
 import com.fitpet.server.user.domain.repository.UserRepository;
 import com.fitpet.server.user.infra.jpa.UserJpaRepository;
@@ -89,5 +90,10 @@ public class UserRepositoryAdapter implements UserRepository {
     @Override
     public long countByDailyStepCountGreaterThan(int dailyStepCount) {
         return jpa.countByDailyStepCountGreaterThan(dailyStepCount);
+    }
+
+    @Override
+    public List<User> findTop10ByGenderOrderByDailyStepCountDesc(Gender gender) {
+        return jpa.findTop10ByGenderOrderByDailyStepCountDesc(gender);
     }
 }

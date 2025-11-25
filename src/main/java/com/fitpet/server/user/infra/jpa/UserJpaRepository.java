@@ -1,5 +1,6 @@
 package com.fitpet.server.user.infra.jpa;
 
+import com.fitpet.server.user.domain.entity.Gender;
 import com.fitpet.server.user.domain.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,5 +50,8 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     List<User> findTop10ByOrderByDailyStepCountDesc();
 
+    List<User> findTop10ByGenderOrderByDailyStepCountDesc(Gender gender);
+
     long countByDailyStepCountGreaterThan(Integer dailyStepCount);
+
 }

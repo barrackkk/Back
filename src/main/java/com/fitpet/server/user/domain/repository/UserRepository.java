@@ -1,5 +1,6 @@
 package com.fitpet.server.user.domain.repository;
 
+import com.fitpet.server.user.domain.entity.Gender;
 import com.fitpet.server.user.domain.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,4 +37,7 @@ public interface UserRepository {
     List<User> findTop10ByOrderByDailyStepCountDesc();
 
     long countByDailyStepCountGreaterThan(int dailyStepCount);
+
+    List<User> findTop10ByGenderOrderByDailyStepCountDesc(Gender gender);
+
 }
