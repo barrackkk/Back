@@ -2,6 +2,7 @@ package com.fitpet.server.user.presentation.controller;
 
 import com.fitpet.server.security.jwt.JwtTokenProvider;
 import com.fitpet.server.user.application.service.UserService;
+import com.fitpet.server.user.presentation.dto.RankingResponse;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
 import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
@@ -73,6 +74,14 @@ public class UserController {
         log.info("[UserController] 사용자 수정 완료: id: {}", userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @GetMapping("/{userId}/rankings/daily-step")
+    public ResponseEntity<RankingResponse> getDailyStepRanking(@PathVariable Long userId) {
+        log.info("[UserController] 일일 걸음 랭킹 조회 요청: userId={}", userId);
+        RankingResponse rankingResponse = userService.getDailyStepRanking(userId);
+        log.info("[UserController] 일일 걸음 랭킹 조회 완료: userId={}", userId);
+        return ResponseEntity.ok(rankingResponse);
     }
 
     @PatchMapping("/signUp/complete")
