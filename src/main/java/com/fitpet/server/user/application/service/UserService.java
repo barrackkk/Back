@@ -1,5 +1,6 @@
 package com.fitpet.server.user.application.service;
 
+import com.fitpet.server.user.presentation.dto.RankingResponse;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
 import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
@@ -17,4 +18,6 @@ public interface UserService {
     UserDto inputInfo(Long userId, UserInputInfoRequest request);
 
     boolean isRegistrationComplete(Long userId);
+
+    RankingResponse getDailyStepRanking(Long userId);
 }

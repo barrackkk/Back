@@ -7,10 +7,13 @@ import com.fitpet.server.user.domain.exception.DuplicateEmailException;
 import com.fitpet.server.user.domain.exception.DuplicateNicknameException;
 import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
+import com.fitpet.server.user.presentation.dto.RankingResponse;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
 import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
+import com.fitpet.server.user.presentation.dto.UserRankingDto;
 import com.fitpet.server.user.presentation.dto.UserUpdateRequest;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -109,6 +112,29 @@ public class UserServiceImpl implements UserService {
         return user.getRegistrationStatus() == RegistrationStatus.COMPLETE;
     }
 
+
+    @Override
+    @Transactional(readOnly = true)
+    public RankingResponse getDailyStepRanking(Long targetUserId) {
+        User user = userRepository.findById(targetUserId)
+                .orElseThrow(UserNotFoundException::new);
+
+        int myStepCount = user.getDailyStepCount() == null ? 0 : user.getDailyStepCount();
+
+        List<UserRankingDto> top10 = userRepository.findTop10ByOrderByDailyStepCountDesc()
+                .stream()
+                .map(u -> new UserRankingDto(
+                        u.getId(),
+                        u.getNickname(),
+                        u.getDailyStepCount() == null ? 0 : u.getDailyStepCount()
+                ))
+                .toList();
+
+        long higherCount = userRepository.countByDailyStepCountGreaterThan(myStepCount);
+        int myRank = (int) higherCount + 1;
+
+        return new RankingResponse(top10, myRank);
+    }
 
     private void validateUserCreateRequest(UserCreateRequest request) {
         if (userRepository.existsByEmail(request.email())) {
