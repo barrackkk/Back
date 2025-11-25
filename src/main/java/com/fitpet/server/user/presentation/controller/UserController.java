@@ -2,6 +2,8 @@ package com.fitpet.server.user.presentation.controller;
 
 import com.fitpet.server.security.jwt.JwtTokenProvider;
 import com.fitpet.server.user.application.service.UserService;
+import com.fitpet.server.user.domain.entity.Gender;
+import com.fitpet.server.user.presentation.dto.GenderRankingResponse;
 import com.fitpet.server.user.presentation.dto.RankingResponse;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -33,24 +36,24 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDto> create(
-        @Valid @RequestBody UserCreateRequest userCreateRequest
+            @Valid @RequestBody UserCreateRequest userCreateRequest
     ) {
         log.info("[UserController] 사용자 회원가입 요청: email: {}, nickname: {}",
-            userCreateRequest.email(), userCreateRequest.nickname());
+                userCreateRequest.email(), userCreateRequest.nickname());
 
         UserDto createdUser = userService.createUser(userCreateRequest);
 
         log.info("[UserController] 사용자 회원가입 완료: id: {}, email: {}",
-            createdUser.userId(), createdUser.email());
+                createdUser.userId(), createdUser.email());
 
         return ResponseEntity
-            .status(HttpStatus.CREATED)
-            .body(createdUser);
+                .status(HttpStatus.CREATED)
+                .body(createdUser);
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserDto> find(
-        @PathVariable Long userId
+            @PathVariable Long userId
     ) {
         log.info("[UserController] 사용자 조회 요청: id: {}", userId);
 
@@ -64,8 +67,8 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<UserDto> update(
-        @PathVariable Long userId,
-        @Valid @RequestBody UserUpdateRequest userUpdateRequest
+            @PathVariable Long userId,
+            @Valid @RequestBody UserUpdateRequest userUpdateRequest
     ) {
         log.info("[UserController] 사용자 수정 요청: id: {}", userId);
 
@@ -84,10 +87,18 @@ public class UserController {
         return ResponseEntity.ok(rankingResponse);
     }
 
+    @GetMapping("/rankings/daily-step/gender")
+    public ResponseEntity<GenderRankingResponse> getGenderDailyStepRanking(@RequestParam Gender gender) {
+        log.info("[UserController] 성별 일일 걸음 랭킹 조회 요청: gender={}", gender);
+        GenderRankingResponse rankingResponse = userService.getGenderDailyStepRanking(gender);
+        log.info("[UserController] 성별 일일 걸음 랭킹 조회 완료: gender={}", gender);
+        return ResponseEntity.ok(rankingResponse);
+    }
+
     @PatchMapping("/signUp/complete")
     public ResponseEntity<UserDto> updateUserInfo(
-        @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader,
-        @Valid @RequestBody UserInputInfoRequest userInputInfoRequest
+            @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authHeader,
+            @Valid @RequestBody UserInputInfoRequest userInputInfoRequest
     ) {
         String accessToken = extractBearerToken(authHeader);
         if (accessToken == null) {
@@ -118,7 +129,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> delete(
-        @PathVariable Long userId
+            @PathVariable Long userId
     ) {
         log.info("[UserController] 사용자 삭제 요청: id: {}", userId);
 
