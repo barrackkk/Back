@@ -79,8 +79,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
-    @GetMapping("/{userId}/rankings/daily-step")
-    public ResponseEntity<RankingResponse> getDailyStepRanking(@PathVariable Long userId) {
+    @GetMapping("/rankings/daily-step")
+    public ResponseEntity<RankingResponse> getDailyStepRanking() {
+        // TODO: 추후 토큰에서 userId 추출 로직으로 교체
+        Long userId = 3L;
         log.info("[UserController] 일일 걸음 랭킹 조회 요청: userId={}", userId);
         RankingResponse rankingResponse = userService.getDailyStepRanking(userId);
         log.info("[UserController] 일일 걸음 랭킹 조회 완료: userId={}", userId);
