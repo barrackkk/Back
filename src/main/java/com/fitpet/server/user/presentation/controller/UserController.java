@@ -84,22 +84,27 @@ public class UserController {
     }
 
     @GetMapping("/rankings/daily-step")
-    public ResponseEntity<RankingResponse> getDailyStepRanking() {
+    public ResponseEntity<RankingResponse> getDailyStepRanking(
+            @RequestParam(defaultValue = "10") int limit
+    ) {
         // TODO: 추후 토큰에서 userId 추출 로직으로 교체
         Long userId = 3L;
-        log.info("[UserController] 일일 걸음 랭킹 조회 요청: userId={}", userId);
-        RankingResult rankingResult = userService.getDailyStepRanking(userId);
+        log.info("[UserController] 일일 걸음 랭킹 조회 요청: userId={}, limit={}", userId, limit);
+        RankingResult rankingResult = userService.getDailyStepRanking(userId, limit);
         RankingResponse rankingResponse = RankingResponse.from(rankingResult);
-        log.info("[UserController] 일일 걸음 랭킹 조회 완료: userId={}", userId);
+        log.info("[UserController] 일일 걸음 랭킹 조회 완료: userId={}, limit={}", userId, limit);
         return ResponseEntity.ok(rankingResponse);
     }
 
     @GetMapping("/rankings/daily-step/gender")
-    public ResponseEntity<GenderRankingResponse> getGenderDailyStepRanking(@RequestParam Gender gender) {
-        log.info("[UserController] 성별 일일 걸음 랭킹 조회 요청: gender={}", gender);
-        GenderRankingResult result = userService.getGenderDailyStepRanking(gender);
+    public ResponseEntity<GenderRankingResponse> getGenderDailyStepRanking(
+            @RequestParam Gender gender,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        log.info("[UserController] 성별 일일 걸음 랭킹 조회 요청: gender={}, limit={}", gender, limit);
+        GenderRankingResult result = userService.getGenderDailyStepRanking(gender, limit);
         GenderRankingResponse response = GenderRankingResponse.from(result);
-        log.info("[UserController] 성별 일일 걸음 랭킹 조회 완료: gender={}", gender);
+        log.info("[UserController] 성별 일일 걸음 랭킹 조회 완료: gender={}, limit={}", gender, limit);
         return ResponseEntity.ok(response);
     }
 

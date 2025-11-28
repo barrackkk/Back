@@ -34,10 +34,10 @@ public interface UserRepository {
 
     Page<User> findInactiveUsers(LocalDateTime inactiveSince, Pageable pageable);
 
-    List<User> findTop10ByOrderByDailyStepCountDesc();
+    List<User> findTopRankers(int limit);
+
+    List<User> findTopRankersByGender(Gender gender, int limit);
 
     long countByDailyStepCountGreaterThan(int dailyStepCount);
-
-    List<User> findTop10ByGenderOrderByDailyStepCountDesc(Gender gender);
 
 }

@@ -117,13 +117,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public RankingResult getDailyStepRanking(Long targetUserId) {
+    public RankingResult getDailyStepRanking(Long targetUserId, int limit) {
         User user = userRepository.findById(targetUserId)
                 .orElseThrow(UserNotFoundException::new);
 
         int myStepCount = user.getDailyStepCount() == null ? 0 : user.getDailyStepCount();
 
-        List<UserRanking> top10 = userRepository.findTop10ByOrderByDailyStepCountDesc()
+        List<UserRanking> top10 = userRepository.findTopRankers(limit)
                 .stream()
                 .map(u -> new UserRanking(
                         u.getId(),
@@ -140,9 +140,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public GenderRankingResult getGenderDailyStepRanking(Gender gender) {
+    public GenderRankingResult getGenderDailyStepRanking(Gender gender, int limit) {
 
-        List<UserRanking> top10 = userRepository.findTop10ByGenderOrderByDailyStepCountDesc(gender)
+        List<UserRanking> top10 = userRepository.findTopRankersByGender(gender, limit)
                 .stream()
                 .map(u -> new UserRanking(
                         u.getId(),

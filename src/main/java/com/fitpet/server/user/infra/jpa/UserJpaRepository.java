@@ -48,9 +48,11 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
             Pageable pageable
     );
 
-    List<User> findTop10ByOrderByDailyStepCountDescUpdatedAtAsc();
+    @Query("SELECT u FROM User u ORDER BY u.dailyStepCount DESC, u.updatedAt ASC")
+    List<User> findTopRankers(Pageable pageable);
 
-    List<User> findTop10ByGenderOrderByDailyStepCountDescUpdatedAtAsc(Gender gender);
+    @Query("SELECT u FROM User u WHERE u.gender = :gender ORDER BY u.dailyStepCount DESC, u.updatedAt ASC")
+    List<User> findTopRankersByGender(@Param("gender") Gender gender, Pageable pageable);
 
     long countByDailyStepCountGreaterThan(int dailyStepCount);
 

@@ -21,7 +21,7 @@ public interface UserService {
 
     boolean isRegistrationComplete(Long userId);
 
-    RankingResult getDailyStepRanking(Long userId);
+    RankingResult getDailyStepRanking(Long userId, int limit);
 
-    GenderRankingResult getGenderDailyStepRanking(Gender gender);
+    GenderRankingResult getGenderDailyStepRanking(Gender gender, int limit);
 }

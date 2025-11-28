@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -83,8 +84,8 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
-    public List<User> findTop10ByOrderByDailyStepCountDesc() {
-        return jpa.findTop10ByOrderByDailyStepCountDescUpdatedAtAsc();
+    public List<User> findTopRankers(int limit) {
+        return jpa.findTopRankers(PageRequest.of(0, limit));
     }
 
     @Override
@@ -93,7 +94,7 @@ public class UserRepositoryAdapter implements UserRepository {
     }
 
     @Override
-    public List<User> findTop10ByGenderOrderByDailyStepCountDesc(Gender gender) {
-        return jpa.findTop10ByGenderOrderByDailyStepCountDescUpdatedAtAsc(gender);
+    public List<User> findTopRankersByGender(Gender gender, int limit) {
+        return jpa.findTopRankersByGender(gender, PageRequest.of(0, limit));
     }
 }
