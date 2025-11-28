@@ -48,9 +48,9 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
             Pageable pageable
     );
 
-    List<User> findTop10ByOrderByDailyStepCountDesc();
+    List<User> findTop10ByOrderByDailyStepCountDescUpdatedAtAsc();
 
-    List<User> findTop10ByGenderOrderByDailyStepCountDesc(Gender gender);
+    List<User> findTop10ByGenderOrderByDailyStepCountDescUpdatedAtAsc(Gender gender);
 
     long countByDailyStepCountGreaterThan(Integer dailyStepCount);
 

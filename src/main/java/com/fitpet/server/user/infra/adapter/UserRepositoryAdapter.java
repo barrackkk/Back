@@ -84,7 +84,7 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public List<User> findTop10ByOrderByDailyStepCountDesc() {
-        return jpa.findTop10ByOrderByDailyStepCountDesc();
+        return jpa.findTop10ByOrderByDailyStepCountDescUpdatedAtAsc();
     }
 
     @Override
@@ -94,6 +94,6 @@ public class UserRepositoryAdapter implements UserRepository {
 
     @Override
     public List<User> findTop10ByGenderOrderByDailyStepCountDesc(Gender gender) {
-        return jpa.findTop10ByGenderOrderByDailyStepCountDesc(gender);
+        return jpa.findTop10ByGenderOrderByDailyStepCountDescUpdatedAtAsc(gender);
     }
 }
