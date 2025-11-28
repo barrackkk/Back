@@ -89,10 +89,7 @@ public class UserController {
         Long userId = 3L;
         log.info("[UserController] 일일 걸음 랭킹 조회 요청: userId={}", userId);
         RankingResult rankingResult = userService.getDailyStepRanking(userId);
-        RankingResponse rankingResponse = new RankingResponse(
-                rankingResult.top10().stream().map(this::toDto).toList(),
-                rankingResult.myRank()
-        );
+        RankingResponse rankingResponse = RankingResponse.from(rankingResult);
         log.info("[UserController] 일일 걸음 랭킹 조회 완료: userId={}", userId);
         return ResponseEntity.ok(rankingResponse);
     }
@@ -101,11 +98,9 @@ public class UserController {
     public ResponseEntity<GenderRankingResponse> getGenderDailyStepRanking(@RequestParam Gender gender) {
         log.info("[UserController] 성별 일일 걸음 랭킹 조회 요청: gender={}", gender);
         GenderRankingResult result = userService.getGenderDailyStepRanking(gender);
-        GenderRankingResponse rankingResponse = new GenderRankingResponse(
-                result.top10().stream().map(this::toDto).toList()
-        );
+        GenderRankingResponse response = GenderRankingResponse.from(result);
         log.info("[UserController] 성별 일일 걸음 랭킹 조회 완료: gender={}", gender);
-        return ResponseEntity.ok(rankingResponse);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/signUp/complete")
@@ -170,11 +165,4 @@ public class UserController {
         return token.isEmpty() ? null : token;
     }
 
-    private UserRankingDto toDto(UserRanking ranking) {
-        return new UserRankingDto(
-                ranking.userId(),
-                ranking.nickname(),
-                ranking.dailyStepCount()
-        );
-    }
 }
