@@ -1,6 +1,9 @@
 package com.fitpet.server.user.presentation.controller;
 
 import com.fitpet.server.security.jwt.JwtTokenProvider;
+import com.fitpet.server.user.application.dto.GenderRankingResult;
+import com.fitpet.server.user.application.dto.RankingResult;
+import com.fitpet.server.user.application.dto.UserRanking;
 import com.fitpet.server.user.application.service.UserService;
 import com.fitpet.server.user.domain.entity.Gender;
 import com.fitpet.server.user.presentation.dto.GenderRankingResponse;
@@ -8,6 +11,7 @@ import com.fitpet.server.user.presentation.dto.RankingResponse;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
 import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
+import com.fitpet.server.user.presentation.dto.UserRankingDto;
 import com.fitpet.server.user.presentation.dto.UserUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +88,11 @@ public class UserController {
         // TODO: 추후 토큰에서 userId 추출 로직으로 교체
         Long userId = 3L;
         log.info("[UserController] 일일 걸음 랭킹 조회 요청: userId={}", userId);
-        RankingResponse rankingResponse = userService.getDailyStepRanking(userId);
+        RankingResult rankingResult = userService.getDailyStepRanking(userId);
+        RankingResponse rankingResponse = new RankingResponse(
+                rankingResult.top10().stream().map(this::toDto).toList(),
+                rankingResult.myRank()
+        );
         log.info("[UserController] 일일 걸음 랭킹 조회 완료: userId={}", userId);
         return ResponseEntity.ok(rankingResponse);
     }
@@ -92,7 +100,10 @@ public class UserController {
     @GetMapping("/rankings/daily-step/gender")
     public ResponseEntity<GenderRankingResponse> getGenderDailyStepRanking(@RequestParam Gender gender) {
         log.info("[UserController] 성별 일일 걸음 랭킹 조회 요청: gender={}", gender);
-        GenderRankingResponse rankingResponse = userService.getGenderDailyStepRanking(gender);
+        GenderRankingResult result = userService.getGenderDailyStepRanking(gender);
+        GenderRankingResponse rankingResponse = new GenderRankingResponse(
+                result.top10().stream().map(this::toDto).toList()
+        );
         log.info("[UserController] 성별 일일 걸음 랭킹 조회 완료: gender={}", gender);
         return ResponseEntity.ok(rankingResponse);
     }
@@ -157,5 +168,13 @@ public class UserController {
         }
         String token = authHeader.substring(space + 1).trim();
         return token.isEmpty() ? null : token;
+    }
+
+    private UserRankingDto toDto(UserRanking ranking) {
+        return new UserRankingDto(
+                ranking.userId(),
+                ranking.nickname(),
+                ranking.dailyStepCount()
+        );
     }
 }

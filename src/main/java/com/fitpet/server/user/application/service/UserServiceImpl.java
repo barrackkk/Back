@@ -1,5 +1,8 @@
 package com.fitpet.server.user.application.service;
 
+import com.fitpet.server.user.application.dto.GenderRankingResult;
+import com.fitpet.server.user.application.dto.RankingResult;
+import com.fitpet.server.user.application.dto.UserRanking;
 import com.fitpet.server.user.application.mapper.UserMapper;
 import com.fitpet.server.user.domain.entity.Gender;
 import com.fitpet.server.user.domain.entity.RegistrationStatus;
@@ -8,12 +11,9 @@ import com.fitpet.server.user.domain.exception.DuplicateEmailException;
 import com.fitpet.server.user.domain.exception.DuplicateNicknameException;
 import com.fitpet.server.user.domain.exception.UserNotFoundException;
 import com.fitpet.server.user.domain.repository.UserRepository;
-import com.fitpet.server.user.presentation.dto.GenderRankingResponse;
-import com.fitpet.server.user.presentation.dto.RankingResponse;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
 import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
-import com.fitpet.server.user.presentation.dto.UserRankingDto;
 import com.fitpet.server.user.presentation.dto.UserUpdateRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -117,15 +117,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public RankingResponse getDailyStepRanking(Long targetUserId) {
+    public RankingResult getDailyStepRanking(Long targetUserId) {
         User user = userRepository.findById(targetUserId)
                 .orElseThrow(UserNotFoundException::new);
 
         int myStepCount = user.getDailyStepCount() == null ? 0 : user.getDailyStepCount();
 
-        List<UserRankingDto> top10 = userRepository.findTop10ByOrderByDailyStepCountDesc()
+        List<UserRanking> top10 = userRepository.findTop10ByOrderByDailyStepCountDesc()
                 .stream()
-                .map(u -> new UserRankingDto(
+                .map(u -> new UserRanking(
                         u.getId(),
                         u.getNickname(),
                         u.getDailyStepCount() == null ? 0 : u.getDailyStepCount()
@@ -135,23 +135,23 @@ public class UserServiceImpl implements UserService {
         long higherCount = userRepository.countByDailyStepCountGreaterThan(myStepCount);
         int myRank = (int) higherCount + 1;
 
-        return new RankingResponse(top10, myRank);
+        return new RankingResult(top10, myRank);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public GenderRankingResponse getGenderDailyStepRanking(Gender gender) {
+    public GenderRankingResult getGenderDailyStepRanking(Gender gender) {
 
-        List<UserRankingDto> top10 = userRepository.findTop10ByGenderOrderByDailyStepCountDesc(gender)
+        List<UserRanking> top10 = userRepository.findTop10ByGenderOrderByDailyStepCountDesc(gender)
                 .stream()
-                .map(u -> new UserRankingDto(
+                .map(u -> new UserRanking(
                         u.getId(),
                         u.getNickname(),
                         u.getDailyStepCount() == null ? 0 : u.getDailyStepCount()
                 ))
                 .toList();
 
-        return new GenderRankingResponse(top10);
+        return new GenderRankingResult(top10);
     }
 
     private void validateUserCreateRequest(UserCreateRequest request) {

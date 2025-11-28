@@ -1,8 +1,8 @@
 package com.fitpet.server.user.application.service;
 
+import com.fitpet.server.user.application.dto.GenderRankingResult;
+import com.fitpet.server.user.application.dto.RankingResult;
 import com.fitpet.server.user.domain.entity.Gender;
-import com.fitpet.server.user.presentation.dto.GenderRankingResponse;
-import com.fitpet.server.user.presentation.dto.RankingResponse;
 import com.fitpet.server.user.presentation.dto.UserCreateRequest;
 import com.fitpet.server.user.presentation.dto.UserDto;
 import com.fitpet.server.user.presentation.dto.UserInputInfoRequest;
@@ -21,7 +21,7 @@ public interface UserService {
 
     boolean isRegistrationComplete(Long userId);
 
-    RankingResponse getDailyStepRanking(Long userId);
+    RankingResult getDailyStepRanking(Long userId);
 
-    GenderRankingResponse getGenderDailyStepRanking(Gender gender);
+    GenderRankingResult getGenderDailyStepRanking(Gender gender);
 }
