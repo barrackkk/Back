@@ -52,6 +52,6 @@ public interface UserJpaRepository extends JpaRepository<User, Long> {
 
     List<User> findTop10ByGenderOrderByDailyStepCountDescUpdatedAtAsc(Gender gender);
 
-    long countByDailyStepCountGreaterThan(Integer dailyStepCount);
+    long countByDailyStepCountGreaterThan(int dailyStepCount);
 
 }
